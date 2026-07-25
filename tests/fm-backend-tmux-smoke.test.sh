@@ -156,6 +156,32 @@ if fm_backend_tmux_resolve_bare_selector "no-such-window-xyz" 2>/dev/null; then
 fi
 pass "real tmux: fm_backend_tmux_resolve_bare_selector fails for a window that does not exist"
 
+# --- fm_backend_target_exists: label-checked liveness ------------------------
+# Regression for the display-message current-window fallback: `tmux
+# display-message -t <session>:<gone-window>` does NOT fail when the window is
+# gone - it resolves to the session's CURRENT window and exits 0. So the naive
+# `#{pane_id}` probe reported every dead worker window in a live session as
+# alive. With the caller-supplied window label, a gone window's resolved
+# #{window_name} no longer matches and the check correctly reports not-existing.
+
+# live window, matching label -> exists
+fm_backend_target_exists tmux "$TARGET" "$WINDOW" \
+  || fail "fm_backend_target_exists should report a live window with a matching label as existing"
+
+# gone/never-existed window in a LIVE session, label supplied -> does NOT exist.
+# This is the defect: the pre-fix pane_id probe returns 0 here via the
+# current-window fallback and reports the dead window as alive.
+GONE="$SESSION:fm-gone-window-xyz"
+if fm_backend_target_exists tmux "$GONE" "fm-gone-window-xyz"; then
+  fail "fm_backend_target_exists reported a gone window in a live session as existing (display-message current-window fallback)"
+fi
+
+# empty expected_label -> unchanged legacy session-presence behaviour
+fm_backend_target_exists tmux "$TARGET" "" \
+  || fail "fm_backend_target_exists with an empty label should preserve the legacy session-presence probe"
+
+pass "real tmux: fm_backend_target_exists matches on the window label and rejects a gone window in a live session"
+
 # --- kill and recovery-grade missing-window classification ------------------
 
 fm_backend_tmux_kill "$TARGET"

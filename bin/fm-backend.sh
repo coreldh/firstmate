@@ -659,10 +659,23 @@ fm_backend_composer_state() {  # <backend> <target> -> empty|pending|unknown
 # primitive so callers that only need a fast alive/dead read (recovery
 # digests, the session-start fleet digest) do not re-derive it inline.
 fm_backend_target_exists() {  # <backend> <target> [expected-label]
-  local backend=$1 target=$2 expected_label=${3:-} session pane
+  local backend=$1 target=$2 expected_label=${3:-} session pane name
   case "$backend" in
     tmux)
-      tmux display-message -p -t "$target" '#{pane_id}' >/dev/null 2>&1
+      # tmux display-message falls back to the session's CURRENT window when the
+      # requested window is gone (and still exits 0), so a bare pane_id probe
+      # reports every dead worker window in a live session as alive. When the
+      # caller supplies the expected window label, resolve the target's
+      # #{window_name} and require it to match: a gone window resolves to some
+      # other window whose name will not match, while a name that DOES match is
+      # a live window by that name. With no expected label, preserve the legacy
+      # session-presence probe.
+      if [ -n "$expected_label" ]; then
+        name=$(tmux display-message -p -t "$target" '#{window_name}' 2>/dev/null) || return 1
+        [ "$name" = "$expected_label" ]
+      else
+        tmux display-message -p -t "$target" '#{pane_id}' >/dev/null 2>&1
+      fi
       ;;
     herdr)
       fm_backend_source herdr || return 1

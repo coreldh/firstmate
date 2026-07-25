@@ -40,6 +40,13 @@ case "${1:-}" in
           *) printf 'codex\n' ;;
         esac
         ;;
+      *window_name*)
+        # Real tmux resolves #{window_name} for a session:window target; the
+        # liveness probe (fm_backend_target_exists) compares it to fm-<id>, so
+        # this mock returns the window portion of the target to model a present
+        # window whose name matches.
+        printf '%s\n' "${target#*:}"
+        ;;
       *) printf '%%1\n' ;;
     esac
     ;;
