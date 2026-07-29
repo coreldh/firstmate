@@ -52,6 +52,12 @@
 # leased home releases its durable treehouse lease so the pool slot is freed,
 # never left leased forever. If the treehouse return fails, teardown leaves the
 # leased home and state in place instead of hiding a still-held lease.
+# Once every refusal has been cleared and the endpoint is dead, teardown records the
+# task's closing provider quota state through bin/fm-quota-record.sh, pairing with
+# fm-spawn.sh's spawn capture so bin/fm-quota-delta.sh can report what the task cost.
+# A refused teardown deliberately records nothing: the task has not ended. Forced
+# secondmate retirement discards child tasks without a close capture, and their
+# ledgers go with the removed home; that path is not instrumented.
 # Usage: fm-teardown.sh <task-id> [--force]
 #   --force skips ordinary-task dirty and landed-work checks, skips scout report
 #   checks, and discards secondmate child work for kind=secondmate. Only use it
@@ -1685,6 +1691,17 @@ fm_backend_clear_transition "$BACKEND" "$STATE" "$T" || true
 [ -n "$TASK_TMP" ] && rm -rf "$TASK_TMP"
 remove_pr_poll_artifacts "$STATE" "$ID" || exit 1
 retire_busy_state "$STATE" "$ID" "$BUSY_GEN" || exit 1
+# Quota instrumentation: the close capture that pairs with fm-spawn.sh's spawn
+# capture. Placed here, and only here, because this is the point of no return -
+# every refusal (unlanded work, missing scout report, endpoint safety, failed
+# worktree return) has already exited above, and every backend's endpoint is
+# already dead, so no further quota can accrue to this task. It runs before the
+# state files are removed on the next line because the recorder reads harness,
+# model, effort and kind from state/<id>.meta. Synchronous, unlike the spawn side:
+# cleanup is not latency-critical, and the record must exist by the time teardown
+# returns so bin/fm-quota-delta.sh can be read immediately. Bounded by
+# FM_QUOTA_TIMEOUT and never fatal - a lost measurement must not fail a cleanup.
+"$FM_ROOT/bin/fm-quota-record.sh" "$ID" close >/dev/null 2>&1 || true
 rm -f "$STATE/$ID.status" "$STATE/$ID.turn-ended" "$STATE/$ID.meta" \
   "$STATE/$ID.pi-ext.ts" "$STATE/$ID.grok-turnend-token" \
   "$STATE/$ID.kimi-turnend-token"
