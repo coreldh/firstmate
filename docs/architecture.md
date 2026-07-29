@@ -70,6 +70,24 @@ It leads with a prominent bordered tangle banner, while `bin/fm-guard.sh` owns t
 On every verified primary harness, tracked hook integration gives the primary session a push-based backstop: when work is in flight and no identity-matched watcher lock with a fresh beacon is live, direct Stop hooks block and passive turn-end hooks force one bounded follow-up.
 The guard covers the main primary and genuinely marked secondmate homes, exempts child crewmate/scout worktrees, is loop-safe per harness, and is documented in [turnend-guard.md](turnend-guard.md).
 
+### Codex project-hook payload integrity
+
+Codex persists project-hook trust against each declaration, not against scripts resolved by that declaration at run time.
+Firstmate therefore never treats the hook process working directory as executable authority.
+Every Firstmate-launched Codex crewmate receives `FM_CODEX_HOOK_ROOT` bound to its parent home's tracked code root, and a Codex secondmate receives the secondmate home's own tracked code root.
+The launched agent cannot change its parent Codex process environment, so editing a task worktree does not retarget the running hooks.
+An ordinary primary session without the launch binding falls back to its process working directory, but the same payload verification below still applies.
+
+Every command in `.codex/hooks.json` pins the SHA-256 of `.codex/hook-payload.sha256`, rejects a symlinked manifest or payload entry, verifies every executable or sourced dependency in that manifest, and only then invokes its named entrypoint.
+Missing hashing support, an unavailable configured root, an unsafe entry, or any digest mismatch prints `firstmate Codex hook refused:` to stderr and exits 2.
+The `Stop` hook therefore stays enabled and blocking while refusing unrecognized code instead of silently stepping aside.
+The manifest covers the complete executable dependency closures of the Codex `SessionStart`, Bash `PreToolUse`, and `Stop` hooks.
+Changing one of those dependencies requires updating the manifest and its pinned digest in `.codex/hooks.json`, which intentionally causes one hook review for the changed declaration; unchanged ordinary spawns reuse the same declaration and require no per-spawn review.
+
+This boundary removes a crewmate's written authority to replace the executed payload, but it is not an operating-system privilege boundary.
+The account owner and any process already running as that account can still write the tracked anchor, the login shell profile still runs before the inline verification because Codex invokes `bash -lc`, and a writable fallback tree retains a check-to-execution race.
+The pinned manifest makes an unrecognized payload fail deterministically; filesystem permissions or a Codex-managed immutable hook directory would be needed to remove those same-account residuals.
+
 A presence-gated sub-supervisor (`bin/fm-supervise-daemon.sh`) extends this for walk-away supervision: the `/afk` skill starts it through the tracked foreground helper `bin/fm-afk-start.sh`, after which the watcher reverts to daemon-managed one-shot mode and the daemon self-handles routine wakes in bash.
 The watcher and daemon share `bin/fm-classify-lib.sh` for captain-relevant status verbs, declared-external-wait vocabulary, and status-scan primitives.
 Terminal verbs remain captain-relevant, while a nonterminal progress verb cannot become terminal merely because its prose contains a legacy free-text token such as `merged`; bare legacy free-text lines remain compatible.

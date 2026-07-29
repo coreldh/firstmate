@@ -372,6 +372,31 @@ test_policy_cli_direct() {
 
 # --- per-harness wiring -----------------------------------------------------
 
+test_codex_hook_separates_trusted_payload_from_worktree_scope() {
+  local settings command base worktree payload out rc
+  settings="$ROOT/.codex/hooks.json"
+  command=$(jq -r '[.hooks.PreToolUse[0].hooks[].command | select(contains("fm-cd-pretool-check.sh"))][0] // empty' "$settings")
+  [ -n "$command" ] || fail "Codex cd-guard hook command is missing"
+
+  base="$TMP_ROOT/codex-hook-parent"
+  worktree="$TMP_ROOT/codex-hook-worktree"
+  fm_git_worktree "$base" "$worktree" fm/cd-codex-hook-worktree
+  mkdir -p "$worktree/bin"
+  : > "$worktree/AGENTS.md"
+  printf '#!/usr/bin/env bash\nprintf "UNTRUSTED_CD_CHECK_EXECUTED\\n"\n' \
+    > "$worktree/bin/fm-cd-pretool-check.sh"
+  chmod +x "$worktree/bin/fm-cd-pretool-check.sh"
+  payload=$(jq -cn --arg command 'cd projects/foo' '{tool_input:{command:$command}}')
+
+  out=$(printf '%s' "$payload" \
+    | (cd "$worktree" && FM_CODEX_HOOK_ROOT="$ROOT" FM_ROOT_OVERRIDE="$worktree" \
+      bash -c "$command") 2>&1)
+  rc=$?
+  expect_code 0 "$rc" "Codex cd guard must keep the linked-worktree exemption"
+  [ -z "$out" ] || fail "trusted cd hook produced output in the linked worktree: $out"
+  pass ".codex/hooks.json: cd hook verifies parent payload and scopes through the agent worktree"
+}
+
 test_scripts_are_shellcheck_clean() {
   command -v shellcheck >/dev/null 2>&1 || { pass "shellcheck not installed, skipping"; return; }
   shellcheck "$ROOT/bin/fm-cd-pretool-check.sh" >/dev/null 2>&1 \
@@ -391,4 +416,5 @@ test_fail_open_missing_node
 test_fail_open_missing_jq_on_stdin
 test_prefilter_skips_node_without_cd_substring
 test_policy_cli_direct
+test_codex_hook_separates_trusted_payload_from_worktree_scope
 test_scripts_are_shellcheck_clean

@@ -439,6 +439,31 @@ test_allow_is_silent_both_modes() {
 
 # --- harness wiring: each adapter invokes the shared checker -----------------
 
+test_codex_hook_uses_trusted_payload_when_worktree_copy_is_modified() {
+  local settings command base worktree payload out rc
+  settings="$ROOT/.codex/hooks.json"
+  command=$(jq -r '.hooks.PreToolUse[0].hooks[0].command // empty' "$settings")
+  [ -n "$command" ] || fail "Codex watcher-arm hook command is missing"
+
+  base=$(fm_test_tmproot fm-arm-codex-hook-parent)
+  worktree="$base-worktree"
+  fm_git_worktree "$base" "$worktree" fm/arm-codex-hook-worktree
+  mkdir -p "$worktree/bin"
+  printf '#!/usr/bin/env bash\nprintf "UNTRUSTED_ARM_CHECK_EXECUTED\\n"\n' \
+    > "$worktree/bin/fm-arm-pretool-check.sh"
+  chmod +x "$worktree/bin/fm-arm-pretool-check.sh"
+  payload=$(jq -cn --arg command "printf '# changed\\n' >> '$worktree/bin/fm-arm-pretool-check.sh'" \
+    '{tool_input:{command:$command}}')
+
+  out=$(printf '%s' "$payload" \
+    | (cd "$worktree" && FM_CODEX_HOOK_ROOT="$ROOT" FM_ROOT_OVERRIDE="$worktree" \
+      bash -c "$command") 2>&1)
+  rc=$?
+  expect_code 0 "$rc" "a covered-payload edit in the agent worktree must not self-lock Bash"
+  [ -z "$out" ] || fail "trusted watcher-arm hook produced output for an allowed worktree edit: $out"
+  pass ".codex/hooks.json: watcher-arm hook verifies parent payload while the agent edits its worktree copy"
+}
+
 # --- shellcheck (belt-and-suspenders; CI/CONTRIBUTING.md also runs this) -----
 
 test_shellcheck_clean() {
@@ -464,4 +489,5 @@ test_failopen_missing_node
 test_claude_mode_stdout_empty_on_deny
 test_default_mode_stdout_has_grok_json_on_deny
 test_allow_is_silent_both_modes
+test_codex_hook_uses_trusted_payload_when_worktree_copy_is_modified
 test_shellcheck_clean
