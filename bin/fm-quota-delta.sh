@@ -20,11 +20,15 @@
 #   that window. It is a measure of the window, not of the task alone: anything else
 #   drawing on the same subscription during the task lands in the same number.
 #
-#   A window whose resetsAt moved between the two captures rolled over mid-task. Its
-#   arithmetic difference is then meaningless - usage was zeroed partway - so the
-#   window is reported as "window reset between captures" with no cost figure rather
-#   than a plausible wrong one. This is the normal case for an overnight run that
-#   rides a reset, so it is called out rather than averaged away.
+#   A window that rolled over mid-task has no meaningful arithmetic difference - usage
+#   was zeroed partway - so it is reported as "window reset between captures" with no
+#   cost figure rather than a plausible wrong one. This is the normal case for an
+#   overnight run that rides a reset, so it is called out rather than averaged away.
+#   Two independent tests detect it, neither comparing resetsAt strings (those jitter
+#   between two reads of the same window, and rolling windows recompute them on every
+#   read): usage fell between the captures, or the window current at spawn was due to
+#   reset before the close capture ran. The second catches what the first cannot - a
+#   window that reset and then climbed back past its spawn-time level.
 #
 #   A capture that did not return usable data yields no cost. This script never
 #   substitutes a zero for a missing measurement, and never silently upgrades a
@@ -43,7 +47,7 @@ FM_HOME="${FM_HOME:-${FM_ROOT_OVERRIDE:-$FM_ROOT}}"
 DATA="${FM_DATA_OVERRIDE:-$FM_HOME/data}"
 
 usage() {
-  sed -n '2,36p' "$SELF" | sed 's/^# \{0,1\}//'
+  sed -n '2,40p' "$SELF" | sed 's/^# \{0,1\}//'
 }
 
 TASK=

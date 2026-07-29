@@ -89,7 +89,7 @@ QUOTA_BIN=${FM_QUOTA_BIN:-quota-axi}
 QUOTA_TIMEOUT=${FM_QUOTA_TIMEOUT:-8}
 
 usage() {
-  sed -n '2,74p' "$SELF" | sed 's/^# \{0,1\}//'
+  sed -n '2,75p' "$SELF" | sed 's/^# \{0,1\}//'
 }
 
 case "${1:-}" in

@@ -19,6 +19,8 @@
 #   (g) end to end over the REAL bin/fm-spawn.sh and bin/fm-teardown.sh: a spawn
 #       writes the spawn record, a cleanup writes the close record, and the pair is
 #       readable as a cost
+#   (h) --help renders each script's whole header and no code, since both
+#       render it by sed-ing a fixed line range out of themselves
 set -u
 
 # shellcheck source=tests/lib.sh
@@ -493,6 +495,26 @@ test_spawn_and_teardown_capture_end_to_end() {
   pass "a real spawn and a real cleanup produce a readable cost"
 }
 
+# --- (h) --help stays whole ------------------------------------------------
+
+# Both scripts render --help by sed'ing a fixed line range out of their own header,
+# which silently truncates or leaks code the moment the header grows. Their headers
+# are the documented owner of the record schema, the attribution rules and the exit
+# codes, so a half-printed one is a real defect.
+test_help_covers_the_whole_header() {
+  local out
+  for pair in "$RECORD:standard home resolution" "$DELTA:usage error or missing jq"; do
+    out=$("${pair%%:*}" --help) || fail "$(basename "${pair%%:*}") --help exited non-zero"
+    assert_contains "$out" "${pair#*:}" \
+      "$(basename "${pair%%:*}") --help is truncated before the end of its header"
+    assert_not_contains "$out" "SCRIPT_DIR=" \
+      "$(basename "${pair%%:*}") --help ran past the header into the code"
+    assert_not_contains "$out" "set -u" \
+      "$(basename "${pair%%:*}") --help ran past the header into the code"
+  done
+  pass "--help renders each script's whole header and no code"
+}
+
 test_record_shape_and_stale_fidelity
 test_missing_is_distinguishable_from_zero
 test_attribution_states_its_basis
@@ -501,3 +523,4 @@ test_async_returns_immediately
 test_delta_reports_cost_and_refuses_across_a_reset
 test_delta_names_a_missing_or_failed_capture
 test_spawn_and_teardown_capture_end_to_end
+test_help_covers_the_whole_header
