@@ -438,6 +438,29 @@ test_fm_lock_status_still_works_with_shared_lib() {
   pass "fm-lock: shared session-lock lib preserves the status path"
 }
 
+# A login shell records argv[0] with a leading dash ("-zsh", "-/bin/bash"), and
+# every real Stop hook walks past one on its way up the ancestry. BSD basename
+# parses a leading-dash operand as an option cluster and dies with
+# "basename: illegal option -- /", so an unguarded basename on an ancestor's
+# comm writes that line to the hook's stderr on every single turn end.
+test_ancestry_walk_is_quiet_past_a_login_shell_ancestor() {
+  local dir err
+  dir=$(make_primary_dir "$TMP_ROOT/dash-named-ancestor")
+  # exec -a in a subshell gives a genuine process whose recorded comm begins
+  # with a dash, which is the exact shape a login shell has. No ps stub: the
+  # walk reads the real process table, same as in production.
+  err=$( ( exec -a "-/bin/bash" /bin/bash -c '
+        . "$1/bin/fm-session-lock-lib.sh"
+        fm_harness_ancestry_pid >/dev/null || true
+      ' _ "$dir" ) 2>&1 )
+  case "$err" in
+    *"illegal option"*|*basename*|*"usage:"*)
+      fail "ancestry walk leaked a basename option-parsing error past a dash-named ancestor: $err" ;;
+  esac
+  [ -z "$err" ] || fail "ancestry walk must resolve silently, got stderr: $err"
+  pass "session-lock: ancestry walk is quiet past a dash-named (login shell) ancestor"
+}
+
 test_settings_registers_autoarm_with_multi_hour_timeout
 test_inert_in_child_worktree
 test_inert_without_session_lock
@@ -456,3 +479,4 @@ test_need_vanished_mid_cycle_closes_quietly
 test_afk_mid_cycle_suppresses_rewake
 test_active_in_marked_secondmate_home
 test_fm_lock_status_still_works_with_shared_lib
+test_ancestry_walk_is_quiet_past_a_login_shell_ancestor
