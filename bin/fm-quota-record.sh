@@ -115,6 +115,14 @@ case "$PHASE" in
     exit 2
     ;;
 esac
+# The id becomes a directory path under data/, so it is validated with the shared
+# path-safety predicate rather than trusted from the caller or re-implemented here.
+# shellcheck source=bin/fm-pr-lib.sh
+. "$SCRIPT_DIR/fm-pr-lib.sh"
+fm_task_id_path_safe "$TASK" || {
+  echo "fm-quota-record.sh: unsafe task id '$TASK'" >&2
+  exit 2
+}
 
 # Detach and return immediately. The child runs the same code path with --async
 # dropped, so there is exactly one capture implementation.
