@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Spawn a direct report: a crewmate in a treehouse or Orca worktree, or a
 # secondmate in its isolated firstmate home.
-# Usage: fm-spawn.sh <task-id> <project-dir> [--harness <name>|harness|launch-command] [--model <name>] [--effort <level>] [--backend <name>] [--scout]
-#        fm-spawn.sh <task-id> [<firstmate-home>] [--harness <name>|harness|launch-command] [--model <name>] [--effort <level>] [--backend <name>] --secondmate
+# Usage: fm-spawn.sh <task-id> <project-dir> [--harness <name>|harness|launch-command] [--model <name>] [--effort <level>] [--backend <name>] [--quota-provider <name>] [--scout]
+#        fm-spawn.sh <task-id> [<firstmate-home>] [--harness <name>|harness|launch-command] [--model <name>] [--effort <level>] [--backend <name>] [--quota-provider <name>] --secondmate
 #   --harness <name> is the explicit per-spawn harness/profile adapter. The old
 #   positional harness arg still works for back-compat.
 #   --model <name> and --effort <low|medium|high|xhigh|max> are concrete profile
@@ -85,10 +85,17 @@
 #   default-branch commit when safe; skipped syncs warn and launch unchanged.
 #   Ship/scout spawns refuse to launch unless the resolved task path is a real
 #   git worktree root distinct from the primary project checkout.
+#   --quota-provider <name> declares which quota-axi provider this spawn draws on,
+#   for the spawn-time quota capture only. It never affects harness, model, effort,
+#   backend, or any dispatch choice. Pass it when firstmate has resolved a route for
+#   a harness whose provider is model-dependent (opencode, pi, kimi); claude, codex,
+#   and grok are attributed by name identity without it, and anything else is
+#   recorded as unresolved rather than guessed. See bin/fm-quota-record.sh.
 # Batch dispatch: pass one or more `id=repo` pairs instead of a single <id> <project>, e.g.
 #     fm-spawn.sh fix-a-k3=projects/foo add-b-q7=projects/bar [--scout]
 #   Each pair re-execs this script in single-task mode, so the single path stays the only
-#   source of truth; shared --scout/--harness/--model/--effort/--backend applies to every pair.
+#   source of truth; shared --scout/--harness/--model/--effort/--backend/--quota-provider
+#   applies to every pair.
 #   If config/crew-dispatch.json exists, shared --harness is required for crewmate
 #   and scout batches. The loop lives here, in bash, so callers never hand-write a
 #   multi-task shell loop (the tool shell is zsh, which does not word-split unquoted
@@ -152,10 +159,12 @@ HARNESS_ARG=
 MODEL=
 EFFORT=
 BACKEND_ARG=
+QUOTA_PROVIDER=
 HARNESS_SET=0
 MODEL_SET=0
 EFFORT_SET=0
 BACKEND_SET=0
+QUOTA_PROVIDER_SET=0
 POS=()
 want_value=
 for a in "$@"; do
@@ -168,6 +177,7 @@ for a in "$@"; do
       model) MODEL=$a; MODEL_SET=1 ;;
       effort) EFFORT=$a; EFFORT_SET=1 ;;
       backend) BACKEND_ARG=$a; BACKEND_SET=1 ;;
+      quota-provider) QUOTA_PROVIDER=$a; QUOTA_PROVIDER_SET=1 ;;
       *) echo "error: internal parser state for --$want_value" >&2; exit 1 ;;
     esac
     want_value=
@@ -184,6 +194,8 @@ for a in "$@"; do
     --effort=*) EFFORT=${a#--effort=}; EFFORT_SET=1 ;;
     --backend) want_value=backend ;;
     --backend=*) BACKEND_ARG=${a#--backend=}; BACKEND_SET=1 ;;
+    --quota-provider) want_value=quota-provider ;;
+    --quota-provider=*) QUOTA_PROVIDER=${a#--quota-provider=}; QUOTA_PROVIDER_SET=1 ;;
     *) POS+=("$a") ;;
   esac
 done
@@ -192,6 +204,7 @@ done
 [ "$MODEL_SET" -eq 0 ] || [ -n "$MODEL" ] || { echo "error: --model requires a non-empty value" >&2; exit 1; }
 [ "$EFFORT_SET" -eq 0 ] || [ -n "$EFFORT" ] || { echo "error: --effort requires a non-empty value" >&2; exit 1; }
 [ "$BACKEND_SET" -eq 0 ] || [ -n "$BACKEND_ARG" ] || { echo "error: --backend requires a non-empty value" >&2; exit 1; }
+[ "$QUOTA_PROVIDER_SET" -eq 0 ] || [ -n "$QUOTA_PROVIDER" ] || { echo "error: --quota-provider requires a non-empty value" >&2; exit 1; }
 case "$EFFORT" in
   ''|low|medium|high|xhigh|max) ;;
   *) echo "error: --effort must be one of low, medium, high, xhigh, max" >&2; exit 1 ;;
@@ -358,6 +371,7 @@ if [ "${#POS[@]}" -gt 0 ] && [ "${POS[0]}" != "$idpart" ] && case "$idpart" in *
   [ -z "$MODEL" ] || shared_args+=(--model "$MODEL")
   [ -z "$EFFORT" ] || shared_args+=(--effort "$EFFORT")
   [ -z "$BACKEND_ARG" ] || shared_args+=(--backend "$BACKEND_ARG")
+  [ -z "$QUOTA_PROVIDER" ] || shared_args+=(--quota-provider "$QUOTA_PROVIDER")
   for pair in "${POS[@]}"; do
     case "$pair" in
       *=*) : ;;
@@ -1474,6 +1488,17 @@ META_WINDOW=$T
   fi
 } > "$STATE/$ID.meta"
 [ "$BACKEND" = orca ] && ORCA_ABORT_CLEANUP=0
+
+# Quota instrumentation: record the provider rate-limit state this spawn starts
+# from, so the close capture in fm-teardown.sh yields a computable cost. Placed
+# immediately after the meta write because the recorder reads the resolved
+# harness/model/effort/kind from that file - it never re-derives them. --async
+# detaches, so a slow or hung quota read cannot delay or wedge dispatch, and the
+# recorder records its own failure rather than failing the spawn.
+# bin/fm-quota-record.sh owns the record schema and the attribution rules; pass
+# --quota-provider when firstmate has already resolved the route for a harness
+# whose provider is model-dependent (opencode, pi, kimi).
+FM_QUOTA_PROVIDER="$QUOTA_PROVIDER" "$FM_ROOT/bin/fm-quota-record.sh" "$ID" spawn --async >/dev/null 2>&1 || true
 
 sq_brief=$(shell_quote "$BRIEF")
 sq_turnend=$(shell_quote "$TURNEND")
