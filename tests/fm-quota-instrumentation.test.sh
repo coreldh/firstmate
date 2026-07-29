@@ -24,6 +24,15 @@ set -u
 # shellcheck source=tests/lib.sh
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
+# Every case builds and points at its own home, so an ambient home override in the
+# invoking shell must not reach the fixtures. Without this, an exported
+# FM_DATA_OVERRIDE silently diverts the very records these cases assert on - the
+# end-to-end case invokes teardown through FM_HOME on purpose, exactly as firstmate
+# does, and would otherwise write its close record into the caller's directory.
+unset FM_HOME FM_ROOT_OVERRIDE FM_STATE_OVERRIDE FM_DATA_OVERRIDE \
+  FM_PROJECTS_OVERRIDE FM_CONFIG_OVERRIDE FM_QUOTA_BIN FM_QUOTA_PROVIDER \
+  FM_QUOTA_TIMEOUT FM_QUOTA_DISABLE FM_QUOTA_SYNC
+
 RECORD="$ROOT/bin/fm-quota-record.sh"
 DELTA="$ROOT/bin/fm-quota-delta.sh"
 SPAWN="$ROOT/bin/fm-spawn.sh"
@@ -219,7 +228,7 @@ EOF
 # --- (d) every degradation is explicit --------------------------------------
 
 test_every_degradation_records_itself() {
-  local home fakebin ledger junk hang line n
+  local home fakebin ledger junk hang line n child_pid_file hang_child waited
   IFS='|' read -r home fakebin <<EOF
 $(make_home degrade)
 EOF
@@ -229,13 +238,27 @@ EOF
   junk="$TMP_ROOT/degrade/junk"
   printf '#!/usr/bin/env bash\necho not-json\n' > "$junk"; chmod +x "$junk"
   hang="$TMP_ROOT/degrade/hang"
-  printf '#!/usr/bin/env bash\nsleep 293\n' > "$hang"; chmod +x "$hang"
+  child_pid_file="$TMP_ROOT/degrade/child.pid"
+  # The reader records its own child's pid so the orphan check can watch that exact
+  # process. A pattern match like `pgrep -f "sleep 293"` would also match another
+  # concurrent copy of this suite and fail spuriously - this file is per-run.
+  cat > "$hang" <<'SH'
+#!/usr/bin/env bash
+sleep 293 &
+printf '%s\n' "$!" > "$FM_TEST_HANG_CHILD_PID_FILE"
+wait
+SH
+  chmod +x "$hang"
 
   record "$home" "$fakebin" t spawn FM_QUOTA_BIN=fm-quota-absent-reader >/dev/null 2>&1
   record "$home" "$fakebin" t close FM_FAKE_QUOTA_SNAPSHOT=/nonexistent/snapshot.json >/dev/null 2>&1
   record "$home" "$fakebin" t spawn FM_QUOTA_BIN="$junk" >/dev/null 2>&1
   record "$home" "$fakebin" t close FM_QUOTA_DISABLE=1 >/dev/null 2>&1
-  record "$home" "$fakebin" t spawn FM_QUOTA_BIN="$hang" FM_QUOTA_TIMEOUT=1 >/dev/null 2>&1
+  # 3s, not 1s: under heavy parallel load the reader needs room to start and record
+  # its child pid before the timeout fires, or this case measures process-startup
+  # latency instead of the kill.
+  record "$home" "$fakebin" t spawn FM_QUOTA_BIN="$hang" FM_QUOTA_TIMEOUT=3 \
+    FM_TEST_HANG_CHILD_PID_FILE="$child_pid_file" >/dev/null 2>&1
 
   n=$(wc -l <"$ledger" | tr -d ' ')
   [ "$n" = 5 ] || fail "expected one record per capture attempt, got $n"
@@ -249,10 +272,21 @@ EOF
   done
 
   # The reader was still killed on time, and its children went with it: a hung
-  # quota read must not leave work behind for the next hour.
-  sleep 0.5
-  [ "$(pgrep -f 'sleep 293' | wc -l | tr -d ' ')" = 0 ] \
-    || fail "the timed-out reader orphaned a child process"
+  # quota read must not leave work behind for the next hour. Polled rather than
+  # slept once, because reaping the killed group is not instantaneous under load.
+  waited=0
+  while [ ! -s "$child_pid_file" ]; do
+    [ "$waited" -lt 50 ] || fail "the hung reader never recorded its child pid"
+    sleep 0.1
+    waited=$((waited + 1))
+  done
+  hang_child=$(cat "$child_pid_file")
+  waited=0
+  while kill -0 "$hang_child" 2>/dev/null; do
+    [ "$waited" -lt 100 ] || fail "the timed-out reader orphaned child $hang_child"
+    sleep 0.1
+    waited=$((waited + 1))
+  done
   pass "reader absent, failing, unparseable, disabled and hung each record one explicit outcome"
 }
 
