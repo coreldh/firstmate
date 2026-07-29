@@ -31,9 +31,10 @@ TMP_ROOT=$(fm_test_tmproot fm-update-tests)
 
 # Build a fresh world: a bare origin seeded with one commit, a firstmate repo
 # clone checked out on main, and a home dir with state/ and data/. Echoes the
-# world dir. Files seeded: AGENTS.md, README.md, bin/tool.sh, and an internal skill note.
+# world dir. The real Codex hook declarations and payload inventory are copied
+# in so the post-fast-forward manifest check exercises production-format data.
 new_world() {
-  local name=$1 w
+  local name=$1 w payload
   w="$TMP_ROOT/$name"
   mkdir -p "$w/home/state" "$w/home/data"
   # Fresh watcher beacon keeps fm-guard quiet.
@@ -45,9 +46,15 @@ new_world() {
 
   printf 'v1\n' > "$w/seed/AGENTS.md"
   printf 'r1\n' > "$w/seed/README.md"
-  mkdir -p "$w/seed/bin" "$w/seed/.agents/skills"
+  mkdir -p "$w/seed/bin" "$w/seed/.agents/skills" "$w/seed/.codex"
   printf 'echo a\n' > "$w/seed/bin/tool.sh"
   printf 's1\n' > "$w/seed/.agents/skills/note.md"
+  cp "$ROOT/.codex/hook-payload.sha256" "$w/seed/.codex/hook-payload.sha256"
+  cp "$ROOT/.codex/hooks.json" "$w/seed/.codex/hooks.json"
+  while read -r _ payload; do
+    mkdir -p "$w/seed/$(dirname "$payload")"
+    cp "$ROOT/$payload" "$w/seed/$payload"
+  done < "$ROOT/.codex/hook-payload.sha256"
   git -C "$w/seed" add -A
   git -C "$w/seed" commit -qm c1
   git -C "$w/seed" push -q origin main
@@ -90,6 +97,11 @@ bump_origin() {
 run_update() {
   local w=$1
   FM_ROOT_OVERRIDE="$w/main" FM_HOME="$w/home" "$UPDATE" 2>/dev/null
+}
+
+run_update_with_diagnostics() {
+  local w=$1
+  FM_ROOT_OVERRIDE="$w/main" FM_HOME="$w/home" "$UPDATE" 2>&1
 }
 
 # --- T1: main + secondmate behind, instruction change; FF, not a merge ------
@@ -291,6 +303,29 @@ test_unsafe_secondmate_home_skipped_before_git_update() {
   pass "T11 unsafe secondmate home is not fast-forwarded"
 }
 
+test_warns_when_fast_forward_makes_hook_manifest_stale() {
+  local w out
+  w=$(new_world t12)
+  printf '\n# upstream payload change without regenerated manifest\n' \
+    >> "$w/seed/bin/fm-harness.sh"
+  git -C "$w/seed" add -A
+  git -C "$w/seed" commit -qm stale-hook-manifest
+  git -C "$w/seed" push -q origin main
+
+  out=$(run_update_with_diagnostics "$w")
+
+  assert_contains "$out" "firstmate: updated " \
+    "firstmate fast-forwarded the changed payload"
+  assert_contains "$out" \
+    "HOOK_MANIFEST_STALE: the fast-forwarded Codex hook payload manifest is obsolete." \
+    "self-update warns about the stale hook manifest"
+  assert_contains "$out" "hook manifest drift: .codex/hook-payload.sha256" \
+    "self-update includes the generator diagnostic"
+  [ -z "$(git -C "$w/main" status --porcelain)" ] \
+    || fail "self-update --check dirtied the fast-forwarded checkout"
+  pass "T12 post-fast-forward check warns without dirtying the checkout"
+}
+
 test_updates_main_and_secondmate
 test_reread_gate_is_instruction_only
 test_dirty_secondmate_skipped
@@ -300,5 +335,6 @@ test_registry_backstop_dedup_and_self_exclusion
 test_firstmate_wrong_branch_skipped
 test_firstmate_detached_head_skipped
 test_unsafe_secondmate_home_skipped_before_git_update
+test_warns_when_fast_forward_makes_hook_manifest_stale
 
 echo "# all fm-update tests passed"
