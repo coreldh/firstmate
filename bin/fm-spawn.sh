@@ -1521,6 +1521,11 @@ LAUNCH=${LAUNCH//__OPINPUT__/$sq_opinput}
 if [ "$HARNESS" = claude ] && [ -n "${CLAUDE_CONFIG_DIR:-}" ]; then
   LAUNCH="CLAUDE_CONFIG_DIR=$(shell_quote "$CLAUDE_CONFIG_DIR") $LAUNCH"
 fi
+if [ "$HARNESS" = codex ]; then
+  CODEX_HOOK_ROOT=$FM_ROOT
+  [ "$KIND" = secondmate ] && CODEX_HOOK_ROOT=$PROJ_ABS
+  LAUNCH="FM_CODEX_HOOK_ROOT=$(shell_quote "$CODEX_HOOK_ROOT") $LAUNCH"
+fi
 if [ "$KIND" = secondmate ]; then
   sq_home=$(shell_quote "$PROJ_ABS")
   LAUNCH="FM_ROOT_OVERRIDE= FM_STATE_OVERRIDE= FM_DATA_OVERRIDE= FM_PROJECTS_OVERRIDE= FM_CONFIG_OVERRIDE= FM_HOME=$sq_home $LAUNCH"
