@@ -391,7 +391,8 @@ test_codex_wiring() {
   [ -f "$settings" ] || fail "tracked .codex/hooks.json is missing"
   command=$(jq -r '[.hooks.PreToolUse[0].hooks[].command | select(contains("fm-cd-pretool-check.sh"))][0] // empty' "$settings")
   [ -n "$command" ] || fail "codex PreToolUse must invoke fm-cd-pretool-check.sh"
-  assert_contains "$command" 'pwd -P' "codex cd hook must anchor from the hook process working directory"
+  assert_contains "$command" 'FM_CODEX_HOOK_ROOT' "codex cd hook must prefer the Firstmate-provided trusted code root"
+  assert_contains "$command" '.codex/hook-payload.sha256' "codex cd hook must verify the pinned payload manifest"
   assert_contains "$command" 'fm-cd-pretool-check.sh' "codex cd hook must invoke the cd-guard"
   jq -e '[.hooks.PreToolUse[0].hooks[].command | select(contains("fm-arm-pretool-check.sh"))] | length == 1' "$settings" >/dev/null \
     || fail "codex cd hook must not displace the watcher-arm hook"

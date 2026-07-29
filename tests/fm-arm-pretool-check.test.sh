@@ -492,8 +492,10 @@ test_codex_hooks_pretool_wired() {
   command=$(jq -r '.hooks.PreToolUse[0].hooks[0].command // empty' "$settings")
   [ -n "$command" ] || fail "PreToolUse hook command is missing from codex primary hooks"
   assert_contains "$command" 'fm-arm-pretool-check.sh' "codex pretool hook must invoke the shared checker"
-  assert_contains "$command" 'pwd -P' "codex pretool hook must anchor to the hook process root like the Stop hook does"
-  assert_contains "$command" 'printf "%s" "$payload" | "$root/bin/fm-arm-pretool-check.sh"' "codex pretool hook must forward the exact captured payload to the checker"
+  assert_contains "$command" 'FM_CODEX_HOOK_ROOT' "codex pretool hook must prefer the Firstmate-provided trusted code root"
+  assert_contains "$command" '.codex/hook-payload.sha256' "codex pretool hook must verify the pinned payload manifest"
+  assert_contains "$command" 'printf "%s" "$payload" | "$root/bin/fm-arm-pretool-check.sh"' \
+    "codex pretool hook must forward the exact captured payload to the verified checker"
   local matcher
   matcher=$(jq -r '.hooks.PreToolUse[0].matcher // empty' "$settings")
   [ "$matcher" = "Bash" ] || fail "codex pretool hook must matcher-scope to Bash, got: $matcher"
