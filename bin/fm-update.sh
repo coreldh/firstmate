@@ -23,6 +23,7 @@
 # tmux actions the skill performs. The script's job is the safe git mechanics
 # plus a parseable summary telling the caller what to do next:
 #   - one status line per target (updated/already current/skipped)
+#   - HOOK_MANIFEST_STALE or HOOK_MANIFEST_ERROR after an unsafe post-FF check
 #   - reread-firstmate: yes|no    (did the running firstmate's instructions change)
 #   - nudge-secondmates: fm-<id>...|none   (updated live secondmates to nudge)
 #
@@ -53,6 +54,24 @@ reread_firstmate="no"
 ff_target "$FM_ROOT" "firstmate" origin no no
 if [ "$FF_STATUS" = "updated" ] && [ -n "$FF_INSTR" ]; then
   reread_firstmate="yes"
+fi
+if [ "$FF_STATUS" = "updated" ]; then
+  if hook_manifest_output=$(FM_ROOT_OVERRIDE="$FM_ROOT" \
+    "$SCRIPT_DIR/fm-hook-manifest.sh" --check 2>&1); then
+    :
+  else
+    hook_manifest_rc=$?
+    if [ "$hook_manifest_rc" -eq 1 ]; then
+      printf '%s\n' \
+        "HOOK_MANIFEST_STALE: the fast-forwarded Codex hook payload manifest is obsolete." \
+        "HOOK_MANIFEST_STALE: regenerate and review it with bin/fm-hook-manifest.sh before trusting hooks." \
+        "$hook_manifest_output" >&2
+    else
+      printf '%s\n' \
+        "HOOK_MANIFEST_ERROR: the fast-forwarded Codex hook payload manifest could not be verified." \
+        "$hook_manifest_output" >&2
+    fi
+  fi
 fi
 
 # --- secondmates -----------------------------------------------------------
