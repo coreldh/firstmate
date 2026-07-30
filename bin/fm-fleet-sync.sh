@@ -66,8 +66,8 @@ fi
 
 project_label() {
   case "$PROJ" in
-    "$PROJECTS"/*) basename "$PROJ" ;;
-    projects/*) basename "$PROJ" ;;
+    "$PROJECTS"/*) basename -- "$PROJ" ;;
+    projects/*) basename -- "$PROJ" ;;
     *) printf '%s\n' "$PROJ" ;;
   esac
 }

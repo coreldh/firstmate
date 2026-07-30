@@ -469,7 +469,7 @@ removal_target_abs_path() {
   if [ -d "$target" ]; then
     cd "$target" && pwd -P
   else
-    cd "$(dirname "$target")" && printf '%s/%s\n' "$(pwd -P)" "$(basename "$target")"
+    cd "$(dirname "$target")" && printf '%s/%s\n' "$(pwd -P)" "$(basename -- "$target")"
   fi
 }
 
@@ -945,7 +945,7 @@ validate_firstmate_home_children_removal() {
   [ -d "$sub_state" ] || return 0
   for child_meta in "$sub_state"/*.meta; do
     [ -e "$child_meta" ] || continue
-    child_id=$(basename "$child_meta" .meta)
+    child_id=$(basename -- "$child_meta" .meta)
     fm_backend_validate_task_endpoint "$child_meta" "$child_id" || return 1
     validate_pr_poll_cleanup "$sub_state" "$child_id" || return 1
     child_wt=$(meta_value "$child_meta" worktree)
@@ -977,7 +977,7 @@ cleanup_firstmate_home_children() {
   [ -d "$sub_state" ] || return 0
   for child_meta in "$sub_state"/*.meta; do
     [ -e "$child_meta" ] || continue
-    child_id=$(basename "$child_meta" .meta)
+    child_id=$(basename -- "$child_meta" .meta)
     child_wt=$(meta_value "$child_meta" worktree)
     child_proj=$(meta_value "$child_meta" project)
     child_kind=$(meta_value "$child_meta" kind)
@@ -1068,7 +1068,7 @@ if [ "$KIND" = secondmate ] && [ "$FORCE" != "--force" ]; then
     for child_meta in "$SUB_STATE"/*.meta; do
       [ -e "$child_meta" ] || continue
       echo "REFUSED: secondmate $ID still has in-flight work in $SUB_STATE." >&2
-      echo "Found $(basename "$child_meta"). Let that home finish or explicitly discard with --force." >&2
+      echo "Found $(basename -- "$child_meta"). Let that home finish or explicitly discard with --force." >&2
       exit 1
     done
   fi

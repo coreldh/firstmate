@@ -142,21 +142,21 @@ canonical_path_for_check() {
       cd "$probe" && pwd -P
     else
       parent=$(dirname "$probe")
-      base=$(basename "$probe")
+      base=$(basename -- "$probe")
       cd "$parent" && printf '%s/%s\n' "$(pwd -P)" "$base"
     fi
     return
   fi
   tail=
   while [ ! -e "$probe" ] && [ "$probe" != "/" ]; do
-    tail="$(basename "$probe")${tail:+/$tail}"
+    tail="$(basename -- "$probe")${tail:+/$tail}"
     probe=$(dirname "$probe")
   done
   if [ -d "$probe" ]; then
     prefix=$(cd "$probe" && pwd -P)
   elif [ -e "$probe" ]; then
     parent=$(dirname "$probe")
-    base=$(basename "$probe")
+    base=$(basename -- "$probe")
     prefix=$(cd "$parent" && printf '%s/%s\n' "$(pwd -P)" "$base")
   else
     prefix=/
@@ -823,7 +823,7 @@ refuse_populated_projectless_home() {
   fi
   for project_path in "$home/projects"/* "$home/projects"/.[!.]* "$home/projects"/..?*; do
     [ -e "$project_path" ] || [ -L "$project_path" ] || continue
-    clones+=("$(basename "$project_path")")
+    clones+=("$(basename -- "$project_path")")
   done
   if [ -f "$home/data/projects.md" ]; then
     registry_entries=$(awk '$1 == "-" && $2 != "" { print $2 }' "$home/data/projects.md") || {

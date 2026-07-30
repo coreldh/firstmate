@@ -114,7 +114,7 @@ fm_afk_start_main() {
   case "${1:-}" in
     '' ) ;;
     -h|--help) fm_afk_start_usage; return 0 ;;
-    * ) echo "usage: $(basename "${BASH_SOURCE[1]:-fm-afk-start.sh}")" >&2; return 2 ;;
+    * ) echo "usage: $(basename -- "${BASH_SOURCE[1]:-fm-afk-start.sh}")" >&2; return 2 ;;
   esac
 
   mkdir -p "$FM_AFK_STATE"

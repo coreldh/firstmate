@@ -334,14 +334,14 @@ classify_signal() {  # <reason-after-colon> <state>
     [ -e "$f" ] || continue
     last=$(last_status_line "$f")
     [ -n "$last" ] || continue
-    distilled="${distilled}$(basename "$f"): ${last} | "
+    distilled="${distilled}$(basename -- "$f"): ${last} | "
     status_is_captain_relevant "$last" || continue
     rel=1
     # Dedupe against the catch-all scan: if this status was already escalated
     # (seen marker matches), skip escalating again. The seen marker is the
     # single source of truth shared between the per-wake signal path and the
     # heartbeat scan. all_seen stays 1 only if EVERY relevant file was seen.
-    task=$(basename "$f"); task="${task%.status}"
+    task=$(basename -- "$f"); task="${task%.status}"
     seen="$state/.subsuper-seen-status-$(_stale_key "$task")"
     [ "$(cat "$seen" 2>/dev/null || true)" = "$last" ] || all_seen=0
   done
@@ -487,7 +487,7 @@ migrate_watcher_pause_markers() {  # <state>
     [ -e "$meta" ] || continue
     win=$(fm_backend_target_of_meta "$meta")
     [ -n "$win" ] || continue
-    task=$(basename "$meta"); task=${task%.meta}
+    task=$(basename -- "$meta"); task=${task%.meta}
     key=$(_stale_key "$task")
     watcher_key=$(_stale_key "$win")
     last=$(last_status_line "$state/$task.status")
@@ -505,7 +505,7 @@ sync_pause_markers_from_signal() {  # <state> <signal files>
     case "$f" in *.status) ;; *) continue ;; esac
     [ -e "$f" ] || continue
     last=$(last_status_line "$f")
-    task=$(basename "$f"); task=${task%.status}
+    task=$(basename -- "$f"); task=${task%.status}
     win=$(window_for_task "$task" "$state" 2>/dev/null || true)
     [ -n "$win" ] || continue
     reconcile_pause_tracking "$win" "$state" "$last"
@@ -533,7 +533,7 @@ mark_escalated_seen() {  # <kind> <arg> <state>
         last=$(last_status_line "$f")
         [ -n "$last" ] || continue
         status_is_captain_relevant "$last" || continue
-        task=$(basename "$f"); task="${task%.status}"
+        task=$(basename -- "$f"); task="${task%.status}"
         mark_status_seen "$state" "$task" "$last"
       done ;;
     stale)
@@ -1048,7 +1048,7 @@ housekeeping() {  # <state>
       [ -n "$f" ] || continue
       seen="$state/.subsuper-seen-status-$(_stale_key "$task")"
       [ "$(cat "$seen" 2>/dev/null || true)" = "$last" ] && continue
-      escalate_add "$state" "$(basename "$f"): $last (catch-all scan)"
+      escalate_add "$state" "$(basename -- "$f"): $last (catch-all scan)"
       mark_status_seen "$state" "$task" "$last"
     done < <(scan_captain_relevant_statuses "$state")
   fi
@@ -1059,7 +1059,7 @@ window_for_task() {  # <task-key> [state]
   local key=$1 state=${2:-$(_state_root)} meta task w t
   for meta in "$state"/*.meta; do
     [ -e "$meta" ] || continue
-    task=$(basename "$meta"); task=${task%.meta}
+    task=$(basename -- "$meta"); task=${task%.meta}
     [ "$(_stale_key "$task")" = "$key" ] || continue
     w=$(fm_backend_target_of_meta "$meta")
     [ -n "$w" ] && { printf '%s' "$w"; return 0; }

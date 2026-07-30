@@ -77,7 +77,7 @@ case "$BLOCK_BUDGET" in ''|*[!0-9]*|0) BLOCK_BUDGET=3 ;; esac
 for arg in "$@"; do
   case "$arg" in
     --claude) CLAUDE_MODE=1 ;;
-    *) echo "usage: $(basename "$0") [--claude]" >&2; exit 2 ;;
+    *) echo "usage: $(basename -- "$0") [--claude]" >&2; exit 2 ;;
   esac
 done
 

@@ -328,7 +328,7 @@ mode=arm
 case "${1:-}" in
   ''|arm|--arm) mode=arm ;;
   --restart) mode=restart ;;
-  *) echo "usage: $(basename "$0") [--restart]" >&2; exit 2 ;;
+  *) echo "usage: $(basename -- "$0") [--restart]" >&2; exit 2 ;;
 esac
 
 if [ "$mode" = restart ]; then

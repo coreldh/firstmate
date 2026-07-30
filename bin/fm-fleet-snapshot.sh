@@ -405,7 +405,7 @@ task_json_lines() {
 
   for meta in "$STATE"/*.meta; do
     [ -e "$meta" ] || continue
-    id=$(basename "$meta" .meta)
+    id=$(basename -- "$meta" .meta)
     kind=$(meta_value "$meta" kind)
     [ -n "$kind" ] || kind=ship
     harness=$(meta_value "$meta" harness)
@@ -1284,7 +1284,7 @@ scout_report_lines() {
   LC_ALL=C find "$DATA" -mindepth 2 -maxdepth 2 -type f -name report.md -print \
     | sort \
     | while IFS= read -r report; do
-      id=$(basename "$(dirname "$report")")
+      id=$(basename -- "$(dirname "$report")")
       jq -n --arg id "$id" --arg path "$report" '{id:$id,path:$path}'
     done \
     | jq -s 'sort_by(.id)'

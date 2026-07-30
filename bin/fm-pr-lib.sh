@@ -932,7 +932,7 @@ fm_pr_poll_retirement_recover_all() {
   FM_PR_POLL_RETIREMENT_REJECTED=
   for receipt in "$state"/*.pr-poll-retirement; do
     [ -e "$receipt" ] || [ -L "$receipt" ] || continue
-    id=$(basename "$receipt" .pr-poll-retirement)
+    id=$(basename -- "$receipt" .pr-poll-retirement)
     if ! fm_pr_task_id_valid "$id" \
       || ! fm_pr_poll_retirement_recover_one "$state" "$id" "$template"; then
       FM_PR_POLL_RETIREMENT_REJECTED="$FM_PR_POLL_RETIREMENT_REJECTED $receipt"

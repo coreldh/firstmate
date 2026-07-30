@@ -60,7 +60,7 @@ scan_open_blockers() {  # -> tab-separated blocker rows
   local meta id status key verb summary clean_summary
   for meta in "$STATE"/*.meta; do
     [ -f "$meta" ] || continue
-    id=$(basename "$meta")
+    id=$(basename -- "$meta")
     id=${id%.meta}
     status="$STATE/$id.status"
     [ -f "$status" ] || continue

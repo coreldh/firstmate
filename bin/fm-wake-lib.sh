@@ -120,7 +120,7 @@ fm_lock_clean_known_files() {
 fm_lock_abs_path() {
   local path=$1 dir base
   dir=$(dirname "$path")
-  base=$(basename "$path")
+  base=$(basename -- "$path")
   dir=$(cd "$dir" 2>/dev/null && pwd -P) || return 1
   printf '%s/%s\n' "$dir" "$base"
 }
@@ -164,7 +164,7 @@ fm_lock_discard_owner() {
 
 fm_lock_remove_stray_owner_link() {
   local lockdir=$1 ownerdir=$2 stray
-  stray="$lockdir/$(basename "$ownerdir")"
+  stray="$lockdir/$(basename -- "$ownerdir")"
   if [ -L "$stray" ] && [ "$(readlink "$stray" 2>/dev/null || true)" = "$ownerdir" ]; then
     rm -f "$stray" 2>/dev/null || true
   fi

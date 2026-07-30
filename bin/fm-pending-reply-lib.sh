@@ -174,7 +174,7 @@ fm_pending_reply_set() {  # <record-path> <key> <value>
   local rec=$1 key=$2 value=$3 dir base tmp line
   [ -f "$rec" ] || return 1
   dir=$(dirname "$rec")
-  base=$(basename "$rec")
+  base=$(basename -- "$rec")
   tmp="$dir/.${base}.tmp.$$"
   : > "$tmp" || return 1
   while IFS= read -r line || [ -n "$line" ]; do
@@ -932,11 +932,11 @@ fm_pending_reply_tick() {  # <state-dir>
   [ -d "$dir" ] || return 0
   for rec in "$dir"/*; do
     [ -f "$rec" ] || continue
-    case "$(basename "$rec")" in
+    case "$(basename -- "$rec")" in
       .*) continue ;;
     esac
     corr=$(fm_pending_reply_get "$rec" corr_id)
-    [ -n "$corr" ] || corr=$(basename "$rec")
+    [ -n "$corr" ] || corr=$(basename -- "$rec")
     task_id=$(fm_pending_reply_get "$rec" task_id)
     phase=$(fm_pending_reply_get "$rec" phase)
     [ "$phase" != resolved ] || continue

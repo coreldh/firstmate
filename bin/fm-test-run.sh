@@ -337,7 +337,7 @@ select_lane() {
       # stays here, serial only.
       while IFS= read -r s; do
         [ -n "$s" ] || continue
-        base=$(basename "$s")
+        base=$(basename -- "$s")
         fam=$(family_for_basename "$base")
         if [ "$fam" = "real-herdr-gated" ]; then
           continue
@@ -561,7 +561,7 @@ select_family() {
   [ -n "$want" ] || die "--family requires a name"
   while IFS= read -r s; do
     [ -n "$s" ] || continue
-    base=$(basename "$s")
+    base=$(basename -- "$s")
     fam=$(family_for_basename "$base")
     if [ "$fam" = "$want" ]; then
       add_script "$s"
@@ -577,7 +577,7 @@ families_for_test_reference() {
   while IFS= read -r s; do
     [ -n "$s" ] || continue
     if grep -Fq "$needle" "$s"; then
-      family_for_basename "$(basename "$s")"
+      family_for_basename "$(basename -- "$s")"
       found=1
     fi
   done < <(all_repo_tests)
@@ -599,7 +599,7 @@ families_for_changed_path() {
     tests/*.test.sh)
       # A single test file change selects only that script via basename family
       # resolution in the caller; emit a marker family of __script__
-      printf '%s\n' "__script__:$(basename "$path")"
+      printf '%s\n' "__script__:$(basename -- "$path")"
       ;;
     bin/fm-test-run.sh|bin/fm-test-isolation-proof.sh)
       printf '%s\n' pure-contract-unit
@@ -695,11 +695,11 @@ families_for_changed_path() {
       printf '%s\n' pure-contract-unit
       ;;
     tests/lib.sh|tests/*-helpers.sh)
-      families_for_test_reference "$(basename "$path")" \
+      families_for_test_reference "$(basename -- "$path")" \
         || printf '%s\n' "__unmapped__:$path"
       ;;
     bin/*)
-      families_for_test_reference "$(basename "$path")" \
+      families_for_test_reference "$(basename -- "$path")" \
         || printf '%s\n' "__unmapped__:$path"
       ;;
     tests/*)
@@ -758,7 +758,7 @@ select_changed() {
   for f in "${unique_families[@]+"${unique_families[@]}"}"; do
     while IFS= read -r s; do
       [ -n "$s" ] || continue
-      if [ "$(family_for_basename "$(basename "$s")")" = "$f" ]; then
+      if [ "$(family_for_basename "$(basename -- "$s")")" = "$f" ]; then
         add_script "$s"
       fi
     done < <(all_repo_tests)
@@ -797,7 +797,7 @@ apply_exclude_families() {
   local -a kept=()
   [ "${#EXCLUDE_FAMILIES[@]}" -gt 0 ] || return 0
   for s in "${SCRIPTS[@]+"${SCRIPTS[@]}"}"; do
-    fam=$(family_for_basename "$(basename "$s")")
+    fam=$(family_for_basename "$(basename -- "$s")")
     keep=1
     for ex in "${EXCLUDE_FAMILIES[@]}"; do
       if [ "$fam" = "$ex" ]; then
@@ -1185,7 +1185,7 @@ family_bump() {
 record_script_result() {
   local script=$1 rc=$2 duration=$3 out=$4 end_iso=$5
   local base family expected gate_skip fail_delta
-  base=$(basename "$script")
+  base=$(basename -- "$script")
   family=$(family_for_basename "$base")
   expected=$(expected_gate_skip_for_family "$family")
 
@@ -1219,7 +1219,7 @@ record_script_result() {
 run_one_serial() {
   local script=$1
   local base family expected out begin_iso begin_ms end_ms end_iso duration rc
-  base=$(basename "$script")
+  base=$(basename -- "$script")
   family=$(family_for_basename "$base")
   expected=$(expected_gate_skip_for_family "$family")
   out="$RUN_TMP/out.$TOTAL"
@@ -1326,7 +1326,7 @@ else
     work="$RUN_TMP/w$worker_n"
     mkdir -p "$work/tmp"
     chmod 0700 "$work" "$work/tmp" || die "could not chmod 0700 worker root $work"
-    base=$(basename "$script")
+    base=$(basename -- "$script")
     family=$(family_for_basename "$base")
     expected=$(expected_gate_skip_for_family "$family")
     printf 'FM_TEST_BEGIN %s %s family=%s expected_gate_skip=%s\n' \

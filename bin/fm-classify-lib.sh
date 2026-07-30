@@ -288,7 +288,7 @@ window_to_task() {
       mw=$(grep '^window=' "$meta" 2>/dev/null | tail -1 | cut -d= -f2- || true)
       mt=$(grep '^terminal=' "$meta" 2>/dev/null | tail -1 | cut -d= -f2- || true)
       [ "$mw" = "$w" ] || [ "$mt" = "$w" ] || continue
-      t=$(basename "$meta")
+      t=$(basename -- "$meta")
       t=${t%.meta}
       printf '%s' "$t"
       return 0
@@ -407,7 +407,7 @@ scan_captain_relevant_statuses() {  # <state>
     [ -e "$f" ] || continue
     last=$(last_status_line "$f")
     status_is_captain_relevant "$last" || continue
-    task=$(basename "$f"); task="${task%.status}"
+    task=$(basename -- "$f"); task="${task%.status}"
     printf '%s\t%s\t%s\n' "$f" "$task" "$last"
   done
   return 0

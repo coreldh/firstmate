@@ -80,11 +80,11 @@ current_checks_authenticated() {
   local check id
   for check in "$STATE"/*.check.sh; do
     [ -e "$check" ] || [ -L "$check" ] || continue
-    if [ "$(basename "$check")" = x-watch.check.sh ] \
+    if [ "$(basename -- "$check")" = x-watch.check.sh ] \
       && fmx_poll_shim_valid "$check" "$FM_HOME" "$FM_ROOT"; then
       continue
     fi
-    id=$(basename "$check" .check.sh)
+    id=$(basename -- "$check" .check.sh)
     fm_custom_check_registered "$STATE" "$id" && continue
     fm_pr_poll_artifacts_valid "$STATE" "$id" "$TEMPLATE" || return 1
   done
@@ -374,11 +374,11 @@ migration_needed() {
   local check id
   for check in "$STATE"/*.check.sh; do
     [ -e "$check" ] || [ -L "$check" ] || continue
-    if [ "$(basename "$check")" = x-watch.check.sh ] \
+    if [ "$(basename -- "$check")" = x-watch.check.sh ] \
       && fmx_poll_shim_valid "$check" "$FM_HOME" "$FM_ROOT"; then
       continue
     fi
-    id=$(basename "$check" .check.sh)
+    id=$(basename -- "$check" .check.sh)
     fm_custom_check_registered "$STATE" "$id" && continue
     if ! fm_pr_poll_artifacts_valid "$STATE" "$id" "$TEMPLATE"; then
       return 0
@@ -391,11 +391,11 @@ unsafe_checks_absent() {
   local check id
   for check in "$STATE"/*.check.sh; do
     [ -e "$check" ] || [ -L "$check" ] || continue
-    if [ "$(basename "$check")" = x-watch.check.sh ] \
+    if [ "$(basename -- "$check")" = x-watch.check.sh ] \
       && fmx_poll_shim_valid "$check" "$FM_HOME" "$FM_ROOT"; then
       continue
     fi
-    id=$(basename "$check" .check.sh)
+    id=$(basename -- "$check" .check.sh)
     fm_custom_check_registered "$STATE" "$id" && continue
     fm_pr_poll_artifacts_valid "$STATE" "$id" "$TEMPLATE" || return 1
   done
@@ -1023,11 +1023,11 @@ if migration_needed; then
 
   for check in "$STATE"/*.check.sh; do
     [ -e "$check" ] || [ -L "$check" ] || continue
-    if [ "$(basename "$check")" = x-watch.check.sh ] \
+    if [ "$(basename -- "$check")" = x-watch.check.sh ] \
       && fmx_poll_shim_valid "$check" "$FM_HOME" "$FM_ROOT"; then
       continue
     fi
-    id=$(basename "$check" .check.sh)
+    id=$(basename -- "$check" .check.sh)
     fm_custom_check_registered "$STATE" "$id" && continue
     fm_pr_poll_artifacts_valid "$STATE" "$id" "$TEMPLATE" && continue
 

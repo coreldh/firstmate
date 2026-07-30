@@ -484,7 +484,7 @@ case "$ARG3" in
     LAUNCH=$ARG3
     HARNESS=""
     for word in $LAUNCH; do
-      case "$word" in [A-Za-z_]*=*) continue ;; *) HARNESS=$(basename "$word"); break ;; esac
+      case "$word" in [A-Za-z_]*=*) continue ;; *) HARNESS=$(basename -- "$word"); break ;; esac
     done
     ;;
   '')
@@ -579,7 +579,7 @@ resolve_kimi_binary() {
       *)
         dir=$(cd "$(dirname "$candidate")" 2>/dev/null && pwd -P) || dir=
         if [ -n "$dir" ]; then
-          printf '%s/%s\n' "$dir" "$(basename "$candidate")"
+          printf '%s/%s\n' "$dir" "$(basename -- "$candidate")"
           return 0
         fi
         ;;
@@ -834,7 +834,7 @@ else
 fi
 [ -f "$BRIEF" ] || { echo "error: no brief at $BRIEF" >&2; exit 1; }
 BRIEF_DIR_REAL=$(cd "$(dirname "$BRIEF")" && pwd -P)
-BRIEF_REAL="$BRIEF_DIR_REAL/$(basename "$BRIEF")"
+BRIEF_REAL="$BRIEF_DIR_REAL/$(basename -- "$BRIEF")"
 
 # PROJ_ABS can still carry a symlinked path component (e.g. macOS's /tmp ->
 # /private/tmp) when it came from the ship/scout branch's logical `pwd` above.
@@ -1445,7 +1445,7 @@ if [ "$KIND" = secondmate ]; then
   YOLO=off
   SECONDMATE_PROJECTS=$(secondmate_registry_value "$ID" projects || true)
 else
-  PROJ_NAME=$(basename "$PROJ_ABS")
+  PROJ_NAME=$(basename -- "$PROJ_ABS")
   read -r MODE YOLO <<EOF
 $("$FM_ROOT/bin/fm-project-mode.sh" "$PROJ_NAME")
 EOF

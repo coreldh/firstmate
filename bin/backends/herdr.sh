@@ -480,7 +480,7 @@ fm_backend_herdr_presentation_session_socket_path() {  # <session>
     *) return 1 ;;
   esac
   sock_dir=$(dirname "$socket")
-  sock_base=$(basename "$socket")
+  sock_base=$(basename -- "$socket")
   [ -n "$sock_dir" ] && [ -n "$sock_base" ] || return 1
   if [ -d "$sock_dir" ]; then
     sock_dir=$(cd "$sock_dir" 2>/dev/null && pwd -P) || return 1

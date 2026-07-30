@@ -206,7 +206,7 @@ secondmate_sync() {
     for meta in "$STATE"/*.meta; do
       [ -f "$meta" ] || continue
       grep -q '^kind=secondmate' "$meta" 2>/dev/null || continue
-      id=$(basename "$meta" .meta)
+      id=$(basename -- "$meta" .meta)
       echo "SECONDMATE_SYNC: secondmate $id: skipped: primary default-branch commit cannot be resolved"
     done
     return 0
@@ -428,7 +428,7 @@ secondmate_liveness_sweep() {
   for meta in "$STATE"/*.meta; do
     [ -f "$meta" ] || continue
     grep -q '^kind=secondmate$' "$meta" 2>/dev/null || continue
-    id=$(basename "$meta" .meta)
+    id=$(basename -- "$meta" .meta)
     window=$(fm_meta_get "$meta" window)
     [ -n "$window" ] || continue
     harness=$(fm_meta_get "$meta" harness)

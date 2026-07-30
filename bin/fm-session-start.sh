@@ -349,7 +349,7 @@ META_FOUND=0
 for meta in "$STATE"/*.meta; do
   [ -f "$meta" ] || continue
   META_FOUND=1
-  id=$(basename "$meta" .meta)
+  id=$(basename -- "$meta" .meta)
   printf '\n--- %s ---\n' "$id"
   cat "$meta"
 
@@ -379,7 +379,7 @@ subsection "Orphan status logs (state/*.status without matching .meta)"
 ORPHAN_STATUS_FOUND=0
 for status in "$STATE"/*.status; do
   [ -f "$status" ] || continue
-  id=$(basename "$status" .status)
+  id=$(basename -- "$status" .status)
   [ -f "$STATE/$id.meta" ] && continue
   ORPHAN_STATUS_FOUND=1
   printf '\n--- %s ---\n' "$id"
