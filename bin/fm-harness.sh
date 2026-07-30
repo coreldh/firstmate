@@ -45,10 +45,18 @@ detect_own() {
   # is unambiguous when firstmate runs natively on grok.
   [ "${GROK_AGENT:-}" = "1" ] && { echo grok; return; }
   # Layer 2: walk the parent chain and match the command name.
+  # Strip the directory with ${comm##*/} rather than basename. A login shell
+  # records argv[0] with a leading dash ("-zsh", "-/bin/bash") and every
+  # ancestry walk passes one, where an unguarded BSD basename reads that operand
+  # as an option cluster and writes "illegal option" to stderr - here, out of
+  # every caller of this script, including the Claude Stop hook. "basename --"
+  # also fixes that; parameter expansion is preferred because it cannot misparse
+  # an operand at all and saves a fork per hop. This keeps all three ancestry
+  # walks on one pattern (see bin/fm-session-lock-lib.sh).
   local pid=$$ comm args
   for _ in 1 2 3 4 5 6 7 8; do
     comm=$(ps -o comm= -p "$pid" 2>/dev/null) || break
-    case "$(basename -- "$comm")" in
+    case "${comm##*/}" in
       *claude*) echo claude; return ;;
       *codex*) echo codex; return ;;
       *opencode*) echo opencode; return ;;
