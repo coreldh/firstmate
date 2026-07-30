@@ -209,6 +209,8 @@ test_ship_modes_generate_clean_briefs() {
     assert_grep "{TASK}" "$brief" "$id: brief missing the {TASK} placeholder"
     assert_grep "mid-task \`working:\` line (including setup complete) is nonterminal" "$brief" \
       "$id: brief missing nonterminal working:/setup-complete gate protection"
+    assert_no_grep "# Spec-forging contract - HARD GATE" "$brief" \
+      "$id: ordinary brief rendered the opt-in spec-forging contract"
     assert_no_grep "EOF" "$brief" "$id: brief leaked a heredoc EOF marker (unterminated heredoc)"
   done
   pass "fm-brief.sh: no-mistakes/direct-PR/local-only briefs generate cleanly"
@@ -347,6 +349,69 @@ test_herdr_lab_omission_is_loud_for_ship_and_scout() {
       "$kind brief missing the fail-visible regeneration instruction"
   done
   pass "fm-brief.sh: ship and scout scaffolds make omitted Herdr intent fail-visible"
+}
+
+test_spec_forging_requires_and_renders_faber_contract() {
+  local home id brief err status
+  home="$TMP_ROOT/spec-forging-home"
+  mkdir -p "$home/data"
+  id="brief-spec-forging-e1"
+
+  FM_SPEC_FORGING_PRD='docs/product.md plus signature receipt' \
+    FM_SPEC_FORGING_AGENTS='AGENTS.md' \
+    FM_SPEC_FORGING_REPO='example/repo at /work/repo; verify origin/main; push fm/spec' \
+    FM_SPEC_FORGING_FILES='.kiro/specs/example/{requirements,design,tasks}.md' \
+    FM_SPEC_FORGING_SLICE='slice one; excludes deployment' \
+    FM_SPEC_FORGING_VISUAL_GATE='not applicable because the slice has no UI' \
+    FM_SPEC_FORGING_SURFACE='configured crewmate harness' \
+    FM_SPEC_FORGING_VALIDATION_GATE='independent reviewer receives path@sha' \
+    FM_HOME="$home" "$ROOT/bin/fm-brief.sh" "$id" example --spec-forging >/dev/null 2>&1
+  brief="$home/data/$id/brief.md"
+
+  assert_present "$brief" "spec-forging brief with all eight data was not scaffolded"
+  assert_grep "# Spec-forging contract - HARD GATE" "$brief" \
+    "spec-forging brief did not render its hard-gate section"
+  assert_grep "**Exact PRD path and signature evidence:** docs/product.md plus signature receipt" "$brief" \
+    "spec-forging brief lost the PRD and signature datum"
+  assert_grep "**Target repo AGENTS.md path:** AGENTS.md" "$brief" \
+    "spec-forging brief lost the target AGENTS.md datum"
+  assert_grep "**Repo, root, verification ref, and push ref:** example/repo" "$brief" \
+    "spec-forging brief lost the repo and refs datum"
+  assert_grep "**Exact spec directory and files to produce:** .kiro/specs/example/{requirements,design,tasks}.md" "$brief" \
+    "spec-forging brief lost the spec directory and files datum"
+  assert_grep "**Slice and out-of-scope:** slice one; excludes deployment" "$brief" \
+    "spec-forging brief lost the slice and out-of-scope datum"
+  assert_grep "**Visual-gate state:** not applicable because the slice has no UI" "$brief" \
+    "spec-forging brief lost the visual-gate datum"
+  assert_grep "**Forging surface:** configured crewmate harness" "$brief" \
+    "spec-forging brief lost the forging-surface datum"
+  assert_grep "**Validation-gate mechanism:** independent reviewer receives path@sha" "$brief" \
+    "spec-forging brief lost the validation-gate datum"
+  assert_grep "Do not approve what you forged." "$brief" \
+    "spec-forging brief lost the no-self-approval clause"
+  assert_grep "Every forged artifact returns to an independent gate." "$brief" \
+    "spec-forging brief lost the independent-gate clause"
+  assert_grep "A scope change on a gated artifact means correct only the affected scope and return to an independent gate." "$brief" \
+    "spec-forging brief lost the scope-change clause"
+
+  id="brief-spec-forging-missing-e2"
+  err="$home/missing.err"
+  FM_SPEC_FORGING_PRD='docs/product.md plus signature receipt' \
+    FM_SPEC_FORGING_AGENTS='AGENTS.md' \
+    FM_SPEC_FORGING_REPO='example/repo at /work/repo; verify origin/main; push fm/spec' \
+    FM_SPEC_FORGING_FILES='.kiro/specs/example/{requirements,design,tasks}.md' \
+    FM_SPEC_FORGING_SLICE= \
+    FM_SPEC_FORGING_VISUAL_GATE='not applicable because the slice has no UI' \
+    FM_SPEC_FORGING_SURFACE='configured crewmate harness' \
+    FM_SPEC_FORGING_VALIDATION_GATE='independent reviewer receives path@sha' \
+    FM_HOME="$home" "$ROOT/bin/fm-brief.sh" "$id" example --spec-forging >/dev/null 2>"$err"; status=$?
+
+  expect_code 1 "$status" "spec-forging brief missing a required datum must fail to render"
+  assert_grep "error: --spec-forging missing slice and out-of-scope (FM_SPEC_FORGING_SLICE)" "$err" \
+    "spec-forging render failure did not name the missing datum"
+  assert_absent "$home/data/$id/brief.md" \
+    "spec-forging render failure still wrote a partial brief"
+  pass "fm-brief.sh: --spec-forging requires all eight Faber data and renders all three clauses"
 }
 
 test_secondmate_no_projects_charter() {
@@ -628,6 +693,7 @@ test_ship_project_memory_wording
 test_herdr_lab_contract_is_explicit_and_complete
 test_herdr_lab_contract_quotes_foreign_firstmate_path
 test_herdr_lab_omission_is_loud_for_ship_and_scout
+test_spec_forging_requires_and_renders_faber_contract
 test_herdr_lab_contract_applies_to_scouts_but_not_secondmates
 test_secondmate_no_projects_charter
 test_secondmate_marked_request_reporting_contract
