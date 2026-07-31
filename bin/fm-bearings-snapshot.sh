@@ -72,7 +72,8 @@ FM_BEARINGS_RECORDED_PRS=${FM_BEARINGS_RECORDED_PRS:-20}
 FM_BEARINGS_UNHEALTHY=${FM_BEARINGS_UNHEALTHY:-20}
 FM_BEARINGS_PR_REPOS=${FM_BEARINGS_PR_REPOS:-10}
 FM_BEARINGS_PR_LIMIT=${FM_BEARINGS_PR_LIMIT:-20}
-FM_BEARINGS_PR_CHECK_LIMIT=${FM_BEARINGS_PR_CHECK_LIMIT:-30}
+FM_BEARINGS_PR_CHECK_LIMIT=${FM_BEARINGS_PR_CHECK_LIMIT:-}
+FM_BEARINGS_PR_CHECK_CONCURRENCY=${FM_BEARINGS_PR_CHECK_CONCURRENCY:-8}
 FM_BEARINGS_PR_TIMEOUT=${FM_BEARINGS_PR_TIMEOUT:-20}
 case "$FM_BEARINGS_PR_TIMEOUT" in ''|*[!0-9]*|0) FM_BEARINGS_PR_TIMEOUT=20 ;; esac
 validate_bound() {  # <name> <value>
@@ -89,7 +90,12 @@ validate_bound FM_BEARINGS_RECORDED_PRS "$FM_BEARINGS_RECORDED_PRS"
 validate_bound FM_BEARINGS_UNHEALTHY "$FM_BEARINGS_UNHEALTHY"
 validate_bound FM_BEARINGS_PR_REPOS "$FM_BEARINGS_PR_REPOS"
 validate_bound FM_BEARINGS_PR_LIMIT "$FM_BEARINGS_PR_LIMIT"
+if [ -z "$FM_BEARINGS_PR_CHECK_LIMIT" ]; then
+  FM_BEARINGS_PR_CHECK_LIMIT=$((FM_BEARINGS_PR_REPOS * FM_BEARINGS_PR_LIMIT \
+    + FM_BEARINGS_RECORDED_PRS + FM_BEARINGS_LANDED))
+fi
 validate_bound FM_BEARINGS_PR_CHECK_LIMIT "$FM_BEARINGS_PR_CHECK_LIMIT"
+validate_bound FM_BEARINGS_PR_CHECK_CONCURRENCY "$FM_BEARINGS_PR_CHECK_CONCURRENCY"
 
 usage() {
   cat <<'EOF'
@@ -124,7 +130,10 @@ Opt-in surfaces: --fields bodies|paths|actions|endpoints, --all-in-flight,
   --all-decisions, --all-secondmates, --all-landed, --all-reports, --all-queued, --all-recorded-prs,
   --all-unhealthy, --all-pr-repos, --include-prs (adds candidate_prs).
 Raise FM_BEARINGS_PR_LIMIT to expand per-repository open-PR results.
-FM_BEARINGS_PR_CHECK_LIMIT is a hard safety cap over unique named PR checks.
+FM_BEARINGS_PR_CHECK_LIMIT caps unique named PR checks; unchecked references are
+  replaced and disclosed without losing the digest. Its default derives from the
+  discovery, recorded-PR, and landed bounds so it cannot fall below that ceiling.
+FM_BEARINGS_PR_CHECK_CONCURRENCY bounds simultaneous gh-axi calls (default: 8).
 EOF
 }
 
@@ -477,25 +486,97 @@ MODEL=$(printf '%s' "$SNAP" | jq \
         (if $include_prs == 1 then empty else {surface:"live open-PR discovery", reveal:"--include-prs"} end) ]) }
 ') || { echo "fm-bearings-snapshot: projection failed" >&2; exit 1; }
 
-# Every GitHub PR URL that survived the bounded projection is live-checked.
-# Checks run concurrently and the hard cap prevents an interactive request from
-# expanding into an unbounded forge sweep.
-PR_URLS=$(printf '%s' "$MODEL" | jq -r '
-  .. | strings
-  | scan("https://github\\.com/[^/[:space:]\"?#]+/[^/[:space:]\"?#]+/pull/[0-9]+")
+# A projection truncation marker immediately after a PR number makes the identity
+# ambiguous: #1234 may have become #12…. Replace the whole ambiguous reference
+# before scanning so it can never fabricate a live row for a different PR.
+TRUNCATED_PR_REFS=$(printf '%s' "$MODEL" | jq -r '
+  (.. | strings | scan("https://github\\.com/[^/[:space:]\"?#]+/[^/[:space:]\"?#]+/pull/[0-9]+…")),
+  (.. | strings | scan("https://github\\.com/[^/[:space:]\"?#]+/[^/[:space:]\"?#]+/pull/[0-9]+\\.\\.\\."))
 ' | sort -u)
-PR_URL_COUNT=$(printf '%s\n' "$PR_URLS" | sed '/^$/d' | wc -l | tr -d ' ')
-if [ "$PR_URL_COUNT" -gt "$FM_BEARINGS_PR_CHECK_LIMIT" ]; then
-  echo "fm-bearings-snapshot: $PR_URL_COUNT named PRs exceed live-check cap $FM_BEARINGS_PR_CHECK_LIMIT" >&2
-  exit 1
+TRUNCATED_PR_COUNT=$(printf '%s\n' "$TRUNCATED_PR_REFS" | sed '/^$/d' | wc -l | tr -d ' ')
+if [ "$TRUNCATED_PR_COUNT" -gt 0 ]; then
+  MODEL=$(printf '%s' "$MODEL" | jq --argjson n "$TRUNCATED_PR_COUNT" '
+    walk(
+      if type == "string" then
+        gsub("https://github\\.com/[^/[:space:]\"?#]+/[^/[:space:]\"?#]+/pull/[0-9]+(…|\\.\\.\\.)";
+             "[truncated PR reference: state unknown, not actionable]")
+      else . end)
+    | .omitted += [{
+        surface:("\($n) truncated PR reference" + (if $n == 1 then "" else "s" end)
+                 + " replaced as state unknown and non-actionable"),
+        reveal:"inspect the untruncated source record"
+      }]
+  ') || { echo "fm-bearings-snapshot: truncated PR sanitization failed" >&2; exit 1; }
 fi
 
-PR_LIVENESS='[]'
-if [ "$PR_URL_COUNT" -gt 0 ]; then
+# Candidate discovery already observed these URLs as open through a generation-time
+# `gh-axi pr list --state open`; seed that live result rather than querying each
+# candidate a second time.
+PR_LIVENESS=$(printf '%s' "$CANDIDATE_PRS" | jq --arg now "$NOW" '
+  map({url,state:"open",checked_at:$now,actionable:true,reason:"-"})
+')
+
+# Known non-GitHub merge-request references cannot be queried with gh-axi. Keep
+# them explicit and non-actionable instead of mislabeling them as a missing result.
+UNSUPPORTED_PR_URLS=$(printf '%s' "$MODEL" | jq -r '
+  .. | strings
+  | scan("https://gitlab\\.com/[^/[:space:]\"?#]+/[^/[:space:]\"?#]+/-/merge_requests/[0-9]+(?=$|[[:space:]\"?#/,.;:)\\]}>])")
+' | sort -u)
+UNSUPPORTED_PR_JSON=$(printf '%s\n' "$UNSUPPORTED_PR_URLS" | jq -Rsc '
+  split("\n") | map(select(length > 0))
+')
+UNSUPPORTED_PR_COUNT=$(printf '%s' "$UNSUPPORTED_PR_JSON" | jq 'length')
+PR_LIVENESS=$(jq -n --arg now "$NOW" --argjson live "$PR_LIVENESS" --argjson urls "$UNSUPPORTED_PR_JSON" '
+  $live + ($urls | map({
+    url:.,state:"unknown",checked_at:"-",actionable:false,
+    reason:"unsupported forge URL; gh-axi checks GitHub only"
+  }))
+')
+
+# Scan only unambiguous canonical GitHub PR identities. The terminal boundary
+# rejects truncated numbers and malformed suffixes that could otherwise be
+# shortened into a different, apparently actionable PR.
+PR_URLS=$(printf '%s' "$MODEL" | jq -r '
+  .. | strings
+  | scan("https://github\\.com/[^/[:space:]\"?#]+/[^/[:space:]\"?#]+/pull/[0-9]+(?=$|[[:space:]\"?#/,.;:)\\]}>])")
+' | sort -u)
+PR_URL_JSON=$(printf '%s\n' "$PR_URLS" | jq -Rsc 'split("\n") | map(select(length > 0))')
+CANDIDATE_URL_JSON=$(printf '%s' "$CANDIDATE_PRS" | jq '[.[].url] | unique')
+PR_VIEW_JSON=$(jq -n --argjson urls "$PR_URL_JSON" --argjson candidates "$CANDIDATE_URL_JSON" '
+  $urls | map(. as $url | select(($candidates | index($url)) == null))
+')
+PR_OMITTED_JSON=$(printf '%s' "$PR_VIEW_JSON" | jq --argjson n "$FM_BEARINGS_PR_CHECK_LIMIT" '.[$n:]')
+PR_OMITTED_COUNT=$(printf '%s' "$PR_OMITTED_JSON" | jq 'length')
+PR_VIEW_JSON=$(printf '%s' "$PR_VIEW_JSON" | jq --argjson n "$FM_BEARINGS_PR_CHECK_LIMIT" '.[:$n]')
+PR_VIEW_URLS=$(printf '%s' "$PR_VIEW_JSON" | jq -r '.[]')
+
+# The live-check cap degrades only the PR surface. Remove every unchecked
+# canonical URL from every string and disclose the exact omission; the rest of
+# the bearings digest remains available.
+if [ "$PR_OMITTED_COUNT" -gt 0 ]; then
+  MODEL=$(printf '%s' "$MODEL" | jq \
+    --argjson urls "$PR_OMITTED_JSON" \
+    --argjson n "$PR_OMITTED_COUNT" \
+    --argjson cap "$FM_BEARINGS_PR_CHECK_LIMIT" '
+    reduce $urls[] as $url (.;
+      walk(if type == "string"
+           then (split($url) | join("[PR omitted: live-check cap reached]"))
+           else . end))
+    | .omitted += [{
+        surface:("\($n) PR reference" + (if $n == 1 then "" else "s" end)
+                 + " omitted by live-check cap \($cap)"),
+        reveal:"raise FM_BEARINGS_PR_CHECK_LIMIT"
+      }]
+  ') || { echo "fm-bearings-snapshot: PR cap degradation failed" >&2; exit 1; }
+fi
+
+PR_VIEW_COUNT=$(printf '%s' "$PR_VIEW_JSON" | jq 'length')
+if [ "$PR_VIEW_COUNT" -gt 0 ]; then
   PR_TMP=$(mktemp -d "${TMPDIR:-/tmp}/fm-bearings-prs.XXXXXX") \
     || { echo "fm-bearings-snapshot: cannot create PR-check temp directory" >&2; exit 1; }
   trap 'rm -rf "$PR_TMP"' EXIT HUP INT TERM
   pids=""
+  batch_size=0
   index=0
   while IFS= read -r url; do
     [ -n "$url" ] || continue
@@ -527,23 +608,48 @@ if [ "$PR_URL_COUNT" -gt 0 ]; then
         > "$PR_TMP/$index.json"
     ) &
     pids="$pids $!"
+    batch_size=$((batch_size + 1))
+    if [ "$batch_size" -ge "$FM_BEARINGS_PR_CHECK_CONCURRENCY" ]; then
+      for pid in $pids; do
+        wait "$pid" || { echo "fm-bearings-snapshot: live PR check worker failed" >&2; exit 1; }
+      done
+      pids=""
+      batch_size=0
+    fi
   done <<EOF
-$PR_URLS
+$PR_VIEW_URLS
 EOF
   for pid in $pids; do
     wait "$pid" || { echo "fm-bearings-snapshot: live PR check worker failed" >&2; exit 1; }
   done
-  PR_LIVENESS=$(jq -s 'sort_by(.url)' "$PR_TMP"/*.json) \
+  PR_VIEW_LIVENESS=$(jq -s 'sort_by(.url)' "$PR_TMP"/*.json) \
     || { echo "fm-bearings-snapshot: live PR check collection failed" >&2; exit 1; }
+  PR_LIVENESS=$(jq -n --argjson seeded "$PR_LIVENESS" --argjson checked "$PR_VIEW_LIVENESS" '
+    ($seeded + $checked) | unique_by(.url) | sort_by(.url)
+  ')
 fi
 
-PR_UNKNOWN_COUNT=$(printf '%s' "$PR_LIVENESS" | jq '[.[] | select(.state == "unknown")] | length')
-if [ "$PR_URL_COUNT" -eq 0 ]; then
+PR_UNKNOWN_COUNT=$(printf '%s' "$PR_LIVENESS" | jq '
+  [.[] | select(.url | startswith("https://github.com/")) | select(.state == "unknown")] | length
+')
+PR_CANDIDATE_LIVE_COUNT=$(printf '%s' "$CANDIDATE_URL_JSON" | jq 'length')
+PR_CHECKED_COUNT=$((PR_VIEW_COUNT + PR_CANDIDATE_LIVE_COUNT))
+if [ "$PR_CHECKED_COUNT" -eq 0 ]; then
   PR_STATUS="named PRs checked (0); $PR_STATUS"
 elif [ "$PR_UNKNOWN_COUNT" -gt 0 ]; then
-  PR_STATUS="named PRs checked ($PR_URL_COUNT; $PR_UNKNOWN_COUNT state unknown); $PR_STATUS"
+  PR_STATUS="named PRs checked ($PR_CHECKED_COUNT; $PR_UNKNOWN_COUNT state unknown); $PR_STATUS"
 else
-  PR_STATUS="named PRs checked ($PR_URL_COUNT); $PR_STATUS"
+  PR_STATUS="named PRs checked ($PR_CHECKED_COUNT); $PR_STATUS"
+fi
+if [ "$UNSUPPORTED_PR_COUNT" -gt 0 ]; then
+  PR_STATUS="$PR_STATUS; $UNSUPPORTED_PR_COUNT unsupported forge reference(s) state unknown"
+fi
+if [ "$PR_OMITTED_COUNT" -gt 0 ]; then
+  if [ "$PR_OMITTED_COUNT" -eq 1 ]; then
+    PR_STATUS="$PR_STATUS; 1 PR reference omitted by live-check cap $FM_BEARINGS_PR_CHECK_LIMIT"
+  else
+    PR_STATUS="$PR_STATUS; $PR_OMITTED_COUNT PR references omitted by live-check cap $FM_BEARINGS_PR_CHECK_LIMIT"
+  fi
 fi
 
 MODEL=$(printf '%s' "$MODEL" | jq \
@@ -551,7 +657,19 @@ MODEL=$(printf '%s' "$MODEL" | jq \
   --argjson live "$PR_LIVENESS" '
   def live_for($url):
     first($live[] | select(.url == $url))
-    // {url:$url,state:"unknown",checked_at:"-",actionable:false,reason:"live state missing"};
+    // (if ($url | startswith("[PR omitted:")) then
+          {url:$url,state:"unknown",checked_at:"-",actionable:false,
+           reason:"not checked: live-check cap reached"}
+        elif ($url | test("^https://github\\.com/")) then
+          {url:$url,state:"unknown",checked_at:"-",actionable:false,
+           reason:"malformed or non-canonical GitHub PR URL"}
+        elif ($url | test("/merge_requests/[0-9]+")) then
+          {url:$url,state:"unknown",checked_at:"-",actionable:false,
+           reason:"unsupported forge URL; gh-axi checks GitHub only"}
+        else
+          {url:$url,state:"unknown",checked_at:"-",actionable:false,
+           reason:"not a supported PR URL"}
+        end);
   .prs = $prs
   | .recorded_prs |= map(. as $row | live_for($row.url) as $pr | . + {
       state:$pr.state,
@@ -560,7 +678,10 @@ MODEL=$(printf '%s' "$MODEL" | jq \
       reason:$pr.reason
     })
   | .landed |= map(
-      if (.artifact | test("^https://github\\.com/[^/]+/[^/]+/pull/[0-9]+$")) then
+      .artifact as $artifact
+      | if (($artifact | test("^https://github\\.com/[^/]+/[^/]+/pull/[0-9]+$"))
+            or ($artifact | test("/merge_requests/[0-9]+"))
+            or ($artifact | startswith("[PR omitted:"))) then
         . as $row | live_for($row.artifact) as $pr | . + {
           pr_state:$pr.state,
           pr_checked_at:$pr.checked_at,

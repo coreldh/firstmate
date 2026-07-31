@@ -61,6 +61,27 @@ echo "gh-axi $*" >> "$NET_LOG"
 [ "${FAKE_GH_SLEEP:-0}" = 1 ] && sleep 30
 case "$*" in
   "pr view "*)
+    if [ "${FAKE_GH_TRACK_CONCURRENCY:-0}" = 1 ]; then
+      lock="$NET_LOG.concurrent.lock"
+      while ! mkdir "$lock" 2>/dev/null; do sleep 0.01; done
+      active=0
+      [ ! -f "$NET_LOG.active" ] || read -r active < "$NET_LOG.active"
+      active=$((active + 1))
+      printf '%s\n' "$active" > "$NET_LOG.active"
+      maximum=0
+      [ ! -f "$NET_LOG.maximum" ] || read -r maximum < "$NET_LOG.maximum"
+      [ "$active" -le "$maximum" ] || printf '%s\n' "$active" > "$NET_LOG.maximum"
+      rmdir "$lock"
+      cleanup_concurrency() {
+        while ! mkdir "$lock" 2>/dev/null; do sleep 0.01; done
+        current=1
+        [ ! -f "$NET_LOG.active" ] || read -r current < "$NET_LOG.active"
+        printf '%s\n' "$((current - 1))" > "$NET_LOG.active"
+        rmdir "$lock"
+      }
+      trap cleanup_concurrency EXIT
+      sleep "${FAKE_GH_VIEW_DELAY:-0.2}"
+    fi
     number=$(printf '%s\n' "$*" | sed -n 's/^pr view \([0-9][0-9]*\) .*/\1/p')
     state=${FAKE_RECORDED_PR_STATE:-open}
     cat <<EOF
@@ -75,6 +96,18 @@ pull_request:
 EOF
     ;;
   "pr list "*)
+    if [ -n "${FAKE_GH_PER_REPO_COUNT:-}" ]; then
+      repo=$(printf '%s\n' "$*" | sed -n 's/.*--repo \([^ ]*\).*/\1/p')
+      printf 'count: %s\n' "$FAKE_GH_PER_REPO_COUNT"
+      printf 'pull_requests[%s]{number,title,state,author,draft,review,url}:\n' "$FAKE_GH_PER_REPO_COUNT"
+      i=1
+      while [ "$i" -le "$FAKE_GH_PER_REPO_COUNT" ]; do
+        printf '  %s,"PR %s",open,fixture,no,none,"https://github.com/%s/pull/%s"\n' \
+          "$((100 + i))" "$i" "$repo" "$((100 + i))"
+        i=$((i + 1))
+      done
+      exit 0
+    fi
     if [ "${FAKE_GH_MANY:-0}" = 1 ]; then
       cat <<'EOF'
 count: 3
@@ -1082,15 +1115,91 @@ write_large_fixture() {  # <home> <count>
   done
 }
 
-test_named_pr_check_cap_fails_closed() {
-  local home fakebin output rc
+test_named_pr_check_cap_degrades_without_losing_digest() {
+  local home fakebin json rc
   home=$(make_home named-pr-cap); write_large_fixture "$home" 3
   fakebin=$(make_fakebin "$home"); : > "$home/net.log"
-  output=$(FM_BEARINGS_PR_CHECK_LIMIT=2 run "$home" "$fakebin" --json 2>&1); rc=$?
-  expect_code 1 "$rc" "named PRs above the hard live-check cap must fail closed"
-  assert_contains "$output" "3 named PRs exceed live-check cap 2" "hard PR cap diagnostic missing"
-  [ ! -s "$home/net.log" ] || fail "hard PR cap made forge calls before refusing: $(cat "$home/net.log")"
-  pass "the hard named-PR check cap fails before any forge call"
+  json=$(FM_BEARINGS_PR_CHECK_LIMIT=2 run "$home" "$fakebin" --json); rc=$?
+  expect_code 0 "$rc" "named PRs above the live-check cap must preserve the digest"
+  printf '%s' "$json" | jq -e '
+    .schema == "fm-bearings.v1"
+      and (.prs | test("1 PR reference omitted by live-check cap 2"))
+      and ([.omitted[] | select(.surface == "1 PR reference omitted by live-check cap 2")] | length) == 1
+      and ([.pr_liveness[] | select(.actionable == true)] | length) == 2
+      and ([.. | strings | select(test("https://github.com/acme/repo-3/pull/3"))] | length) == 0
+  ' >/dev/null || fail "named-PR cap did not degrade with an explicit omission: $json"
+  [ "$(grep -c '^gh-axi pr view ' "$home/net.log")" = 2 ] \
+    || fail "live-check cap did not bound forge calls: $(cat "$home/net.log")"
+  pass "the named-PR cap omits unchecked references and preserves the digest"
+}
+
+test_default_pr_check_cap_covers_discovery_ceiling() {
+  local home fakebin json rc
+  home=$(make_home discovery-ceiling); write_large_fixture "$home" 5
+  fakebin=$(make_fakebin "$home"); : > "$home/net.log"
+  json=$(FAKE_GH_PER_REPO_COUNT=8 FM_BEARINGS_PR_REPOS=5 FM_BEARINGS_PR_LIMIT=8 \
+    run "$home" "$fakebin" --include-prs --json); rc=$?
+  expect_code 0 "$rc" "ordinary discovery within its published bounds must preserve the digest"
+  printf '%s' "$json" | jq -e '
+    (.candidate_prs | length) == 40
+      and ([.omitted[] | select(.surface | test("live-check cap"))] | length) == 0
+  ' >/dev/null || fail "default live-check cap fell below the discovery ceiling: $json"
+  pass "the derived live-check cap covers the configured discovery ceiling"
+}
+
+test_truncated_pr_identity_is_never_live_or_actionable() {
+  local home fakebin json
+  home=$(make_home truncated-pr); write_fixture "$home"
+  fakebin=$(make_fakebin "$home"); : > "$home/net.log"
+  printf 'done: PR merged and landed cleanly aaaaaaaaaaaa https://github.com/kunchenguid/firstmate/pull/1234\n' \
+    > "$home/state/ship-task.status"
+  json=$(run "$home" "$fakebin" --json)
+  printf '%s' "$json" | jq -e '
+    ([.pr_liveness[] | select(.url == "https://github.com/kunchenguid/firstmate/pull/12")] | length) == 0
+      and ([.. | strings | select(test("pull/12…"))] | length) == 0
+      and ([.omitted[] | select(.surface == "1 truncated PR reference replaced as state unknown and non-actionable")] | length) == 1
+  ' >/dev/null || fail "truncated PR identity fabricated a live row: $json"
+  if grep -q '^gh-axi pr view 12 ' "$home/net.log"; then
+    fail "truncated PR #1234 was misqueried as PR #12: $(cat "$home/net.log")"
+  fi
+  pass "a truncated PR identity is explicit unknown and never queried as another PR"
+}
+
+test_unsupported_forge_reason_is_explicit() {
+  local home fakebin json
+  home=$(make_home unsupported-forge); write_fixture "$home"
+  fakebin=$(make_fakebin "$home")
+  fm_write_meta "$home/state/ship-task.meta" \
+    "window=firstmate:fm-ship-task" \
+    "worktree=$home/projects/ship-wt" \
+    "project=firstmate" \
+    "harness=codex" \
+    "kind=ship" \
+    "mode=no-mistakes" \
+    "pr=https://gitlab.com/acme/repo/-/merge_requests/20"
+  json=$(run "$home" "$fakebin" --json)
+  printf '%s' "$json" | jq -e '
+    .recorded_prs | any(.[];
+      .url == "https://gitlab.com/acme/repo/-/merge_requests/20"
+      and .state == "unknown"
+      and .actionable == false
+      and (.reason | test("unsupported forge")))
+  ' >/dev/null || fail "unsupported forge was mislabeled as a missing live state: $json"
+  pass "an unsupported forge is explicit and non-actionable"
+}
+
+test_live_pr_checks_have_a_concurrency_ceiling() {
+  local home fakebin json maximum
+  home=$(make_home pr-concurrency); write_large_fixture "$home" 6
+  fakebin=$(make_fakebin "$home")
+  json=$(FAKE_GH_TRACK_CONCURRENCY=1 FM_BEARINGS_PR_CHECK_CONCURRENCY=2 \
+    run "$home" "$fakebin" --json)
+  maximum=$(cat "$home/net.log.maximum")
+  [ "$maximum" -le 2 ] || fail "live PR concurrency exceeded 2 (observed $maximum)"
+  [ "$maximum" -ge 2 ] || fail "live PR checks unexpectedly serialized (observed $maximum)"
+  printf '%s' "$json" | jq -e '(.pr_liveness | length) == 6' >/dev/null \
+    || fail "concurrency bound dropped checked PRs: $json"
+  pass "live PR checks obey the configured concurrency ceiling"
 }
 
 test_section_caps_and_expansion_flags() {
@@ -1979,7 +2088,11 @@ test_superseded_queued_item_dropped_by_default
 test_include_prs_adds_live_discovery
 test_partial_github_failure_degrades
 test_perl_fallback_bounds_github_call
-test_named_pr_check_cap_fails_closed
+test_named_pr_check_cap_degrades_without_losing_digest
+test_default_pr_check_cap_covers_discovery_ceiling
+test_truncated_pr_identity_is_never_live_or_actionable
+test_unsupported_forge_reason_is_explicit
+test_live_pr_checks_have_a_concurrency_ceiling
 test_section_caps_and_expansion_flags
 test_pr_repository_cap_and_expansion
 test_per_repository_pr_cap_is_disclosed
