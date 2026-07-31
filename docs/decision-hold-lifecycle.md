@@ -18,7 +18,8 @@ A post-teardown visual review can complete against the surviving report and dura
 It accepts `--none` as an explicit semantic inventory result, not as inferred absence.
 It verifies every listed identity against tasks-axi before recording completion.
 For a live origin, it requires one exact `endpoint_task_id=` dispatch binding, obtains a fresh Bearings projection, and writes one atomic cleanup receipt per unresolved hold under `data/decision-hold-receipts/`.
-The receipt binds the origin, dispatch, hold, live backlog path, canonical object digest, and the Bearings snapshot digest.
+The receipt records the origin, dispatch, hold, live backlog path, canonical object digest, and the digest of the Bearings snapshot observed by `complete`.
+The stored Bearings digest is evidence of that completion-time snapshot; `verify` does not compare it with the fresh snapshot digest.
 For an open keyed status decision, it appends a `captain-held [key=<key>]: ...` transfer event only after the matching backlog hold is durable.
 `bin/fm-classify-lib.sh` recognizes that transfer as closing the live status copy without claiming that the captain has answered it.
 
@@ -26,7 +27,7 @@ Scout teardown calls the script's read-only `verify` subcommand after checking f
 An unresolved hold permits cleanup only while its receipt is intact, its task and dispatch links match, its nonzero object digest still identifies the unique backlog row, and a fresh Bearings snapshot still shows it.
 The captain does not need to answer in the cleanup session because the unresolved hold remains the durable Captain's Call object after source cleanup.
 Absent, duplicate, malformed, wrong-dispatch, zero-digest, missing-path, or Bearings-invisible evidence refuses without touching teardown's unlanded-work gates.
-The `--force` path remains the explicit captain-approved discard escape hatch.
+Receipt remediation never authorizes force or discard, and neither is a migration path for missing historical authority.
 
 The `resolve` subcommand requires a decision file and at least one existing dependent task whose structured `blocked-by` edge points to the hold.
 It records the decision digest and routed task identities as a retry identity in the hold body, clears each dependency edge through tasks-axi, and marks the hold Done only after those writes succeed.
@@ -36,6 +37,29 @@ An all-zero digest, missing object, changed dispatch, hand-written row, or histo
 Historical rows are not migrated implicitly because their producing dispatch and decision object cannot be reconstructed authoritatively from row prose alone.
 An exact retry can finish a partial routing operation, while a changed decision or routed-task set is rejected.
 A failed intermediate step leaves the hold open.
+
+## Historical fail-closed remedy
+
+The normative operator procedure is owned by `.agents/skills/decision-hold-lifecycle/SKILL.md`.
+Mechanically, an unresolved historical hold can reconstruct a missing cleanup receipt only by repeating `complete` with the full recorded inventory while the live origin still has one exact `endpoint_task_id=` and the hold remains open.
+An origin with no exact dispatch binding remains intact and refused because the script cannot reconstruct that historical association from row prose.
+A historical resolved row with no script-owned cleanup receipt or canonical decision object also remains intact and refused because no safe automatic migration is shipped.
+When the cleanup receipt and canonical decision object both survive, an exact `resolve` retry may finish only the missing resolution receipt.
+Every other historical case preserves the origin metadata and hold row for a later authority-bearing decision; cleanup does not proceed, and force or discard is not an operator remedy under this contract.
+
+## Receipt trust boundary and held residuals
+
+The receipt gate is same-account tamper evidence, not an operating-system authority boundary.
+The following residuals are disclosed and remain `HELD`; this change neither accepts them nor designs them away.
+
+- **R1 - same-account forgery:** an actor able to write both the backlog and receipt directory can recompute row digests and fabricate mutually consistent local files.
+- **R2 - completion-time Bearings digest:** `bearings_sha256` records the snapshot used by `complete`, but `verify` checks only that a fresh Bearings projection still names the hold and does not compare the fresh digest with the stored value.
+- **R3 - check-to-execution race:** `verify` checks the durable row digest before requesting fresh Bearings, so a concurrent same-account writer can change or remove the row between the check and later cleanup.
+
+The R3 window is a time-of-check-to-time-of-use residual in the shipped receipt surface.
+The independent CM31 gate demonstrated it deterministically by removing the hold during a delayed Bearings call and observing teardown proceed without the hold remaining.
+That evidence does not authorize operating-system hardening, profile changes, permission changes, or acceptance of the residual.
+`docs/codex-hook-threat-model.md` describes the related same-account and check-to-execution threat class for the separate Codex hook surface; it remains architecture only.
 
 ## Structured read surfaces
 
@@ -72,6 +96,7 @@ ok - resolved findings and decision-like prose do not create false holds
 ok - terminal single-owner stale status decisions do not block empty inventory
 ok - main-home and secondmate-home captain holds remain correctly routed
 ok - resolve matches first/middle/last in quoted blocked_by and rejects a genuinely absent id
+ok - historical open and binding-less refusals name only safe operator remedies
 ok - absent, malformed, duplicate, wrong-origin, hand-written, and zero-digest resolution rows refuse
 
 $ bash tests/fm-fleet-snapshot-view.test.sh

@@ -410,7 +410,7 @@ test_spec_forging_authority_contract() {
     assert_absent "$home/data/$id" "missing $variable created a partial task directory"
   done
 
-  id=brief-spec-whitespace
+  id="brief-spec-whitespace"
   status=0
   FM_SPEC_FORGING_PRD='   ' FM_SPEC_FORGING_AGENTS=agents FM_SPEC_FORGING_REPO=repo \
     FM_SPEC_FORGING_FILES=files FM_SPEC_FORGING_SLICE=slice FM_SPEC_FORGING_VISUAL_GATE=visual \

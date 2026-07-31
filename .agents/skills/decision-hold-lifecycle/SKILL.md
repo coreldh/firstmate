@@ -25,7 +25,11 @@ A completed investigation and an ended visual review use this same owner and com
 Run the command in the originating work's authoritative `FM_HOME`; main-home work creates main-home holds, and secondmate-owned work creates holds in that secondmate home's backlog rather than copying them into the main backlog.
 Do not close a hold merely because the originating investigation completed, its report was archived, its visual review ended, or its task was torn down.
 The hold remains the authoritative Captain's Call item until the captain's answer is durably recorded, dependent work is created in the same backlog and blocked by that hold, and `bin/fm-decision-hold.sh resolve` routes the answer by clearing those dependency edges before closing the hold.
-Resolution retains a digest-bound decision object and a task-and-dispatch-bound receipt; a historical resolved row without that receipt remains refused until an authoritative migration is available.
+Resolution retains a digest-bound decision object and a task-and-dispatch-bound receipt.
+For a historical open hold whose exact endpoint dispatch binding survives, re-run `complete` with the full recorded inventory to reconstruct the cleanup receipt from current authoritative state.
+If that binding is absent, or if a historical resolved row lacks its script-owned cleanup receipt or canonical decision object, preserve the origin metadata and hold row and keep cleanup refused because no safe automatic migration is shipped.
+An exact `resolve` retry may finish a missing resolution receipt only when the script-owned cleanup receipt and canonical decision object both survive.
+Never substitute force or discard for the missing historical authority.
 Resolved findings, recommendations that need no captain choice, and prose that merely sounds decision-like do not create holds.
 Bearings reads the resulting structured state and must never compensate by scraping historical reports, visual-review artifacts, terminal output, chat, or other prose.
 
@@ -35,7 +39,7 @@ Bearings reads the resulting structured state and must never compensate by scrap
 2. Inventory only genuine unresolved choices that require the captain.
 3. For each choice, choose a stable key and use the script's `hold` command with a concise title, reason, and repository.
 4. Run the script's `complete` command with the full unresolved-key inventory for that review pass.
-5. Before cleanup, let the script's read-only `verify` command confirm the task identity, exact dispatch, nonzero object digests, and a fresh Bearings appearance; unresolved or indeterminate evidence refuses.
+5. Before cleanup, let the script's read-only `verify` command confirm the task identity, exact dispatch, nonzero object digests, and a fresh Bearings appearance; unresolved or indeterminate evidence refuses and follows the historical remedy above without force or discard.
 6. Relay the choices to the captain as decisions from Bearings' Captain's Call section under `AGENTS.md` section 9; do not use the word hold in captain chat.
 7. After the captain decides, record dependent work with normal tasks-axi commands and block it by the hold identity.
 8. Put the captain's exact durable decision in a file and use the script's `resolve` command with every routed task.
