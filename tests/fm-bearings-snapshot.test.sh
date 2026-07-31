@@ -1057,6 +1057,23 @@ test_include_prs_adds_live_discovery() {
   pass "--include-prs adds live discovery while named checks remain mandatory"
 }
 
+test_discovered_pr_is_individually_verified_before_actionable() {
+  local home fakebin json
+  home=$(make_home discovered-merged); write_fixture "$home"
+  fakebin=$(make_fakebin "$home"); : > "$home/net.log"
+  json=$(FAKE_GH_MANY=1 FAKE_RECORDED_PR_STATE=merged \
+    run "$home" "$fakebin" --include-prs --json)
+  printf '%s' "$json" | jq -e '
+    .candidate_prs | any(.[];
+      .url == "https://github.com/acme/repo/pull/1"
+      and .state == "merged"
+      and .actionable == false)
+  ' >/dev/null || fail "a discovered PR merged after listing remained actionable: $json"
+  grep -q '^gh-axi pr view 1 --repo acme/repo$' "$home/net.log" \
+    || fail "discovered PR did not receive its own live verification: $(cat "$home/net.log")"
+  pass "a discovered PR receives its own live verification before becoming actionable"
+}
+
 test_partial_github_failure_degrades() {
   local home fakebin json rc
   home=$(make_home partial); write_fixture "$home"
@@ -2086,6 +2103,7 @@ test_open_decision_surfaces_end_to_end
 test_report_pointers_surface
 test_superseded_queued_item_dropped_by_default
 test_include_prs_adds_live_discovery
+test_discovered_pr_is_individually_verified_before_actionable
 test_partial_github_failure_degrades
 test_perl_fallback_bounds_github_call
 test_named_pr_check_cap_degrades_without_losing_digest

@@ -509,12 +509,10 @@ if [ "$TRUNCATED_PR_COUNT" -gt 0 ]; then
   ') || { echo "fm-bearings-snapshot: truncated PR sanitization failed" >&2; exit 1; }
 fi
 
-# Candidate discovery already observed these URLs as open through a generation-time
-# `gh-axi pr list --state open`; seed that live result rather than querying each
-# candidate a second time.
-PR_LIVENESS=$(printf '%s' "$CANDIDATE_PRS" | jq --arg now "$NOW" '
-  map({url,state:"open",checked_at:$now,actionable:true,reason:"-"})
-')
+# Discovery only identifies candidates. It cannot authorize actionability because
+# a PR may merge or close between the list response and the rendered digest.
+# Every canonical URL, including every candidate, receives its own pr view below.
+PR_LIVENESS='[]'
 
 # Known non-GitHub merge-request references cannot be queried with gh-axi. Keep
 # them explicit and non-actionable instead of mislabeling them as a missing result.
@@ -541,10 +539,7 @@ PR_URLS=$(printf '%s' "$MODEL" | jq -r '
   | scan("https://github\\.com/[^/[:space:]\"?#]+/[^/[:space:]\"?#]+/pull/[0-9]+(?=$|[[:space:]\"?#/,.;:)\\]}>])")
 ' | sort -u)
 PR_URL_JSON=$(printf '%s\n' "$PR_URLS" | jq -Rsc 'split("\n") | map(select(length > 0))')
-CANDIDATE_URL_JSON=$(printf '%s' "$CANDIDATE_PRS" | jq '[.[].url] | unique')
-PR_VIEW_JSON=$(jq -n --argjson urls "$PR_URL_JSON" --argjson candidates "$CANDIDATE_URL_JSON" '
-  $urls | map(. as $url | select(($candidates | index($url)) == null))
-')
+PR_VIEW_JSON=$PR_URL_JSON
 PR_OMITTED_JSON=$(printf '%s' "$PR_VIEW_JSON" | jq --argjson n "$FM_BEARINGS_PR_CHECK_LIMIT" '.[$n:]')
 PR_OMITTED_COUNT=$(printf '%s' "$PR_OMITTED_JSON" | jq 'length')
 PR_VIEW_JSON=$(printf '%s' "$PR_VIEW_JSON" | jq --argjson n "$FM_BEARINGS_PR_CHECK_LIMIT" '.[:$n]')
@@ -632,8 +627,7 @@ fi
 PR_UNKNOWN_COUNT=$(printf '%s' "$PR_LIVENESS" | jq '
   [.[] | select(.url | startswith("https://github.com/")) | select(.state == "unknown")] | length
 ')
-PR_CANDIDATE_LIVE_COUNT=$(printf '%s' "$CANDIDATE_URL_JSON" | jq 'length')
-PR_CHECKED_COUNT=$((PR_VIEW_COUNT + PR_CANDIDATE_LIVE_COUNT))
+PR_CHECKED_COUNT=$PR_VIEW_COUNT
 if [ "$PR_CHECKED_COUNT" -eq 0 ]; then
   PR_STATUS="named PRs checked (0); $PR_STATUS"
 elif [ "$PR_UNKNOWN_COUNT" -gt 0 ]; then
