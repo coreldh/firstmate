@@ -42,6 +42,15 @@ A net increase is allowed only for a genuinely new current fact with no stronger
 Before allowing it, consolidate enough lower-priority material to remain within budget.
 Never describe the session as reset-safe while the memory total is over budget or an exception is unresolved.
 
+## Canonical CAPTAIN-RESUME refresh
+
+Every `/stow` invocation refreshes the canonical `$FM_HOME/CAPTAIN-RESUME.md` after the knowledge sweep, backlog routing, and successful post-pass budget report, even when no memory file changed.
+Obtain the current harness's real producing session identity and run `bin/fm-captain-resume.sh refresh --session-id '<identity>'`.
+Never invent, reuse, or omit a session identity to make the refresh pass.
+The command derives live tasks, pending decisions, source reports, pending notifications, and next steps from fresh durable state; do not replace any section with a chat-only claim.
+It writes only the canonical home-root carrier and preserves every other file named `CAPTAIN-RESUME` as historical.
+If the refresh fails, report the exact exception and do not call the session reset-safe.
+
 ## Knowledge sweep and routing
 
 1. **Sweep the session for uncaptured durable knowledge.**
@@ -74,6 +83,7 @@ Report the outcome in plain captain-facing language with all of these facts:
 - one or more actions for each of `data/captain.md`, `data/captain-shared.md`, and `data/learnings.md`: `unchanged`, `added`, `rewritten`, `pruned`, or `routed`;
 - each durable finding filed outside memory and its authoritative owner;
 - every unresolved exception, including a primary-owned shared-file constraint in a secondmate home;
+- the canonical `CAPTAIN-RESUME.md` path, producing session identity, refresh timestamp, and SHA-256 from this invocation;
 - whether the session is safe to reset, only when all durable findings are captured and the post-pass result is within budget with no exception.
 
 Do not hide an over-budget result behind a reset-safe claim.

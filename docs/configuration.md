@@ -151,6 +151,13 @@ An inherited `data/captain-shared.md` counts in a secondmate's total but remains
 The internal `/stow` skill curates only the editable local files in that case and reports the primary-owned shared file as a concrete exception if it alone exceeds the budget.
 The helper's header owns exact parsing, publication, and report output mechanics.
 
+## Canonical session handoff (CAPTAIN-RESUME.md)
+
+`CAPTAIN-RESUME.md` at the effective `FM_HOME` root is the canonical local session handoff and is gitignored.
+The internal `/stow` skill refreshes it through `bin/fm-captain-resume.sh` after every complete stow pass.
+Files with the same name below `data/` or elsewhere are historical objects and are never removed or rewritten by that command.
+See [`captain-resume.md`](captain-resume.md) for the current content and failure contract.
+
 ## Secondmate routes (data/secondmates.md)
 
 Persistent secondmate routes live locally in `data/secondmates.md`.

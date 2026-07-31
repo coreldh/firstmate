@@ -17,14 +17,23 @@ The `complete` subcommand unions the reviewed keys into `decision_keys=` and app
 A post-teardown visual review can complete against the surviving report and durable holds without recreating volatile task metadata.
 It accepts `--none` as an explicit semantic inventory result, not as inferred absence.
 It verifies every listed identity against tasks-axi before recording completion.
+For a live origin, it requires one exact `endpoint_task_id=` dispatch binding, obtains a fresh Bearings projection, and writes one atomic cleanup receipt per unresolved hold under `data/decision-hold-receipts/`.
+The receipt binds the origin, dispatch, hold, live backlog path, canonical object digest, and the Bearings snapshot digest.
 For an open keyed status decision, it appends a `captain-held [key=<key>]: ...` transfer event only after the matching backlog hold is durable.
 `bin/fm-classify-lib.sh` recognizes that transfer as closing the live status copy without claiming that the captain has answered it.
 
 Scout teardown calls the script's read-only `verify` subcommand after checking for the report and before removing any source state.
+An unresolved hold permits cleanup only while its receipt is intact, its task and dispatch links match, its nonzero object digest still identifies the unique backlog row, and a fresh Bearings snapshot still shows it.
+The captain does not need to answer in the cleanup session because the unresolved hold remains the durable Captain's Call object after source cleanup.
+Absent, duplicate, malformed, wrong-dispatch, zero-digest, missing-path, or Bearings-invisible evidence refuses without touching teardown's unlanded-work gates.
 The `--force` path remains the explicit captain-approved discard escape hatch.
 
 The `resolve` subcommand requires a decision file and at least one existing dependent task whose structured `blocked-by` edge points to the hold.
 It records the decision digest and routed task identities as a retry identity in the hold body, clears each dependency edge through tasks-axi, and marks the hold Done only after those writes succeed.
+It also retains the exact decision in a canonical non-symlink object and publishes a separate atomic resolution receipt bound to the originating task, original dispatch, unique live-or-archived row, decision digest, decision path, routed task identities, and row digest.
+`verify-resolution` requires every routed task to remain a unique live-or-archived object.
+An all-zero digest, missing object, changed dispatch, hand-written row, or historical row without the script-owned receipts fails closed.
+Historical rows are not migrated implicitly because their producing dispatch and decision object cannot be reconstructed authoritatively from row prose alone.
 An exact retry can finish a partial routing operation, while a changed decision or routed-task set is rejected.
 A failed intermediate step leaves the hold open.
 
@@ -43,6 +52,7 @@ The projection remains read-only and does not inspect historical prose.
 Verification date: 2026-07-14.
 Additional quoted `blocked_by` regression verification date: 2026-07-17.
 Plural blocker-readiness and mixed-home projection verification date: 2026-07-22.
+Dispatch-bound cleanup and trusted-resolution receipt verification date: 2026-07-31.
 
 The focused end-to-end regression uses only synthetic `sample` identities and decision text.
 It begins with a completed investigation and visual review whose genuine unresolved choice exists only in the report.
@@ -62,6 +72,7 @@ ok - resolved findings and decision-like prose do not create false holds
 ok - terminal single-owner stale status decisions do not block empty inventory
 ok - main-home and secondmate-home captain holds remain correctly routed
 ok - resolve matches first/middle/last in quoted blocked_by and rejects a genuinely absent id
+ok - absent, malformed, duplicate, wrong-origin, hand-written, and zero-digest resolution rows refuse
 
 $ bash tests/fm-fleet-snapshot-view.test.sh
 ok - backlog normalization preserves strict roles and resolves every blocker compatibly

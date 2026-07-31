@@ -6,7 +6,7 @@
 # description, acceptance criteria, and context, and may adjust other sections
 # when the task genuinely deviates (e.g. working an existing external PR instead
 # of shipping a new one).
-# Usage: fm-brief.sh <task-id> <repo-name> [--scout] [--herdr-lab]
+# Usage: fm-brief.sh <task-id> <repo-name> [--scout] [--herdr-lab] [--spec-forging]
 #        fm-brief.sh <task-id> --secondmate {<project>...|--no-projects}
 #   --scout writes the scout contract instead: the deliverable is a report at
 #   data/<task-id>/report.md (no branch, no push, no PR) and the worktree is scratch.
@@ -26,6 +26,20 @@
 #   The flag must be explicit because {TASK} is filled after scaffolding and the
 #   caller-supplied repo string cannot reliably identify this repo. Briefs made
 #   without it carry a loud declaration so an omitted contract cannot be silent.
+#   --spec-forging is mandatory when the task will forge requirements, design,
+#   or tasks from a signed product contract. The flag must be explicit because
+#   {TASK} is filled after scaffolding and the repo string cannot identify intent.
+#   It requires all eight Faber preflight data through these environment variables:
+#     FM_SPEC_FORGING_PRD              exact PRD path and signature evidence
+#     FM_SPEC_FORGING_AGENTS           target repo AGENTS.md path
+#     FM_SPEC_FORGING_REPO             repo, root, verification ref, and push ref
+#     FM_SPEC_FORGING_FILES            exact spec directory and files to produce
+#     FM_SPEC_FORGING_SLICE            slice and out-of-scope
+#     FM_SPEC_FORGING_VISUAL_GATE      visual-gate state
+#     FM_SPEC_FORGING_SURFACE          forging surface
+#     FM_SPEC_FORGING_VALIDATION_GATE  validation-gate mechanism
+#   A missing, whitespace-only, or multiline datum makes the scaffold fail before
+#   it creates a task directory or writes a brief.
 # For ship tasks, the definition of done is shaped by the project's delivery mode
 # (data/projects.md via fm-project-mode.sh; see the project-management skill
 # and AGENTS.md task lifecycle):
@@ -93,6 +107,7 @@ else
 fi
 KIND=ship
 HERDR_LAB=0
+SPEC_FORGING=0
 NO_PROJECTS=0
 POS=()
 for a in "$@"; do
@@ -100,6 +115,7 @@ for a in "$@"; do
     --scout) KIND=scout ;;
     --secondmate) KIND=secondmate ;;
     --herdr-lab) HERDR_LAB=1 ;;
+    --spec-forging) SPEC_FORGING=1 ;;
     --no-projects) NO_PROJECTS=1 ;;
     *) POS+=("$a") ;;
   esac
@@ -111,9 +127,42 @@ if [ "$KIND" = secondmate ] && [ "$HERDR_LAB" -eq 1 ]; then
   exit 1
 fi
 
+if [ "$KIND" = secondmate ] && [ "$SPEC_FORGING" -eq 1 ]; then
+  echo "error: --spec-forging applies only to crewmate ship or scout briefs" >&2
+  exit 1
+fi
+
 if [ "$NO_PROJECTS" -eq 1 ] && [ "$KIND" != secondmate ]; then
   echo "error: --no-projects applies only to --secondmate charters" >&2
   exit 1
+fi
+
+require_spec_forging_datum() {
+  local variable=$1 datum=$2 value=${!1:-}
+  case "$value" in
+    *[![:space:]]*) : ;;
+    *)
+      echo "error: --spec-forging missing $datum ($variable)" >&2
+      return 1
+      ;;
+  esac
+  case "$value" in
+    *$'\n'*|*$'\r'*)
+      echo "error: --spec-forging $datum must be one line ($variable)" >&2
+      return 1
+      ;;
+  esac
+}
+
+if [ "$SPEC_FORGING" -eq 1 ]; then
+  require_spec_forging_datum FM_SPEC_FORGING_PRD "exact PRD path and signature evidence" || exit 1
+  require_spec_forging_datum FM_SPEC_FORGING_AGENTS "target repo AGENTS.md path" || exit 1
+  require_spec_forging_datum FM_SPEC_FORGING_REPO "repo, root, verification ref, and push ref" || exit 1
+  require_spec_forging_datum FM_SPEC_FORGING_FILES "exact spec directory and files to produce" || exit 1
+  require_spec_forging_datum FM_SPEC_FORGING_SLICE "slice and out-of-scope" || exit 1
+  require_spec_forging_datum FM_SPEC_FORGING_VISUAL_GATE "visual-gate state" || exit 1
+  require_spec_forging_datum FM_SPEC_FORGING_SURFACE "forging surface" || exit 1
+  require_spec_forging_datum FM_SPEC_FORGING_VALIDATION_GATE "validation-gate mechanism" || exit 1
 fi
 
 BRIEF="$DATA/$ID/brief.md"
@@ -215,6 +264,34 @@ fi
 
 REPO=${POS[1]}
 
+if [ "$SPEC_FORGING" -eq 1 ]; then
+IFS= read -r -d '' SPEC_FORGING_SECTION <<EOF || true
+# Spec-forging contract - HARD GATE
+This brief was explicitly scaffolded with \`--spec-forging\`.
+Before forging, verify all eight data below against their live sources.
+If any datum is missing or contradicted, stop and ask firstmate; do not infer it.
+
+1. **Exact PRD path and signature evidence:** $FM_SPEC_FORGING_PRD
+2. **Target repo AGENTS.md path:** $FM_SPEC_FORGING_AGENTS
+3. **Repo, root, verification ref, and push ref:** $FM_SPEC_FORGING_REPO
+4. **Exact spec directory and files to produce:** $FM_SPEC_FORGING_FILES
+5. **Slice and out-of-scope:** $FM_SPEC_FORGING_SLICE
+6. **Visual-gate state:** $FM_SPEC_FORGING_VISUAL_GATE
+7. **Forging surface:** $FM_SPEC_FORGING_SURFACE
+8. **Validation-gate mechanism:** $FM_SPEC_FORGING_VALIDATION_GATE
+
+Do not approve what you forged.
+Architecture or scope changes return to Marco Antonio; the forger never authorizes or resolves them.
+The architect is the Marco Antonio station or role and may be an explicitly commissioned worker.
+That worker never self-appoints and never signs for Cesar.
+Agrippa is not the architect.
+After legitimate authorization, the correction returns to an independent gate.
+EOF
+SPEC_FORGING_SECTION=${SPEC_FORGING_SECTION%$'\n'}
+else
+SPEC_FORGING_SECTION=""
+fi
+
 if [ "$HERDR_LAB" -eq 1 ]; then
 HERDR_LAB_HELPER=$(shell_quote "$FM_ROOT/bin/fm-herdr-lab.sh")
 # shellcheck disable=SC2016  # single quotes are deliberate: these lines are literal brief text whose backtick-wrapped $(...) and "$HERDR_LAB_SESSION" snippets must reach the reading agent verbatim, not expand at scaffold time; only the '"$VAR"' break-outs interpolate.
@@ -247,6 +324,12 @@ EOF
 HERDR_SECTION=${HERDR_SECTION%$'\n'}
 fi
 
+if [ "$SPEC_FORGING" -eq 1 ]; then
+  BRIEF_CONTRACTS="$SPEC_FORGING_SECTION"$'\n\n'"$HERDR_SECTION"
+else
+  BRIEF_CONTRACTS=$HERDR_SECTION
+fi
+
 if [ "$KIND" = scout ]; then
 cat > "$BRIEF" <<EOF
 You are a crewmate: an autonomous worker agent managed by firstmate. Work on your own; do not wait for a human.
@@ -254,7 +337,7 @@ You are a crewmate: an autonomous worker agent managed by firstmate. Work on you
 # Task
 {TASK}
 
-$HERDR_SECTION
+$BRIEF_CONTRACTS
 
 # Setup
 You are in a disposable git worktree of $REPO, at a detached HEAD on a clean default branch.
@@ -362,7 +445,7 @@ You are a crewmate: an autonomous worker agent managed by firstmate. Work on you
 # Task
 {TASK}
 
-$HERDR_SECTION
+$BRIEF_CONTRACTS
 
 # Setup
 You are in a disposable git worktree of $REPO, at a detached HEAD on a clean default branch.
