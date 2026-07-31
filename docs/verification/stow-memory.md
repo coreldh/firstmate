@@ -2,6 +2,11 @@
 
 Audience: maintainer verification.
 
+Canonical carrier verification date: 2026-07-31.
+
+`bash tests/fm-captain-resume.test.sh` verifies that every mechanism-driven refresh includes the required state sections and preserves every historical carrier.
+Its bounded output is `ok - canonical CAPTAIN-RESUME refresh is complete and preserves historical carriers` followed by `ok - failed CAPTAIN-RESUME refresh preserves the previous carrier`.
+
 This record supports the active bounded-memory and whole-file curation guarantees for Firstmate's internal `/stow` skill.
 [`docs/configuration.md`](../configuration.md) owns the current operator-facing setting and estimate.
 The internal skill owns curation and completion-receipt behavior.

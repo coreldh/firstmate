@@ -209,6 +209,8 @@ test_ship_modes_generate_clean_briefs() {
     assert_grep "{TASK}" "$brief" "$id: brief missing the {TASK} placeholder"
     assert_grep "mid-task \`working:\` line (including setup complete) is nonterminal" "$brief" \
       "$id: brief missing nonterminal working:/setup-complete gate protection"
+    assert_no_grep "# Spec-forging contract - HARD GATE" "$brief" \
+      "$id: ordinary brief rendered the opt-in spec-forging contract"
     assert_no_grep "EOF" "$brief" "$id: brief leaked a heredoc EOF marker (unterminated heredoc)"
   done
   pass "fm-brief.sh: no-mistakes/direct-PR/local-only briefs generate cleanly"
@@ -347,6 +349,81 @@ test_herdr_lab_omission_is_loud_for_ship_and_scout() {
       "$kind brief missing the fail-visible regeneration instruction"
   done
   pass "fm-brief.sh: ship and scout scaffolds make omitted Herdr intent fail-visible"
+}
+
+test_spec_forging_authority_contract() {
+  local home id brief kind missing variable err status
+  home="$TMP_ROOT/spec-forging-authority-home"
+  mkdir -p "$home/data"
+
+  for kind in ship scout; do
+    id="brief-spec-forging-$kind"
+    set --
+    [ "$kind" = scout ] && set -- --scout
+    FM_SPEC_FORGING_PRD='docs/product.md plus Cesar signature receipt' \
+      FM_SPEC_FORGING_AGENTS='AGENTS.md' \
+      FM_SPEC_FORGING_REPO='coreldh/example at /work/example; verify origin/main; push fork/fm/spec' \
+      FM_SPEC_FORGING_FILES='.kiro/specs/example requirements.md design.md tasks.md' \
+      FM_SPEC_FORGING_SLICE='slice one; deployment excluded' \
+      FM_SPEC_FORGING_VISUAL_GATE='not applicable; no UI' \
+      FM_SPEC_FORGING_SURFACE='commissioned Faber worker' \
+      FM_SPEC_FORGING_VALIDATION_GATE='independent reviewer receives path and sha' \
+      FM_HOME="$home" "$ROOT/bin/fm-brief.sh" "$id" example "$@" --spec-forging >/dev/null 2>&1
+    brief="$home/data/$id/brief.md"
+    assert_present "$brief" "$kind spec-forging brief was not scaffolded"
+    assert_grep "# Spec-forging contract - HARD GATE" "$brief" \
+      "$kind spec-forging brief lost its hard gate"
+    assert_grep "Architecture or scope changes return to Marco Antonio; the forger never authorizes or resolves them." "$brief" \
+      "$kind spec-forging brief let the forger self-resolve architecture or scope"
+    assert_grep "The architect is the Marco Antonio station or role and may be an explicitly commissioned worker." "$brief" \
+      "$kind spec-forging brief lost the commissioned-architect definition"
+    assert_grep "That worker never self-appoints and never signs for Cesar." "$brief" \
+      "$kind spec-forging brief let a worker self-appoint or sign for Cesar"
+    assert_grep "Agrippa is not the architect." "$brief" \
+      "$kind spec-forging brief mislabeled Agrippa as architect"
+    assert_grep "After legitimate authorization, the correction returns to an independent gate." "$brief" \
+      "$kind spec-forging brief lost independent re-gating after authorization"
+    assert_no_grep "correct only the affected scope" "$brief" \
+      "$kind spec-forging brief retained the unsourced self-correction clause"
+  done
+
+  for variable in \
+    FM_SPEC_FORGING_PRD FM_SPEC_FORGING_AGENTS FM_SPEC_FORGING_REPO \
+    FM_SPEC_FORGING_FILES FM_SPEC_FORGING_SLICE FM_SPEC_FORGING_VISUAL_GATE \
+    FM_SPEC_FORGING_SURFACE FM_SPEC_FORGING_VALIDATION_GATE; do
+    id="brief-spec-missing-${variable#FM_SPEC_FORGING_}"
+    missing=$(printf '%s' "$variable" | tr '[:upper:]_' '[:lower:]-')
+    err="$home/$missing.err"
+    status=0
+    env \
+      FM_SPEC_FORGING_PRD='prd' \
+      FM_SPEC_FORGING_AGENTS='agents' \
+      FM_SPEC_FORGING_REPO='repo' \
+      FM_SPEC_FORGING_FILES='files' \
+      FM_SPEC_FORGING_SLICE='slice' \
+      FM_SPEC_FORGING_VISUAL_GATE='visual' \
+      FM_SPEC_FORGING_SURFACE='surface' \
+      FM_SPEC_FORGING_VALIDATION_GATE='gate' \
+      "$variable=" FM_HOME="$home" \
+      "$ROOT/bin/fm-brief.sh" "$id" example --spec-forging >/dev/null 2>"$err" || status=$?
+    expect_code 1 "$status" "missing $variable must refuse spec-forging scaffold"
+    assert_absent "$home/data/$id" "missing $variable created a partial task directory"
+  done
+
+  id=brief-spec-whitespace
+  status=0
+  FM_SPEC_FORGING_PRD='   ' FM_SPEC_FORGING_AGENTS=agents FM_SPEC_FORGING_REPO=repo \
+    FM_SPEC_FORGING_FILES=files FM_SPEC_FORGING_SLICE=slice FM_SPEC_FORGING_VISUAL_GATE=visual \
+    FM_SPEC_FORGING_SURFACE=surface FM_SPEC_FORGING_VALIDATION_GATE=gate FM_HOME="$home" \
+    "$ROOT/bin/fm-brief.sh" "$id" example --spec-forging >/dev/null 2>"$home/whitespace.err" || status=$?
+  expect_code 1 "$status" "whitespace-only Faber datum must refuse"
+  assert_absent "$home/data/$id" "whitespace-only Faber datum created a partial task directory"
+
+  status=0
+  FM_HOME="$home" "$ROOT/bin/fm-brief.sh" brief-spec-secondmate --secondmate --no-projects --spec-forging \
+    >/dev/null 2>"$home/secondmate.err" || status=$?
+  expect_code 1 "$status" "secondmate charter must reject --spec-forging"
+  pass "fm-brief.sh: Faber authority is fail-closed, independent, and never self-appointed"
 }
 
 test_secondmate_no_projects_charter() {
@@ -628,6 +705,7 @@ test_ship_project_memory_wording
 test_herdr_lab_contract_is_explicit_and_complete
 test_herdr_lab_contract_quotes_foreign_firstmate_path
 test_herdr_lab_omission_is_loud_for_ship_and_scout
+test_spec_forging_authority_contract
 test_herdr_lab_contract_applies_to_scouts_but_not_secondmates
 test_secondmate_no_projects_charter
 test_secondmate_marked_request_reporting_contract
