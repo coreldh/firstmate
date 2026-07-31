@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Behavior tests for the bearings projection wrapper over fm-fleet-snapshot.sh.
-# Covers the output/token bound, TOON/JSON parity, the local-only default (zero
-# GitHub/network calls), the --include-prs opt-in path, graceful degradation on a
-# partial PR-fetch failure, end-to-end unresolved-decision durability, and current
-# report pointers.
+# Covers the output/token bound, TOON/JSON parity, mandatory live checks for named
+# PRs, the --include-prs discovery opt-in, graceful degradation on a partial
+# PR-fetch failure, end-to-end unresolved-decision durability, and current report
+# pointers.
 set -u
 
 # shellcheck source=tests/lib.sh
@@ -15,9 +15,9 @@ TMP_ROOT=$(fm_test_tmproot fm-bearings)
 
 command -v jq >/dev/null 2>&1 || { echo "skip: jq not found"; exit 0; }
 
-# A fakebin that stubs the local tools the canonical snapshot may reach for, plus a
-# gh/gh-axi that RECORDS every call to $NET_LOG so a test can prove the default path
-# makes no network call. gh returns one fixture open PR keyed to the ship task.
+# A fakebin that stubs the local tools the canonical snapshot may reach for.
+# gh and gh-axi record every call to $NET_LOG.
+# gh-axi returns one fixture open PR keyed to the ship task.
 make_fakebin() {  # <dir>
   local fb
   fb=$(fm_fakebin "$1")
@@ -58,7 +58,40 @@ SH
 #!/usr/bin/env bash
 echo "gh-axi $*" >> "$NET_LOG"
 [ "${FAKE_GH_FAIL:-0}" = 1 ] && exit 1
-exit 0
+[ "${FAKE_GH_SLEEP:-0}" = 1 ] && sleep 30
+case "$*" in
+  "pr view "*)
+    number=$(printf '%s\n' "$*" | sed -n 's/^pr view \([0-9][0-9]*\) .*/\1/p')
+    state=${FAKE_RECORDED_PR_STATE:-open}
+    cat <<EOF
+pull_request:
+  number: $number
+  title: "Fixture PR"
+  state: $state
+  author: fixture
+  draft: no
+  merged: no
+  checks: "1 passed, 0 failed, 1 total"
+EOF
+    ;;
+  "pr list "*)
+    if [ "${FAKE_GH_MANY:-0}" = 1 ]; then
+      cat <<'EOF'
+count: 3
+pull_requests[3]{number,title,state,author,draft,review,url}:
+  1,"One",open,fixture,no,none,"https://github.com/acme/repo/pull/1"
+  2,"Two",open,fixture,no,none,"https://github.com/acme/repo/pull/2"
+  3,"Three",open,fixture,no,none,"https://github.com/acme/repo/pull/3"
+EOF
+      exit 0
+    fi
+    cat <<'EOF'
+count: 1
+pull_requests[1]{number,title,state,author,draft,review,url}:
+  9,"Ship the thing",open,fixture,no,approved,"https://github.com/kunchenguid/firstmate/pull/9"
+EOF
+    ;;
+esac
 SH
   cat > "$fb/curl" <<'SH'
 #!/usr/bin/env bash
@@ -853,7 +886,7 @@ EOF
   pass "repeated snapshots keep the same current landed baseline and ignore prior reports"
 }
 
-test_default_is_bounded_and_local_only() {
+test_default_is_bounded_and_checks_named_prs() {
   local home fakebin toon json
   home=$(make_home bounded); write_fixture "$home"
   fakebin=$(make_fakebin "$home"); : > "$home/net.log"
@@ -864,14 +897,47 @@ test_default_is_bounded_and_local_only() {
   # TOON is materially smaller than the canonical snapshot it projects.
   local canon; canon=$(PATH="$fakebin:$PATH" FM_HOME="$home" "$ROOT/bin/fm-fleet-snapshot.sh" --json)
   [ "${#toon}" -lt "${#canon}" ] || fail "projection must be smaller than the canonical snapshot"
-  # Local-only: no GitHub/network call on the default path.
-  [ ! -s "$home/net.log" ] || fail "default run must make no gh/gh-axi call, got: $(cat "$home/net.log")"
-  # Definitive not-requested PR state, never a silent omission.
-  assert_contains "$toon" 'prs: "not_requested' "default must state PR checks were not requested"
-  assert_contains "$toon" "live PR discovery + checks,\"--include-prs\"" "omitted must mark the dropped live-PR surface"
+  # Every named PR is checked even when open-PR discovery was not requested.
+  grep -q '^gh-axi pr view 9 --repo kunchenguid/firstmate$' "$home/net.log" \
+    || fail "default run did not check its recorded PR: $(cat "$home/net.log")"
+  if grep -q '^gh ' "$home/net.log"; then
+    fail "bearings used gh instead of gh-axi: $(cat "$home/net.log")"
+  fi
+  assert_contains "$toon" 'live discovery not requested' "default must distinguish named checks from discovery"
+  assert_contains "$toon" "live open-PR discovery,\"--include-prs\"" "omitted must mark only the dropped discovery surface"
   # Valid JSON, correct schema.
   printf '%s' "$json" | jq -e '.schema == "fm-bearings.v1"' >/dev/null || fail "json schema wrong"
-  pass "default output is bounded, local-only, and marks omitted surfaces"
+  pass "default output is bounded, checks named PRs, and marks omitted discovery"
+}
+
+test_merged_recorded_pr_is_not_actionable() {
+  local home fakebin json
+  home=$(make_home merged-recorded-pr); write_fixture "$home"
+  fakebin=$(make_fakebin "$home"); : > "$home/net.log"
+  json=$(FAKE_RECORDED_PR_STATE=merged run "$home" "$fakebin" --json)
+  printf '%s' "$json" | jq -e '
+    .recorded_prs | any(.[];
+      .url == "https://github.com/kunchenguid/firstmate/pull/9"
+      and .state == "merged"
+      and .actionable == false
+      and .checked_at == "2026-07-11T18:00:00Z")
+  ' >/dev/null || fail "merged recorded PR remained stale or actionable: $json"
+  pass "a merged recorded PR is live-checked and cannot remain actionable"
+}
+
+test_named_pr_check_failure_is_visible() {
+  local home fakebin json
+  home=$(make_home unavailable-recorded-pr); write_fixture "$home"
+  fakebin=$(make_fakebin "$home")
+  json=$(FAKE_GH_FAIL=1 run "$home" "$fakebin" --json)
+  printf '%s' "$json" | jq -e '
+    .recorded_prs | any(.[];
+      .url == "https://github.com/kunchenguid/firstmate/pull/9"
+      and .state == "unknown"
+      and .actionable == false
+      and (.reason | test("failed or timed out")))
+  ' >/dev/null || fail "failed forge check silently retained recorded state: $json"
+  pass "a failed named-PR check is explicit and non-actionable"
 }
 
 test_toon_json_parity() {
@@ -943,20 +1009,19 @@ test_superseded_queued_item_dropped_by_default() {
   pass "superseded queued items are dropped by default and restored with --all-queued"
 }
 
-test_include_prs_is_the_only_fetch_path() {
+test_include_prs_adds_live_discovery() {
   local home fakebin json
   home=$(make_home prs); write_fixture "$home"
   fakebin=$(make_fakebin "$home"); : > "$home/net.log"
   json=$(run "$home" "$fakebin" --include-prs --json)
-  # Now gh WAS called, exactly for pr list.
-  grep -q '^gh pr list ' "$home/net.log" || fail "--include-prs must call gh pr list"
+  grep -q '^gh-axi pr list ' "$home/net.log" || fail "--include-prs must call gh-axi pr list"
   printf '%s' "$json" | jq -e '
-    .prs | startswith("checked")
+    .prs | test("named PRs checked") and test("checked \\(1 repos, 1 open")
   ' >/dev/null || fail "--include-prs must report checked PR state"
   printf '%s' "$json" | jq -e '
-    .candidate_prs | any(.[]; .num == "9" and .task == "ship-task" and .checks == "passing" and .review == "APPROVED")
-  ' >/dev/null || fail "candidate_prs must carry the fetched PR cross-referenced to its task: $json"
-  pass "--include-prs is the only path that fetches, and it enriches correctly"
+    .candidate_prs | any(.[]; .num == "9" and .task == "ship-task" and .state == "open" and .actionable == true)
+  ' >/dev/null || fail "candidate_prs must carry live state and its task cross-reference: $json"
+  pass "--include-prs adds live discovery while named checks remain mandatory"
 }
 
 test_partial_github_failure_degrades() {
@@ -980,17 +1045,17 @@ test_perl_fallback_bounds_github_call() {
   fakebin=$(make_fakebin "$home")
   toolbin="$home/toolbin"
   mkdir -p "$toolbin"
-  for cmd in bash dirname basename jq date sed git grep tail cut tr head sort wc perl sleep cat find; do
+  for cmd in bash dirname basename jq date sed git grep tail cut tr head sort wc perl sleep cat find mktemp rm; do
     ln -s "$(command -v "$cmd")" "$toolbin/$cmd"
   done
   started=$(date +%s)
   json=$(PATH="$fakebin:$toolbin" FM_HOME="$home" FM_BEARINGS_NOW=2026-07-11T18:00:00Z \
     FM_BEARINGS_PR_TIMEOUT=1 NET_LOG="$home/net.log" FAKE_GH_SLEEP=1 "$BEARINGS" --include-prs --json)
   elapsed=$(( $(date +%s) - started ))
-  [ "$elapsed" -lt 10 ] || fail "Perl fallback did not bound a stalled gh call (${elapsed}s)"
+  [ "$elapsed" -lt 10 ] || fail "Perl fallback did not bound a stalled gh-axi call (${elapsed}s)"
   printf '%s' "$json" | jq -e '.prs | test("unavailable")' >/dev/null \
     || fail "timed-out gh call did not fail soft: $json"
-  pass "Perl fallback bounds stalled GitHub calls without coreutils timeout"
+  pass "Perl fallback bounds stalled gh-axi calls without coreutils timeout"
 }
 
 write_large_fixture() {  # <home> <count>
@@ -1015,6 +1080,17 @@ write_large_fixture() {  # <home> <count>
     printf 'needs-decision [key=q%s]: choose %s\n' "$i" "$i" > "$home/state/$id.status"
     i=$((i + 1))
   done
+}
+
+test_named_pr_check_cap_fails_closed() {
+  local home fakebin output rc
+  home=$(make_home named-pr-cap); write_large_fixture "$home" 3
+  fakebin=$(make_fakebin "$home"); : > "$home/net.log"
+  output=$(FM_BEARINGS_PR_CHECK_LIMIT=2 run "$home" "$fakebin" --json 2>&1); rc=$?
+  expect_code 1 "$rc" "named PRs above the hard live-check cap must fail closed"
+  assert_contains "$output" "3 named PRs exceed live-check cap 2" "hard PR cap diagnostic missing"
+  [ ! -s "$home/net.log" ] || fail "hard PR cap made forge calls before refusing: $(cat "$home/net.log")"
+  pass "the hard named-PR check cap fails before any forge call"
 }
 
 test_section_caps_and_expansion_flags() {
@@ -1050,13 +1126,13 @@ test_pr_repository_cap_and_expansion() {
   home=$(make_home repo-caps); write_large_fixture "$home" 5
   fakebin=$(make_fakebin "$home"); : > "$home/net.log"
   json=$(FM_BEARINGS_PR_REPOS=2 run "$home" "$fakebin" --include-prs --json)
-  [ "$(grep -c '^gh pr list ' "$home/net.log")" = 2 ] || fail "default PR repository cap was not enforced"
+  [ "$(grep -c '^gh-axi pr list ' "$home/net.log")" = 2 ] || fail "default PR repository cap was not enforced"
   printf '%s' "$json" | jq -e '
     [.omitted[] | select(.surface == "PR repositories showing 2 of 5" and .reveal == "--all-pr-repos")] | length == 1
   ' >/dev/null || fail "PR repository truncation was not recorded: $json"
   : > "$home/net.log"
   expanded=$(FM_BEARINGS_PR_REPOS=2 run "$home" "$fakebin" --include-prs --all-pr-repos --json)
-  [ "$(grep -c '^gh pr list ' "$home/net.log")" = 5 ] || fail "--all-pr-repos did not reveal every repository"
+  [ "$(grep -c '^gh-axi pr list ' "$home/net.log")" = 5 ] || fail "--all-pr-repos did not reveal every repository"
   printf '%s' "$expanded" | jq -e '.candidate_prs | length == 5' >/dev/null \
     || fail "expanded PR repository set did not enrich every repository: $expanded"
   pass "live PR enrichment caps repositories with counted expansion"
@@ -1139,7 +1215,7 @@ test_completed_scout_report_not_pending() {
 
 # Recently Landed must include merges a secondmate managed. Those completion records
 # live in the secondmate home's OWN backlog, not the main one, so the projection must
-# roll them up. Local, deterministic, no GitHub call.
+# roll them up and live-check every PR URL they name.
 test_landed_includes_secondmate_home_merges() {
   local home fakebin json
   home=$(make_home mate-landed); write_fixture "$home"
@@ -1149,9 +1225,12 @@ test_landed_includes_secondmate_home_merges() {
     (.landed | any(.[]; .id == "mate-landed" and (.artifact | test("/pull/50"))))
       and (.landed | any(.[]; .id == "done-a"))
   ' >/dev/null || fail "landed must merge secondmate-home Done with main-home Done: $json"
-  # Still zero network on this default path.
-  [ ! -s "$home/net.log" ] || fail "landed roll-up must make no gh/gh-axi call, got: $(cat "$home/net.log")"
-  pass "landed includes secondmate-managed merges alongside main-home merges"
+  grep -q '^gh-axi pr view 50 --repo kunchenguid/firstmate$' "$home/net.log" \
+    || fail "secondmate-landed PR was not live-checked: $(cat "$home/net.log")"
+  printf '%s' "$json" | jq -e '
+    .landed | any(.[]; .id == "mate-landed" and .pr_state == "open" and .pr_checked_at == "2026-07-11T18:00:00Z")
+  ' >/dev/null || fail "landed PR did not carry its live state: $json"
+  pass "landed includes secondmate-managed merges and live-checks their PRs"
 }
 
 test_landed_default_balances_dominant_and_sparse_homes() {
@@ -1874,7 +1953,9 @@ test_parent_evidence_reconciles_by_verb_and_key
 test_nonprogressing_child_states_are_explicit
 test_registry_unavailability_and_bounds_are_explicit
 test_current_landed_baseline_is_repeatable_and_prior_report_independent
-test_default_is_bounded_and_local_only
+test_default_is_bounded_and_checks_named_prs
+test_merged_recorded_pr_is_not_actionable
+test_named_pr_check_failure_is_visible
 test_toon_json_parity
 test_landed_includes_secondmate_home_merges
 test_landed_default_balances_dominant_and_sparse_homes
@@ -1895,9 +1976,10 @@ test_completed_scout_report_not_pending
 test_open_decision_surfaces_end_to_end
 test_report_pointers_surface
 test_superseded_queued_item_dropped_by_default
-test_include_prs_is_the_only_fetch_path
+test_include_prs_adds_live_discovery
 test_partial_github_failure_degrades
 test_perl_fallback_bounds_github_call
+test_named_pr_check_cap_fails_closed
 test_section_caps_and_expansion_flags
 test_pr_repository_cap_and_expansion
 test_per_repository_pr_cap_is_disclosed

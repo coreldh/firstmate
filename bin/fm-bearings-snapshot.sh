@@ -11,13 +11,12 @@
 # output, it never removes them from - or otherwise weakens - the canonical snapshot,
 # which stays complete.
 #
-# LOCAL-ONLY by default: a normal invocation makes ZERO GitHub/network/auth calls.
-# It MAY surface PR URLs already recorded locally in task meta (recorded_prs), but it
-# performs no live discovery or checks. Live PR discovery/checks happen ONLY under
-# --include-prs, which is the sole path that touches the network; all gh coupling
-# lives in that branch and never in the canonical snapshot. The default output states
-# explicitly (the prs: line and the omitted[] surfaces) what was not requested, so an
-# absence is never ambiguous.
+# Every PR URL named in the projected output is checked live through gh-axi at
+# generation time.
+# The default invocation does not discover additional open PRs, but recorded and
+# landed PR URLs are never emitted from stale local state alone.
+# --include-prs adds bounded live discovery.
+# Failed, timed-out, or unavailable forge checks remain explicit as state unknown.
 #
 # This wrapper consumes canonical status decisions plus canonically normalized
 # backlog roles, unresolved blockers, and captain actionability. It never infers
@@ -40,9 +39,9 @@
 # order.
 #
 # Flags:
-#   (default)        compact projection, TOON, local-only
+#   (default)        compact projection, TOON, live-check every named PR
 #   --json           the same projected model as JSON (machine/debug; parity form)
-#   --include-prs    ALSO do live open-PR discovery + checks (the only network path)
+#   --include-prs    ALSO do bounded live open-PR discovery
 #   --fields <list>  opt in to dropped surfaces: bodies,paths,actions,endpoints
 #   --all-in-flight  include every in-flight task
 #   --all-decisions  include every open decision
@@ -73,6 +72,7 @@ FM_BEARINGS_RECORDED_PRS=${FM_BEARINGS_RECORDED_PRS:-20}
 FM_BEARINGS_UNHEALTHY=${FM_BEARINGS_UNHEALTHY:-20}
 FM_BEARINGS_PR_REPOS=${FM_BEARINGS_PR_REPOS:-10}
 FM_BEARINGS_PR_LIMIT=${FM_BEARINGS_PR_LIMIT:-20}
+FM_BEARINGS_PR_CHECK_LIMIT=${FM_BEARINGS_PR_CHECK_LIMIT:-30}
 FM_BEARINGS_PR_TIMEOUT=${FM_BEARINGS_PR_TIMEOUT:-20}
 case "$FM_BEARINGS_PR_TIMEOUT" in ''|*[!0-9]*|0) FM_BEARINGS_PR_TIMEOUT=20 ;; esac
 validate_bound() {  # <name> <value>
@@ -89,6 +89,7 @@ validate_bound FM_BEARINGS_RECORDED_PRS "$FM_BEARINGS_RECORDED_PRS"
 validate_bound FM_BEARINGS_UNHEALTHY "$FM_BEARINGS_UNHEALTHY"
 validate_bound FM_BEARINGS_PR_REPOS "$FM_BEARINGS_PR_REPOS"
 validate_bound FM_BEARINGS_PR_LIMIT "$FM_BEARINGS_PR_LIMIT"
+validate_bound FM_BEARINGS_PR_CHECK_LIMIT "$FM_BEARINGS_PR_CHECK_LIMIT"
 
 usage() {
   cat <<'EOF'
@@ -100,12 +101,15 @@ usage: fm-bearings-snapshot.sh [--json] [--include-prs] [--fields <list>]
                                [--all-pr-repos]
 
 Compact bearings projection over fm-fleet-snapshot.sh. TOON by default.
-Default is LOCAL-ONLY (no network); --include-prs is the only path that fetches.
+Every PR URL in the output is checked live through gh-axi at generation time.
+--include-prs additionally discovers bounded open PRs.
 
 Default fields: schema, home, generated, prs, in_flight{id,kind,state,doing},
   secondmates{id,state,doing,provenance,freshness,age_seconds,contradiction,reason},
   decisions_open{id,key,verb,summary,owner}, landed{id,what,artifact,owner},
-  gates{id,title,blocked_by,reason,owner}, reports{id,path}, recorded_prs{id,url},
+  gates{id,title,blocked_by,reason,owner}, reports{id,path},
+  recorded_prs{id,url,state,checked_at,actionable,reason},
+  pr_liveness{url,state,checked_at,actionable,reason},
   unhealthy_endpoints{...} (only when non-empty), omitted{surface,reveal}.
 landed merges this home's Done with registered secondmate homes' Done, bounded by
   a per-home cap (FM_BEARINGS_LANDED_PER_HOME) and an overall cap (FM_BEARINGS_LANDED),
@@ -120,6 +124,7 @@ Opt-in surfaces: --fields bodies|paths|actions|endpoints, --all-in-flight,
   --all-decisions, --all-secondmates, --all-landed, --all-reports, --all-queued, --all-recorded-prs,
   --all-unhealthy, --all-pr-repos, --include-prs (adds candidate_prs).
 Raise FM_BEARINGS_PR_LIMIT to expand per-repository open-PR results.
+FM_BEARINGS_PR_CHECK_LIMIT is a hard safety cap over unique named PR checks.
 EOF
 }
 
@@ -176,8 +181,8 @@ fi
 HOME_LABEL=$(printf '%s' "$SNAP" | jq -er '.fm_home | strings | split("/") | (.[-2:] | join("/"))') \
   || { echo "fm-bearings-snapshot: invalid canonical snapshot" >&2; exit 1; }
 
-# --- optional live PR enrichment (the ONLY network path) --------------------
-PR_STATUS='not_requested (run: /bearings include PRs)'
+# --- optional live open-PR discovery ----------------------------------------
+PR_STATUS='live discovery not requested'
 CANDIDATE_PRS='[]'
 PR_REPOS_TOTAL=0
 PR_REPOS_SHOWN=0
@@ -189,22 +194,22 @@ repo_slug() {  # <url>
   printf '%s' "$1" | sed -n 's#.*github\.com[:/]\([^/]*/[^/]*\)#\1#p' | sed 's#\.git$##; s#/pull/.*$##; s#/$##'
 }
 
-# Bounded gh call; prints stdout, non-zero on timeout/failure. gh only.
-gh_bounded() {  # <args...>
+# Bounded gh-axi call; prints stdout, non-zero on timeout/failure.
+gh_axi_bounded() {  # <args...>
   if command -v timeout >/dev/null 2>&1; then
-    GH_PROMPT_DISABLED=1 GH_NO_UPDATE_NOTIFIER=1 timeout "$FM_BEARINGS_PR_TIMEOUT" gh "$@"
+    GH_PROMPT_DISABLED=1 GH_NO_UPDATE_NOTIFIER=1 timeout "$FM_BEARINGS_PR_TIMEOUT" gh-axi "$@"
   elif command -v gtimeout >/dev/null 2>&1; then
-    GH_PROMPT_DISABLED=1 GH_NO_UPDATE_NOTIFIER=1 gtimeout "$FM_BEARINGS_PR_TIMEOUT" gh "$@"
+    GH_PROMPT_DISABLED=1 GH_NO_UPDATE_NOTIFIER=1 gtimeout "$FM_BEARINGS_PR_TIMEOUT" gh-axi "$@"
   elif command -v perl >/dev/null 2>&1; then
-    GH_PROMPT_DISABLED=1 GH_NO_UPDATE_NOTIFIER=1 perl -e 'my $t = shift; my $pid = fork; die "fork failed" unless defined $pid; if (!$pid) { setpgrp(0, 0); exec @ARGV } local $SIG{ALRM} = sub { kill "TERM", -$pid; select undef, undef, undef, 0.2; kill "KILL", -$pid; exit 124 }; alarm $t; waitpid $pid, 0; exit($? >> 8)' "$FM_BEARINGS_PR_TIMEOUT" gh "$@"
+    GH_PROMPT_DISABLED=1 GH_NO_UPDATE_NOTIFIER=1 perl -e 'my $t = shift; my $pid = fork; die "fork failed" unless defined $pid; if (!$pid) { setpgrp(0, 0); exec @ARGV } local $SIG{ALRM} = sub { kill "TERM", -$pid; select undef, undef, undef, 0.2; kill "KILL", -$pid; exit 124 }; alarm $t; waitpid $pid, 0; exit($? >> 8)' "$FM_BEARINGS_PR_TIMEOUT" gh-axi "$@"
   else
     return 124
   fi
 }
 
 if [ "$INCLUDE_PRS" = 1 ]; then
-  if ! command -v gh >/dev/null 2>&1; then
-    PR_STATUS='unavailable (gh not found)'
+  if ! command -v gh-axi >/dev/null 2>&1; then
+    PR_STATUS='live discovery unavailable (gh-axi not found)'
   else
     # Candidate repos: recorded pr= URLs plus live worktree origins. Deduped.
     repos=""
@@ -231,27 +236,23 @@ EOF
     for repo in $repos; do
       if [ "$ALL_PR_REPOS" != 1 ] && [ "$nrepos" -ge "$FM_BEARINGS_PR_REPOS" ]; then break; fi
       nrepos=$((nrepos + 1))
-      out=$(gh_bounded pr list --repo "$repo" --state open --limit "$pr_fetch_limit" \
-        --json number,title,url,headRefName,reviewDecision,mergeable,statusCheckRollup 2>/dev/null) \
+      out=$(gh_axi_bounded pr list --repo "$repo" --state open --limit "$pr_fetch_limit" \
+        --fields url 2>/dev/null) \
         || { nwarn=$((nwarn + 1)); continue; }
-      [ -n "$out" ] || out='[]'
-      repo_result=$(printf '%s' "$out" | jq --arg repo "$repo" --argjson limit "$FM_BEARINGS_PR_LIMIT" '
-        [ .[] | {
-          num:(.number|tostring),
-          repo:$repo,
-          task:(if (.headRefName // "" | startswith("fm/")) then (.headRefName | ltrimstr("fm/")) else "-" end),
-          url:(.url // "-"),
-          review:(.reviewDecision // "none"),
-          mergeable:(.mergeable // "UNKNOWN"),
-          checks:(
-            (.statusCheckRollup // []) as $c
-            | if ($c|length) == 0 then "none"
-              elif any($c[]; (.conclusion // .state // "") as $s | ($s=="FAILURE" or $s=="ERROR" or $s=="TIMED_OUT" or $s=="CANCELLED" or $s=="ACTION_REQUIRED")) then "failing"
-              elif any($c[]; ((.status // "") != "COMPLETED") and ((.state // "") != "SUCCESS")) then "pending"
-              else "passing" end)
-        } ] as $rows | {returned:($rows | length), rows:$rows[:$limit]}') || { nwarn=$((nwarn + 1)); continue; }
-      returned=$(printf '%s' "$repo_result" | jq '.returned')
-      repo_rows=$(printf '%s' "$repo_result" | jq '.rows')
+      returned=$(printf '%s\n' "$out" | sed -n 's/^count: \([0-9][0-9]*\).*/\1/p' | head -n 1)
+      case "$returned" in ''|*[!0-9]*) nwarn=$((nwarn + 1)); continue ;; esac
+      repo_rows='[]'
+      while IFS= read -r url; do
+        [ -n "$url" ] || continue
+        num=${url##*/}
+        task=$(printf '%s' "$SNAP" | jq -r --arg url "$url" '
+          first(.tasks[] | select(.pr.url == $url) | .id) // "-"')
+        row=$(jq -n --arg num "$num" --arg repo "$repo" --arg task "$task" --arg url "$url" \
+          '{num:$num,repo:$repo,task:$task,url:$url,review:"unknown",mergeable:"UNKNOWN",checks:"unknown"}')
+        repo_rows=$(jq -n --argjson a "$repo_rows" --argjson b "$row" '$a + [$b]')
+      done <<EOF
+$(printf '%s\n' "$out" | sed -n 's#.*"\(https://github\.com/[^"]*/pull/[0-9][0-9]*\)".*#\1#p' | head -n "$FM_BEARINGS_PR_LIMIT")
+EOF
       cnt=$(printf '%s' "$repo_rows" | jq 'length')
       [ "$returned" -gt "$FM_BEARINGS_PR_LIMIT" ] && ncapped=$((ncapped + 1))
       npr=$((npr + cnt))
@@ -473,8 +474,112 @@ MODEL=$(printf '%s' "$SNAP" | jq \
         (if $all_unhealthy == 0 and ($unhealthy_all | length) > $unhealthy_n then {surface:("unhealthy_endpoints showing \($unhealthy_n) of \($unhealthy_all | length)"), reveal:"--all-unhealthy"} else empty end),
         (if $include_prs == 1 and $pr_repos_total > $pr_repos_shown then {surface:("PR repositories showing \($pr_repos_shown) of \($pr_repos_total)"), reveal:"--all-pr-repos"} else empty end),
         (if $include_prs == 1 and $pr_rows_capped > 0 then {surface:("candidate_prs showing \($candidate_prs | length) of at least \($pr_rows_min_total); capped in \($pr_rows_capped) repo(s)"), reveal:"raise FM_BEARINGS_PR_LIMIT"} else empty end),
-        (if $include_prs == 1 then empty else {surface:"live PR discovery + checks", reveal:"--include-prs"} end) ]) }
+        (if $include_prs == 1 then empty else {surface:"live open-PR discovery", reveal:"--include-prs"} end) ]) }
 ') || { echo "fm-bearings-snapshot: projection failed" >&2; exit 1; }
+
+# Every GitHub PR URL that survived the bounded projection is live-checked.
+# Checks run concurrently and the hard cap prevents an interactive request from
+# expanding into an unbounded forge sweep.
+PR_URLS=$(printf '%s' "$MODEL" | jq -r '
+  .. | strings
+  | scan("https://github\\.com/[^/[:space:]\"?#]+/[^/[:space:]\"?#]+/pull/[0-9]+")
+' | sort -u)
+PR_URL_COUNT=$(printf '%s\n' "$PR_URLS" | sed '/^$/d' | wc -l | tr -d ' ')
+if [ "$PR_URL_COUNT" -gt "$FM_BEARINGS_PR_CHECK_LIMIT" ]; then
+  echo "fm-bearings-snapshot: $PR_URL_COUNT named PRs exceed live-check cap $FM_BEARINGS_PR_CHECK_LIMIT" >&2
+  exit 1
+fi
+
+PR_LIVENESS='[]'
+if [ "$PR_URL_COUNT" -gt 0 ]; then
+  PR_TMP=$(mktemp -d "${TMPDIR:-/tmp}/fm-bearings-prs.XXXXXX") \
+    || { echo "fm-bearings-snapshot: cannot create PR-check temp directory" >&2; exit 1; }
+  trap 'rm -rf "$PR_TMP"' EXIT HUP INT TERM
+  pids=""
+  index=0
+  while IFS= read -r url; do
+    [ -n "$url" ] || continue
+    index=$((index + 1))
+    (
+      state=unknown
+      reason="live GitHub state unavailable"
+      rest=${url#https://github.com/}
+      repo=${rest%/pull/*}
+      number=${url##*/}
+      if ! command -v gh-axi >/dev/null 2>&1; then
+        reason="gh-axi not found"
+      elif out=$(gh_axi_bounded pr view "$number" --repo "$repo" 2>/dev/null); then
+        observed=$(printf '%s\n' "$out" | sed -n 's/^  state: \([^ ]*\).*$/\1/p' | head -n 1)
+        case "$observed" in
+          open|closed|merged)
+            state=$observed
+            reason="-"
+            ;;
+          *)
+            reason="gh-axi returned no recognized PR state"
+            ;;
+        esac
+      else
+        reason="gh-axi request failed or timed out"
+      fi
+      jq -n --arg url "$url" --arg state "$state" --arg checked_at "$NOW" --arg reason "$reason" \
+        '{url:$url,state:$state,checked_at:$checked_at,actionable:($state == "open"),reason:$reason}' \
+        > "$PR_TMP/$index.json"
+    ) &
+    pids="$pids $!"
+  done <<EOF
+$PR_URLS
+EOF
+  for pid in $pids; do
+    wait "$pid" || { echo "fm-bearings-snapshot: live PR check worker failed" >&2; exit 1; }
+  done
+  PR_LIVENESS=$(jq -s 'sort_by(.url)' "$PR_TMP"/*.json) \
+    || { echo "fm-bearings-snapshot: live PR check collection failed" >&2; exit 1; }
+fi
+
+PR_UNKNOWN_COUNT=$(printf '%s' "$PR_LIVENESS" | jq '[.[] | select(.state == "unknown")] | length')
+if [ "$PR_URL_COUNT" -eq 0 ]; then
+  PR_STATUS="named PRs checked (0); $PR_STATUS"
+elif [ "$PR_UNKNOWN_COUNT" -gt 0 ]; then
+  PR_STATUS="named PRs checked ($PR_URL_COUNT; $PR_UNKNOWN_COUNT state unknown); $PR_STATUS"
+else
+  PR_STATUS="named PRs checked ($PR_URL_COUNT); $PR_STATUS"
+fi
+
+MODEL=$(printf '%s' "$MODEL" | jq \
+  --arg prs "$PR_STATUS" \
+  --argjson live "$PR_LIVENESS" '
+  def live_for($url):
+    first($live[] | select(.url == $url))
+    // {url:$url,state:"unknown",checked_at:"-",actionable:false,reason:"live state missing"};
+  .prs = $prs
+  | .recorded_prs |= map(. as $row | live_for($row.url) as $pr | . + {
+      state:$pr.state,
+      checked_at:$pr.checked_at,
+      actionable:$pr.actionable,
+      reason:$pr.reason
+    })
+  | .landed |= map(
+      if (.artifact | test("^https://github\\.com/[^/]+/[^/]+/pull/[0-9]+$")) then
+        . as $row | live_for($row.artifact) as $pr | . + {
+          pr_state:$pr.state,
+          pr_checked_at:$pr.checked_at,
+          pr_actionable:$pr.actionable,
+          pr_reason:$pr.reason
+        }
+      else
+        . + {pr_state:"not_applicable",pr_checked_at:"-",pr_actionable:false,pr_reason:"-"}
+      end)
+  | if has("candidate_prs") then
+      .candidate_prs |= map(. as $row | live_for($row.url) as $pr | . + {
+        state:$pr.state,
+        checked_at:$pr.checked_at,
+        actionable:$pr.actionable,
+        reason:$pr.reason
+      })
+    else . end
+  | .pr_liveness = $live
+') || { echo "fm-bearings-snapshot: live PR projection failed" >&2; exit 1; }
 
 if [ "$FORMAT" = json ]; then
   printf '%s\n' "$MODEL"
