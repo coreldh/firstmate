@@ -105,7 +105,7 @@ Default is LOCAL-ONLY (no network); --include-prs is the only path that fetches.
 Default fields: schema, home, generated, prs, in_flight{id,kind,state,doing},
   secondmates{id,state,doing,provenance,freshness,age_seconds,contradiction,reason},
   decisions_open{id,key,verb,summary,owner}, landed{id,what,artifact,owner},
-  gates{id,title,blocked_by,reason,owner}, reports{id,path}, recorded_prs{id,url},
+  gates{id,title,blocked_by,reason,owner}, reports{id,path,owner}, recorded_prs{id,url},
   unhealthy_endpoints{...} (only when non-empty), omitted{surface,reveal}.
 landed merges this home's Done with registered secondmate homes' Done, bounded by
   a per-home cap (FM_BEARINGS_LANDED_PER_HOME) and an overall cap (FM_BEARINGS_LANDED),
@@ -164,7 +164,7 @@ command -v jq >/dev/null 2>&1 || { echo "fm-bearings-snapshot: jq not found" >&2
 "$SCRIPT_DIR/fm-afk-return.sh" guard || exit $?
 
 NOW=${FM_BEARINGS_NOW:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}
-if [ "$ALL_LANDED" = 1 ] || [ "$ALL_SECONDMATES" = 1 ]; then
+if [ "$ALL_LANDED" = 1 ] || [ "$ALL_SECONDMATES" = 1 ] || [ "$ALL_REPORTS" = 1 ]; then
   if [ "$ALL_LANDED" = 1 ]; then
     SNAP=$(FM_SNAPSHOT_NOW="$NOW" FM_SNAPSHOT_SECONDMATES=0 FM_SNAPSHOT_SECONDMATE_LANDED_PER_HOME=0 "$FLEET" --json) || exit $?
   else
@@ -377,9 +377,8 @@ MODEL=$(printf '%s' "$SNAP" | jq \
         state: .current_state.state,
         doing: ((.current_state.detail // "") as $d
                 | (if $d != "" then $d else (.hints.last_event_text // "") end) | trunc(90))
-      } ]
+     } ]
      + [ $secondmate_views[] as $m
-         | select($m.bearings_state == "active_child_work")
          | $m.active_children[]
          | {id:($m.id + "/" + .id),kind,state,
             doing:((.doing // .state) | trunc(90))} ]) as $in_flight_all
@@ -419,7 +418,13 @@ MODEL=$(printf '%s' "$SNAP" | jq \
   | ([ .scout_reports[]
        | . as $r
        | select(($all_reports == 1) or (($rel_ids | index($r.id)) != null))
-       | {id, path} ]) as $reports_all
+       | {id, path, owner:"(main)"} ]
+     + [ (.secondmate_current.records // [])[] as $m
+         | select($m.provenance.selected == "structured-home")
+         | $m.reports[]? as $r
+         | select($all_reports == 1
+                  or (([ $m.active_children[]?.id, $m.landed[]?.id ] | index($r.id)) != null))
+         | {id:($m.id + "/" + $r.id),path:$r.path,owner:$m.id} ]) as $reports_all
   | ([ .tasks[] | select(.kind != "secondmate" and .pr.url != null and .pr.source == "meta") | {id, url:.pr.url} ]) as $recorded_prs_all
   | . as $snap
   | {
@@ -468,7 +473,7 @@ MODEL=$(printf '%s' "$SNAP" | jq \
         (([($snap.secondmate_current.records // [])[] | select(.current.state == "unknown" or .contradiction == true)] | length) as $n | if $n > 0 then {surface:("secondmate current state incomplete or contradictory for \($n) record(s)"),reveal:"inspect the affected secondmate homes",carrier_relevant:true} else empty end),
         (($snap.secondmate_current.records // [])[] as $m
          | ($m.omitted // [])[]
-         | select(.surface == "active_children" or .surface == "decisions_open" or .surface == "queued")
+         | select(.surface == "active_children" or .surface == "decisions_open" or .surface == "queued" or .surface == "reports")
          | {surface:("secondmate " + $m.id + " " + .surface + " omitted: " + (.count | tostring)),reveal:"raise the corresponding FM_SNAPSHOT_SECONDMATE bound",carrier_relevant:true}),
         (([($snap.secondmate_current.records // [])[] | select(.parent_event.activity_scan.input_truncated == true or .parent_event.activity_scan.retained_truncated == true)] | length) as $n | if $n > 0 then {surface:("secondmate parent activity evidence truncated for \($n) record(s)"), reveal:"raise FM_SNAPSHOT_PARENT_ACTIVITY_LINES, FM_SNAPSHOT_PARENT_ACTIVITY_BYTES, or FM_SNAPSHOT_PARENT_ACTIVITIES"} else empty end),
         (([($snap.secondmate_current.records // [])[] | select(.parent_event.activity_scan.available == false)] | length) as $n | if $n > 0 then {surface:("secondmate parent activity evidence unavailable for \($n) record(s)"), reveal:"inspect the parent status logs"} else empty end),

@@ -549,20 +549,28 @@ test_secondmate_and_child_bounds_are_disclosed() {
     printf 'working [key=%s]: active child %s\n' "$child" "$i" > "$mate/state/$child.status"
     i=$((i + 1))
   done
+  i=1
+  while [ "$i" -le 3 ]; do
+    mkdir -p "$mate/data/report-$i"
+    printf '# Report %s\n' "$i" > "$mate/data/report-$i/report.md"
+    i=$((i + 1))
+  done
   printf '\n## Queued\n\n## Done\n' >> "$mate/data/backlog.md"
   fakebin=$(make_fakebin "$home")
   canonical=$(PATH="$fakebin:$PATH" FM_HOME="$home" FM_SNAPSHOT_NOW=2026-07-11T18:00:00Z \
-    FM_SNAPSHOT_SECONDMATES=2 FM_SNAPSHOT_SECONDMATE_CHILDREN=2 "$ROOT/bin/fm-fleet-snapshot.sh" --json)
+    FM_SNAPSHOT_SECONDMATES=2 FM_SNAPSHOT_SECONDMATE_CHILDREN=2 FM_SNAPSHOT_SECONDMATE_REPORTS=2 "$ROOT/bin/fm-fleet-snapshot.sh" --json)
   printf '%s' "$canonical" | jq -e '
     .secondmate_current.total_registered == 3
       and .secondmate_current.shown == 2
       and .secondmate_current.truncated == 1
       and (.secondmate_current.records[] | select(.id == "a")
         | .counts.active_children == 3 and (.active_children | length) == 2
-          and (.omitted | any(.surface == "active_children" and .count == 1)))
+          and .counts.reports == 3 and (.reports | length) == 2
+          and (.omitted | any(.surface == "active_children" and .count == 1))
+          and (.omitted | any(.surface == "reports" and .count == 1)))
       and (.secondmate_current.records | any(.id == "b" and .current.state == "no_active_work"))
   ' >/dev/null || fail "canonical secondmate or child bounds were not enforced: $canonical"
-  json=$(FM_SNAPSHOT_SECONDMATES=2 FM_SNAPSHOT_SECONDMATE_CHILDREN=2 FM_BEARINGS_SECONDMATES=1 \
+  json=$(FM_SNAPSHOT_SECONDMATES=2 FM_SNAPSHOT_SECONDMATE_CHILDREN=2 FM_SNAPSHOT_SECONDMATE_REPORTS=2 FM_BEARINGS_SECONDMATES=1 \
     run "$home" "$fakebin" --json)
   printf '%s' "$json" | jq -e '
     (.secondmates | length) == 1
@@ -570,6 +578,7 @@ test_secondmate_and_child_bounds_are_disclosed() {
       and ([.omitted[].surface] | any(test("secondmates showing 1 of 2")))
       and ([.omitted[].surface] | any(test("registered secondmates omitted by snapshot bound: 1")))
       and (.omitted | any(.surface == "secondmate a active_children omitted: 1" and .carrier_relevant == true))
+      and (.omitted | any(.surface == "secondmate a reports omitted: 1" and .carrier_relevant == true))
       and (.omitted | any(.surface == "registered secondmates omitted by snapshot bound: 1" and .carrier_relevant == true))
   ' >/dev/null || fail "bearings secondmate bound was not disclosed: $json"
   expanded=$(FM_SNAPSHOT_SECONDMATE_CHILDREN=2 FM_BEARINGS_SECONDMATES=1 \
@@ -944,14 +953,20 @@ test_open_decision_surfaces_end_to_end() {
 }
 
 test_report_pointers_surface() {
-  local home fakebin json
+  local home mate root_report mate_report fakebin json
   home=$(make_home reports); write_fixture "$home"
+  mate=$(fixture_mate_home "$home")
+  mkdir -p "$mate/data/mate-scout"
+  printf '# Mate scout\n' > "$mate/data/mate-scout/report.md"
+  root_report=$(cd "$home/data/scout-x" && pwd -P)/report.md
+  mate_report=$(cd "$mate/data/mate-scout" && pwd -P)/report.md
   fakebin=$(make_fakebin "$home")
-  json=$(run "$home" "$fakebin" --json)
-  printf '%s' "$json" | jq -e --arg p "$home/data/scout-x/report.md" '
-    .reports | any(.[]; .id == "scout-x" and .path == $p)
+  json=$(run "$home" "$fakebin" --json --all-reports)
+  printf '%s' "$json" | jq -e --arg root "$root_report" --arg mate "$mate_report" '
+    (.reports | any(.[]; .id == "scout-x" and .path == $root and .owner == "(main)"))
+      and (.reports | any(.[]; .id == "mate/mate-scout" and .path == $mate and .owner == "mate"))
   ' >/dev/null || fail "current scout report pointer must surface: $json"
-  pass "current report pointers surface"
+  pass "main and secondmate report pointers surface"
 }
 
 test_superseded_queued_item_dropped_by_default() {
@@ -1760,6 +1775,7 @@ EOF
   printf '%s' "$json" | jq -e '
     (.secondmates | any(.id == "sshhip" and .state == "captain_decision" and .reason == "-"))
       and ([.decisions_open[] | select(.id == "sshhip/reviewer-decision")] | length) == 1
+      and ([.in_flight[] | select(.id == "sshhip/unreadable-child")] | length) == 1
   ' >/dev/null || fail "restoring the SSHHIP child did not clear only its narrow warning: $json"
 
   cat > "$ha/data/backlog.md" <<'EOF'
