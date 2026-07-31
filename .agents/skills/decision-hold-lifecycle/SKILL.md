@@ -18,7 +18,7 @@ Every unresolved decision that belongs to the captain and is discovered while pr
 The agent performs the semantic inventory because scripts must not infer decisions from report prose, visual-review artifacts, terminal output, or chat.
 Give each distinct unresolved decision a stable privacy-safe key, register it through `bin/fm-decision-hold.sh hold`, and use the same key on retry so registration is idempotent while different decisions retain different durable identities.
 After inventorying the whole report and review surface, run `bin/fm-decision-hold.sh complete` with every unresolved key, or with `--none` only when the reviewed surface contains no unresolved captain decision.
-A live originating task may be cleaned up after `complete` binds every unresolved hold to that task's exact dispatch and proves the hold reappears in Bearings.
+A live originating task may be cleaned up after `complete` retains its report-bound task and dispatch carrier, including for `--none`, binds every unresolved hold to that exact dispatch, and proves each hold reappears in Bearings.
 Cleanup does not require the captain to answer in the same session, and it never closes the hold.
 Do not hand-write a backlog row, archive row, decision object, or receipt to satisfy this gate; only the script-owned lifecycle is authoritative.
 A completed investigation and an ended visual review use this same owner and completion command; a visual tool, including Lavish, never owns a parallel completion policy.

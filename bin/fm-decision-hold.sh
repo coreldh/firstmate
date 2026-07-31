@@ -35,6 +35,9 @@
 # cleanup-authoritative only after `complete` records a receipt under
 # data/decision-hold-receipts/ that binds origin id, endpoint dispatch id, the
 # exact backlog object digest, and a Bearings snapshot in which the hold appears.
+# Every live completion, including `--none`, also retains a report-bound origin
+# receipt so a later post-teardown visual-review pass keeps the authenticated
+# task and dispatch association needed to create and verify hold receipts.
 # This permits cleanup without requiring the captain to answer in the same session.
 #
 # `resolve` requires every --routed-to task to exist and to be blocked by the hold.
@@ -310,8 +313,8 @@ verify_hold_resolved() {  # <hold-id>
   return 1
 }
 
-verify_hold_durable() {  # <hold-id>
-  local id=$1 show state held kind hold_kind body
+verify_hold_durable() {  # <origin-id> <hold-id>
+  local origin=$1 id=$2 show state held kind hold_kind body
   show=$(task_show_durable "$id") \
     || fail "captain decision $id is absent, duplicated, or indeterminate in the live backlog and archive"
   state=$(show_field "$show" state)
@@ -324,7 +327,10 @@ verify_hold_durable() {  # <hold-id>
   fi
   if [ "$state" = "done" ] && [ "$kind" = captain ]; then
     case "$body" in
-      *"Resolution recorded by fm-decision-hold."*"Routed work:"*) return 0 ;;
+      *"Resolution recorded by fm-decision-hold."*"Routed work:"*)
+        verify_resolution_receipt "$origin" "$id"
+        return 0
+        ;;
     esac
   fi
   fail "captain decision $id is neither actively held nor durably resolved"
@@ -361,6 +367,61 @@ decision_object_path() {  # <hold-id>
   printf '%s/%s.decision.md\n' "$RECEIPT_DIR" "$1"
 }
 
+origin_receipt_path() {  # <origin-id>
+  printf '%s/%s.origin\n' "$RECEIPT_DIR" "$1"
+}
+
+write_origin_receipt() {  # <origin-id> <dispatch-id>
+  local origin=$1 dispatch=$2 report="$DATA/$1/report.md" report_sha receipt
+  regular_nonsymlink_file "$report" || fail "origin $origin has no safe report object to retain its dispatch binding"
+  report_sha=$(sha256_file "$report")
+  digest_is_nonzero_sha256 "$report_sha" || fail "origin $origin produced an invalid report digest"
+  receipt=$(origin_receipt_path "$origin")
+  {
+    printf 'schema=fm-decision-hold-origin.v1\n'
+    printf 'origin_id=%s\n' "$origin"
+    printf 'dispatch_id=%s\n' "$dispatch"
+    printf 'origin_path=%s\n' "$report"
+    printf 'origin_sha256=%s\n' "$report_sha"
+  } | write_atomic_file "$receipt"
+}
+
+verify_origin_receipt() {  # <origin-id> [expected-dispatch-id]
+  local origin=$1 expected=${2:-} receipt schema recorded_origin recorded_dispatch origin_path origin_sha
+  receipt=$(origin_receipt_path "$origin")
+  regular_nonsymlink_file "$receipt" || fail "origin $origin has no trusted dispatch carrier"
+  schema=$(receipt_value "$receipt" schema) || fail "origin $origin has a malformed dispatch carrier schema"
+  recorded_origin=$(receipt_value "$receipt" origin_id) || fail "origin $origin dispatch carrier has no task identity"
+  recorded_dispatch=$(receipt_value "$receipt" dispatch_id) || fail "origin $origin dispatch carrier has no dispatch identity"
+  origin_path=$(receipt_value "$receipt" origin_path) || fail "origin $origin dispatch carrier has no source path"
+  origin_sha=$(receipt_value "$receipt" origin_sha256) || fail "origin $origin dispatch carrier has no source digest"
+  [ "$schema" = fm-decision-hold-origin.v1 ] || fail "origin $origin has an unsupported dispatch carrier"
+  [ "$recorded_origin" = "$origin" ] || fail "origin $origin dispatch carrier links a different task"
+  validate_slug dispatch-id "$recorded_dispatch"
+  [ "$recorded_dispatch" = "$origin" ] || fail "origin $origin dispatch carrier links a different endpoint dispatch: $recorded_dispatch"
+  [ -z "$expected" ] || [ "$recorded_dispatch" = "$expected" ] \
+    || fail "origin $origin dispatch carrier disagrees with cleanup dispatch $expected"
+  [ "$origin_path" = "$DATA/$origin/report.md" ] || fail "origin $origin dispatch carrier names an unauthorized source path"
+  regular_nonsymlink_file "$origin_path" || fail "origin $origin dispatch source path does not exist safely"
+  digest_is_nonzero_sha256 "$origin_sha" || fail "origin $origin dispatch source digest must be nonzero sha256"
+  [ "$(sha256_file "$origin_path")" = "$origin_sha" ] || fail "origin $origin dispatch source digest no longer matches"
+  printf '%s\n' "$recorded_dispatch"
+}
+
+completion_dispatch() {  # <origin-id> <meta-path> <has-meta>
+  local origin=$1 meta=$2 has_meta=$3 dispatch
+  if [ "$has_meta" = 1 ]; then
+    dispatch=$(meta_exact_value "$meta" endpoint_task_id) \
+      || fail "origin $origin has no unique endpoint dispatch binding; preserve origin metadata and holds because no safe automatic migration is shipped"
+    [ "$dispatch" = "$origin" ] || fail "origin $origin metadata links a different endpoint dispatch: $dispatch"
+    write_origin_receipt "$origin" "$dispatch"
+    verify_origin_receipt "$origin" "$dispatch" >/dev/null
+  else
+    dispatch=$(verify_origin_receipt "$origin") || return 1
+  fi
+  printf '%s\n' "$dispatch"
+}
+
 fail_missing_cleanup_receipt() {  # <origin-id> <hold-id>
   local origin=$1 id=$2
   if verify_hold_resolved "$id"; then
@@ -387,6 +448,7 @@ verify_cleanup_receipt_base() {  # <origin-id> <dispatch-id> <hold-id>
   [ "$recorded_origin" = "$origin" ] || fail "captain hold $id cleanup receipt links a different task"
   [ "$recorded_dispatch" = "$dispatch" ] || fail "captain hold $id cleanup receipt links a different dispatch"
   [ "$recorded_hold" = "$id" ] || fail "captain hold $id cleanup receipt links a different hold"
+  verify_origin_receipt "$origin" "$dispatch" >/dev/null
   [ "$object_path" = "$DATA/backlog.md" ] || fail "captain hold $id cleanup receipt names an unauthorized object path"
   regular_nonsymlink_file "$object_path" || fail "captain hold $id cleanup object path does not exist safely"
   digest_is_nonzero_sha256 "$object_sha" || fail "captain hold $id cleanup object digest must be nonzero sha256"
@@ -610,35 +672,6 @@ command_complete() {
     previous=$(meta_value "$meta" decision_keys)
   fi
   keys=$(sorted_key_union "$previous" "$supplied")
-  if [ -n "$keys" ]; then
-    while IFS= read -r key; do
-      [ -n "$key" ] || continue
-      verify_hold_durable "$(hold_id "$origin" "$key")"
-    done <<EOF
-$(printf '%s\n' "$keys" | tr ',' '\n')
-EOF
-
-    if [ "$has_meta" = 1 ] && [ -n "$keys" ]; then
-      dispatch=$(meta_exact_value "$meta" endpoint_task_id) \
-        || fail "origin $origin has no unique endpoint dispatch binding; preserve origin metadata and holds because no safe automatic migration is shipped"
-      [ "$dispatch" = "$origin" ] || fail "origin $origin metadata links a different endpoint dispatch: $dispatch"
-      bearings=$(bearings_snapshot) || fail "could not obtain Bearings evidence for $origin"
-      while IFS= read -r key; do
-        [ -n "$key" ] || continue
-        id=$(hold_id "$origin" "$key")
-        if verify_hold_resolved "$id"; then
-          verify_resolution_receipt "$origin" "$id"
-        else
-          bearings_has_hold "$bearings" "$id" \
-            || fail "captain hold $id does not reappear in Bearings"
-          write_cleanup_receipt "$origin" "$dispatch" "$id" "$bearings"
-        fi
-      done <<EOF
-$(printf '%s\n' "$keys" | tr ',' '\n')
-EOF
-    fi
-  fi
-
   status_file="$STATE/$origin.status"
   raw_open=$(status_open_decisions "$status_file")
   open=$(origin_open_decisions "$origin")
@@ -649,6 +682,29 @@ EOF
   done <<EOF
 $open
 EOF
+
+  dispatch=$(completion_dispatch "$origin" "$meta" "$has_meta") || return 1
+  if [ -n "$keys" ]; then
+    while IFS= read -r key; do
+      [ -n "$key" ] || continue
+      verify_hold_durable "$origin" "$(hold_id "$origin" "$key")"
+    done <<EOF
+$(printf '%s\n' "$keys" | tr ',' '\n')
+EOF
+
+    bearings=$(bearings_snapshot) || fail "could not obtain Bearings evidence for $origin"
+    while IFS= read -r key; do
+      [ -n "$key" ] || continue
+      id=$(hold_id "$origin" "$key")
+      if ! verify_hold_resolved "$id"; then
+        bearings_has_hold "$bearings" "$id" \
+          || fail "captain hold $id does not reappear in Bearings"
+        write_cleanup_receipt "$origin" "$dispatch" "$id" "$bearings"
+      fi
+    done <<EOF
+$(printf '%s\n' "$keys" | tr ',' '\n')
+EOF
+  fi
 
   if [ "$has_meta" = 1 ]; then
     if [ "$(meta_value "$meta" decisions_reviewed)" != 1 ] || [ "$previous" != "$keys" ]; then

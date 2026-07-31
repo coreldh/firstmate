@@ -74,8 +74,8 @@ command -v jq >/dev/null 2>&1 || fail "jq is required"
 
 NOW=${FM_CAPTAIN_RESUME_NOW:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}
 validate_one_line "$NOW" || fail "refresh timestamp must be one line"
-SNAPSHOT=$(FM_HOME="$FM_HOME" FM_STATE_OVERRIDE="$STATE" \
-  "$BEARINGS" --json --all-in-flight --all-decisions --all-reports --all-queued) \
+SNAPSHOT=$(FM_HOME="$FM_HOME" FM_STATE_OVERRIDE="$STATE" FM_SNAPSHOT_SECONDMATES=0 \
+  "$BEARINGS" --json --all-in-flight --all-decisions --all-secondmates --all-reports --all-queued) \
   || fail "fresh Bearings snapshot failed"
 printf '%s\n' "$SNAPSHOT" | jq -e '
   .schema == "fm-bearings.v1"
@@ -83,7 +83,11 @@ printf '%s\n' "$SNAPSHOT" | jq -e '
     and (.decisions_open | type == "array")
     and (.reports | type == "array")
     and (.gates | type == "array")
+    and (.omitted | type == "array")
 ' >/dev/null 2>&1 || fail "fresh Bearings snapshot is invalid"
+printf '%s\n' "$SNAPSHOT" | jq -e '
+  [.omitted[] | select(.carrier_relevant == true)] | length == 0
+' >/dev/null 2>&1 || fail "fresh Bearings snapshot is incomplete for the canonical carrier"
 
 if command -v shasum >/dev/null 2>&1; then
   SNAPSHOT_SHA=$(printf '%s' "$SNAPSHOT" | shasum -a 256 | awk '{print $1}')

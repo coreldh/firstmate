@@ -17,6 +17,9 @@ Each refresh contains these disk-derived fields:
 - pending durable wake-queue records and pending-reply filenames;
 - every queued or blocked next step from the complete Bearings gate projection.
 
+The refresh lifts the registered-secondmate count bound and refuses publication when Bearings reports any carrier-relevant upstream omission, including bounded child, decision, queued, registry, or unreadable-home state.
+That refusal preserves the previous canonical carrier byte-for-byte rather than publishing a schema-valid partial reset surface.
+
 The generator does not accept chat text for these sections.
 Empty sections state that the corresponding durable source recorded nothing.
 

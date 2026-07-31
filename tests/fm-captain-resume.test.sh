@@ -115,5 +115,29 @@ test_failed_snapshot_preserves_previous_carrier() {
   pass "failed CAPTAIN-RESUME refresh preserves the previous carrier"
 }
 
+test_truncated_snapshot_preserves_previous_carrier() {
+  local home fake before status
+  home=$(make_home truncated-snapshot)
+  fake="$home/fake-truncated-bearings"
+  write_fake_bearings "$fake"
+  sed 's/"omitted": \[\]/"omitted": [{"surface":"secondmate sample active_children omitted: 1","reveal":"raise bound","carrier_relevant":true}]/' \
+    "$fake" > "$fake.next"
+  mv "$fake.next" "$fake"
+  chmod +x "$fake"
+  before=$(shasum -a 256 "$home/CAPTAIN-RESUME.md" | awk '{print $1}')
+  set +e
+  FM_HOME="$home" FM_CAPTAIN_RESUME_BEARINGS="$fake" \
+    "$RESUME" refresh --session-id 'codex:session-truncated' >"$home/out" 2>"$home/err"
+  status=$?
+  set -e
+  [ "$status" -ne 0 ] || fail "truncated Bearings snapshot unexpectedly refreshed carrier"
+  assert_grep "incomplete for the canonical carrier" "$home/err" \
+    "truncated snapshot refusal did not identify incomplete carrier evidence"
+  [ "$before" = "$(shasum -a 256 "$home/CAPTAIN-RESUME.md" | awk '{print $1}')" ] \
+    || fail "truncated snapshot damaged the previous canonical carrier"
+  pass "truncated CAPTAIN-RESUME evidence preserves the previous carrier"
+}
+
 test_refresh_is_canonical_complete_and_non_destructive
 test_failed_snapshot_preserves_previous_carrier
+test_truncated_snapshot_preserves_previous_carrier

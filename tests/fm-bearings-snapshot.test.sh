@@ -566,8 +566,11 @@ test_secondmate_and_child_bounds_are_disclosed() {
     run "$home" "$fakebin" --json)
   printf '%s' "$json" | jq -e '
     (.secondmates | length) == 1
+      and ([.in_flight[].id] | sort) == ["a/child-1", "a/child-2"]
       and ([.omitted[].surface] | any(test("secondmates showing 1 of 2")))
       and ([.omitted[].surface] | any(test("registered secondmates omitted by snapshot bound: 1")))
+      and (.omitted | any(.surface == "secondmate a active_children omitted: 1" and .carrier_relevant == true))
+      and (.omitted | any(.surface == "registered secondmates omitted by snapshot bound: 1" and .carrier_relevant == true))
   ' >/dev/null || fail "bearings secondmate bound was not disclosed: $json"
   expanded=$(FM_SNAPSHOT_SECONDMATE_CHILDREN=2 FM_BEARINGS_SECONDMATES=1 \
     run "$home" "$fakebin" --json --all-secondmates)
@@ -1679,7 +1682,7 @@ EOF
   ' >/dev/null || fail "canonical mixed-domain classification was wrong: $canonical"
   json=$(run "$home" "$fakebin" --json --fields bodies --all-landed)
   printf '%s' "$json" | jq -e '
-    ([.in_flight[].id] | sort) == ["hibit", "home-assistant", "wheel"]
+    ([.in_flight[].id] | sort) == ["hibit/hibit-worker", "home-assistant/prep", "wheel/wheel-worker"]
       and (.decisions_open | any(.id == "sshhip/reviewer-decision"))
       and (.decisions_open | any(.id == "home-assistant/captain-run") | not)
       and (.gates | any(.id == "production-observation" and .owner == "wheel"

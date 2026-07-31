@@ -494,7 +494,7 @@ test_origin_slug_validation_precedes_path_construction() {
 }
 
 test_visual_review_uses_shared_completion_owner() {
-  local home id hold json
+  local home id hold json origin_receipt hold_receipt saved_origin routed decision
   home=$(make_home visual-review)
   id=sample-board-review
   mkdir -p "$home/data/$id"
@@ -504,6 +504,13 @@ test_visual_review_uses_shared_completion_owner() {
   printf '# Sample board investigation\n\nThe initial findings need no captain choice.\n' > "$home/data/$id/report.md"
   run_decisions "$home" complete "$id" --none >/dev/null \
     || fail "initial investigation could not pass the shared completion owner"
+  origin_receipt="$home/data/decision-hold-receipts/$id.origin"
+  assert_present "$origin_receipt" "empty initial inventory did not preserve its dispatch carrier"
+  assert_grep "origin_id=$id" "$origin_receipt" "dispatch carrier lost its task identity"
+  assert_grep "dispatch_id=$id" "$origin_receipt" "dispatch carrier lost its endpoint identity"
+  assert_grep "origin_path=$home/data/$id/report.md" "$origin_receipt" "dispatch carrier lost its exact report path"
+  grep -Eq '^origin_sha256=[0-9a-f]{64}$' "$origin_receipt" \
+    || fail "dispatch carrier source digest is absent, zero, or malformed"
   run_teardown "$home" "$id" >/dev/null 2> "$home/visual-teardown.err" \
     || fail "completed investigation teardown failed: $(cat "$home/visual-teardown.err")"
   tasks_in "$home" "done" "$id" --report "data/$id/report.md" --keep 0 >/dev/null
@@ -513,8 +520,17 @@ test_visual_review_uses_shared_completion_owner() {
   hold=$(run_decisions "$home" hold "$id" layout \
     --title "Choose the sample layout" --reason "captain layout choice pending" --repo sample) \
     || fail "post-teardown visual review could not use the shared hold owner"
+  saved_origin=$(cat "$origin_receipt")
+  sed 's#^origin_path=.*#origin_path=/tmp/forged-report.md#' "$origin_receipt" > "$origin_receipt.tmp"
+  mv "$origin_receipt.tmp" "$origin_receipt"
+  if run_decisions "$home" complete "$id" layout >"$home/forged-origin.out" 2>"$home/forged-origin.err"; then
+    fail "post-teardown completion accepted a forged report path"
+  fi
+  printf '%s\n' "$saved_origin" > "$origin_receipt"
   run_decisions "$home" complete "$id" layout >/dev/null \
     || fail "post-teardown visual review could not use the shared completion owner"
+  hold_receipt="$home/data/decision-hold-receipts/$hold.hold"
+  assert_present "$hold_receipt" "post-teardown completion did not create a cleanup receipt"
   [ "$hold" = "$id-decision-layout" ] || fail "visual review used a separate identity policy"
   json=$(run_bearings "$home") || fail "Bearings failed after the ended visual review"
   printf '%s' "$json" | jq -e --arg hold "$hold" '
@@ -522,7 +538,40 @@ test_visual_review_uses_shared_completion_owner() {
   ' >/dev/null || fail "ended visual review did not leave its durable Captain Call: $json"
   [ ! -e "$home/data/visual-review-decisions.json" ] \
     || fail "visual review created a second decision database"
+  routed=sample-layout-implementation
+  tasks_in "$home" add "$routed" "Apply the selected sample layout" --kind ship --repo sample >/dev/null
+  tasks_in "$home" block "$routed" --by "$hold" >/dev/null
+  decision="$home/layout-decision.txt"
+  printf 'Use the compact sample layout.\n' > "$decision"
+  run_decisions "$home" resolve "$id" layout --decision-file "$decision" --routed-to "$routed" >/dev/null \
+    || fail "post-teardown hold could not route its trusted resolution"
+  run_decisions "$home" verify-resolution "$id" layout >/dev/null \
+    || fail "post-teardown resolution receipt did not verify"
   pass "ended visual review follows the same decision-hold completion owner"
+}
+
+test_post_teardown_handwritten_resolution_refuses_completion() {
+  local home origin hold digest
+  home=$(make_home post-teardown-handwritten)
+  origin=sample-post-teardown-review
+  hold="$origin-decision-route"
+  digest=123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0
+  mkdir -p "$home/data/$origin"
+  tasks_in "$home" add "$origin" "Review the historical route" --kind scout --repo sample --start >/dev/null
+  write_origin_meta "$home" "$origin"
+  printf 'done: report complete\n' > "$home/state/$origin.status"
+  printf '# Historical route review\n\nNo initial captain choice.\n' > "$home/data/$origin/report.md"
+  run_decisions "$home" complete "$origin" --none >/dev/null
+  run_teardown "$home" "$origin" >/dev/null 2>"$home/teardown.err"
+  tasks_in "$home" "done" "$origin" --report "data/$origin/report.md" --keep 0 >/dev/null
+  tasks_in "$home" add routed-task "Routed task" --kind ship --repo sample >/dev/null
+  write_done_resolution_row "$home" "$hold" "$digest" routed-task
+  if run_decisions "$home" complete "$origin" route >"$home/complete.out" 2>"$home/complete.err"; then
+    fail "post-teardown completion trusted a hand-written resolved row"
+  fi
+  assert_grep "trusted cleanup receipt" "$home/complete.err" \
+    "post-teardown hand-written row did not refuse for missing script authority"
+  pass "post-teardown completion rejects hand-written resolved rows"
 }
 
 test_none_inventory_and_resolved_prose_do_not_create_holds() {
@@ -728,6 +777,7 @@ test_scout_teardown_always_requires_inventory_verification
 test_structured_holds_survive_teardown_and_route_resolution
 test_origin_slug_validation_precedes_path_construction
 test_visual_review_uses_shared_completion_owner
+test_post_teardown_handwritten_resolution_refuses_completion
 test_none_inventory_and_resolved_prose_do_not_create_holds
 test_terminal_single_owner_status_decision_does_not_block_empty_inventory
 test_secondmate_hold_stays_in_authoritative_home

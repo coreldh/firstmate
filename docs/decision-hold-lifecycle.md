@@ -14,7 +14,8 @@ It creates a kind `captain` backlog item when absent and invokes `tasks-axi hold
 It rejects an identity collision, a changed title, and attempts to reopen an already resolved identity.
 
 The `complete` subcommand unions the reviewed keys into `decision_keys=` and appends `decisions_reviewed=1` while originating task metadata is live.
-A post-teardown visual review can complete against the surviving report and durable holds without recreating volatile task metadata.
+Every live completion, including `--none`, also writes an atomic origin carrier bound to the exact endpoint dispatch, report path, and nonzero report digest.
+A post-teardown visual review verifies that carrier against the surviving report before it creates cleanup receipts for new durable holds, without recreating volatile task metadata.
 It accepts `--none` as an explicit semantic inventory result, not as inferred absence.
 It verifies every listed identity against tasks-axi before recording completion.
 For a live origin, it requires one exact `endpoint_task_id=` dispatch binding, obtains a fresh Bearings projection, and writes one atomic cleanup receipt per unresolved hold under `data/decision-hold-receipts/`.
@@ -24,7 +25,7 @@ For an open keyed status decision, it appends a `captain-held [key=<key>]: ...` 
 `bin/fm-classify-lib.sh` recognizes that transfer as closing the live status copy without claiming that the captain has answered it.
 
 Scout teardown calls the script's read-only `verify` subcommand after checking for the report and before removing any source state.
-An unresolved hold permits cleanup only while its receipt is intact, its task and dispatch links match, its nonzero object digest still identifies the unique backlog row, and a fresh Bearings snapshot still shows it.
+An unresolved hold permits cleanup only while its origin carrier and receipt are intact, its task, dispatch, and report links match, its nonzero object digest still identifies the unique backlog row, and a fresh Bearings snapshot still shows it.
 The captain does not need to answer in the cleanup session because the unresolved hold remains the durable Captain's Call object after source cleanup.
 Absent, duplicate, malformed, wrong-dispatch, zero-digest, missing-path, or Bearings-invisible evidence refuses without touching teardown's unlanded-work gates.
 Receipt remediation never authorizes force or discard, and neither is a migration path for missing historical authority.
@@ -92,6 +93,7 @@ ok - non-forced scout teardown always requires durable inventory verification
 ok - captain holds are idempotent, distinct, teardown-safe, Bearings-visible, and durably routed before close
 ok - completion and verification validate origins before constructing paths
 ok - ended visual review follows the same decision-hold completion owner
+ok - post-teardown completion rejects hand-written resolved rows
 ok - resolved findings and decision-like prose do not create false holds
 ok - terminal single-owner stale status decisions do not block empty inventory
 ok - main-home and secondmate-home captain holds remain correctly routed
