@@ -104,6 +104,7 @@ render_json_section() {  # <jq-filter>
 render_pending_notifications() {
   local found=0 file rel
   if [ -f "$STATE/.wake-queue" ]; then
+    # shellcheck disable=SC2015 # awk exit 3 is the intentional no-record sentinel; other failures return.
     awk -F '\t' '
       NF >= 5 {
         payload = $5
@@ -136,6 +137,7 @@ if ! {
   printf '# CAPTAIN-RESUME\n\n'
   printf -- '- Refreshed: %s\n' "$NOW"
   printf -- '- Producing session: %s\n' "$SESSION_ID"
+  # shellcheck disable=SC2016 # Backticks are literal Markdown, not shell interpolation.
   printf -- '- Evidence source: fresh local `fm-bearings.v1` plus durable notification files\n'
   printf -- '- Bearings SHA-256: %s\n' "$SNAPSHOT_SHA"
   printf '\n## Live tasks\n\n'

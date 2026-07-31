@@ -46,7 +46,11 @@
 # requires one live-or-archived row, a nonzero decision digest, exact origin and
 # dispatch links, the canonical existing decision object, every routed task, and
 # matching object digests. Historical resolved rows without this receipt refuse;
-# there is no implicit or hand-written-row migration.
+# there is no implicit or hand-written-row migration. An open historical hold may
+# reconstruct its cleanup receipt only by repeating `complete` while its exact
+# endpoint dispatch binding survives. Binding-less or already-resolved rows whose
+# script-owned objects are absent remain preserved and refused; no safe automatic
+# migration, force, or discard is supplied by this command.
 set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -357,11 +361,19 @@ decision_object_path() {  # <hold-id>
   printf '%s/%s.decision.md\n' "$RECEIPT_DIR" "$1"
 }
 
+fail_missing_cleanup_receipt() {  # <origin-id> <hold-id>
+  local origin=$1 id=$2
+  if verify_hold_resolved "$id"; then
+    fail "historical or hand-written resolved row $id has no trusted cleanup receipt; preserve the origin and row: no safe automatic migration is shipped"
+  fi
+  fail "captain hold $id has no trusted cleanup receipt; re-run complete $origin with its full recorded decision inventory only while the hold remains open and the exact dispatch binding survives; otherwise preserve origin metadata and holds because no safe automatic migration is shipped"
+}
+
 verify_cleanup_receipt_base() {  # <origin-id> <dispatch-id> <hold-id>
   local origin=$1 dispatch=$2 id=$3 receipt schema phase recorded_origin recorded_dispatch recorded_hold object_path object_sha bearings_sha
   receipt=$(cleanup_receipt_path "$id")
   regular_nonsymlink_file "$receipt" \
-    || fail "captain hold $id has no trusted cleanup receipt"
+    || fail_missing_cleanup_receipt "$origin" "$id"
   schema=$(receipt_value "$receipt" schema) || fail "captain hold $id has a malformed cleanup receipt schema"
   phase=$(receipt_value "$receipt" phase) || fail "captain hold $id has a malformed cleanup receipt phase"
   recorded_origin=$(receipt_value "$receipt" origin_id) || fail "captain hold $id has no cleanup task identity"
@@ -434,19 +446,19 @@ verify_resolution_receipt() {  # <origin-id> <hold-id>
   state=$(show_field "$show" state)
   kind=$(show_field "$show" kind)
   body=$(show_field "$show" body)
-  [ "$state" = done ] || fail "captain hold $id is unresolved"
+  [ "$state" = "done" ] || fail "captain hold $id is unresolved"
   [ "$kind" = captain ] || fail "backlog item $id is not kind captain"
   resolution_body_fields "$id" "$body"
 
   cleanup=$(cleanup_receipt_path "$id")
   regular_nonsymlink_file "$cleanup" \
-    || fail "historical or hand-written resolved row $id has no trusted receipt; migrate from an authoritative source or keep refusing"
+    || fail_missing_cleanup_receipt "$origin" "$id"
   dispatch=$(receipt_value "$cleanup" dispatch_id) || fail "captain hold $id cleanup receipt has no dispatch link"
   verify_cleanup_receipt_base "$origin" "$dispatch" "$id"
 
   receipt=$(resolution_receipt_path "$id")
   regular_nonsymlink_file "$receipt" \
-    || fail "historical or hand-written resolved row $id has no trusted receipt; migrate from an authoritative source or keep refusing"
+    || fail "historical or hand-written resolved row $id has no trusted resolution receipt; repeat the exact resolve only when the script-owned cleanup receipt and canonical decision object survive; otherwise preserve the origin and row because no safe automatic migration is shipped"
   schema=$(receipt_value "$receipt" schema) || fail "captain hold $id has a malformed resolution receipt schema"
   phase=$(receipt_value "$receipt" phase) || fail "captain hold $id has a malformed resolution receipt phase"
   recorded_origin=$(receipt_value "$receipt" origin_id) || fail "captain hold $id resolution receipt has no task link"
@@ -608,7 +620,7 @@ EOF
 
     if [ "$has_meta" = 1 ] && [ -n "$keys" ]; then
       dispatch=$(meta_exact_value "$meta" endpoint_task_id) \
-        || fail "origin $origin has no unique endpoint dispatch binding"
+        || fail "origin $origin has no unique endpoint dispatch binding; preserve origin metadata and holds because no safe automatic migration is shipped"
       [ "$dispatch" = "$origin" ] || fail "origin $origin metadata links a different endpoint dispatch: $dispatch"
       bearings=$(bearings_snapshot) || fail "could not obtain Bearings evidence for $origin"
       while IFS= read -r key; do
@@ -671,7 +683,7 @@ command_verify() {
   open=$(origin_open_decisions "$origin")
   if [ -n "$keys" ] || [ -n "$open" ]; then
     dispatch=$(meta_exact_value "$meta" endpoint_task_id) \
-      || fail "origin $origin has no unique endpoint dispatch binding"
+      || fail "origin $origin has no unique endpoint dispatch binding; preserve origin metadata and holds because no safe automatic migration is shipped"
     [ "$dispatch" = "$origin" ] || fail "origin $origin metadata links a different endpoint dispatch: $dispatch"
   fi
   if [ -n "$keys" ]; then
@@ -744,12 +756,13 @@ command_resolve() {
     hold_body=$(show_field "$hold_show" body)
     verify_resolution_identity "$id" "$hold_body" "$decision_digest" "$routed_csv"
     cleanup=$(cleanup_receipt_path "$id")
+    regular_nonsymlink_file "$cleanup" || fail_missing_cleanup_receipt "$origin" "$id"
     dispatch=$(receipt_value "$cleanup" dispatch_id) \
-      || fail "historical resolved row $id has no trusted cleanup receipt"
+      || fail "historical resolved row $id has no trustworthy dispatch link; preserve the origin and row because no safe automatic migration is shipped"
     verify_cleanup_receipt_base "$origin" "$dispatch" "$id"
     decision_object=$(decision_object_path "$id")
     regular_nonsymlink_file "$decision_object" \
-      || fail "historical resolved row $id has no canonical decision object"
+      || fail "historical resolved row $id has no canonical decision object; preserve the origin and row because no safe automatic migration is shipped"
     [ "$(sha256_file "$decision_object")" = "$decision_digest" ] \
       || fail "captain hold $id canonical decision object does not match the requested decision"
     if [ ! -f "$(resolution_receipt_path "$id")" ]; then
@@ -763,8 +776,9 @@ command_resolve() {
   hold_show=$(task_show "$id")
   hold_body=$(show_field "$hold_show" body)
   cleanup=$(cleanup_receipt_path "$id")
+  regular_nonsymlink_file "$cleanup" || fail_missing_cleanup_receipt "$origin" "$id"
   dispatch=$(receipt_value "$cleanup" dispatch_id) \
-    || fail "captain hold $id has no trusted cleanup receipt or dispatch link"
+    || fail "captain hold $id has no trustworthy cleanup dispatch link; preserve origin metadata and holds because no safe automatic migration is shipped"
   verify_cleanup_receipt_base "$origin" "$dispatch" "$id"
   case "$hold_body" in
     *"Resolution recorded by fm-decision-hold."*)

@@ -398,11 +398,52 @@ test_resolution_receipt_attack_constructions_refuse() {
       fail "$case_name hand-written or indeterminate resolution construction verified"
     fi
   done
-  assert_grep "trusted receipt" "$TMP_ROOT/receipt-attack-faithful/faithful.err" \
+  assert_grep "trusted cleanup receipt" "$TMP_ROOT/receipt-attack-faithful/faithful.err" \
     "faithful hand-written historical row did not refuse for missing authority receipt"
+  assert_grep "preserve the origin and row" "$TMP_ROOT/receipt-attack-faithful/faithful.err" \
+    "historical resolved-row refusal did not name the non-destructive operator remedy"
+  assert_grep "no safe automatic migration is shipped" "$TMP_ROOT/receipt-attack-faithful/faithful.err" \
+    "historical resolved-row refusal promised an unavailable migration"
   assert_grep "nonzero" "$TMP_ROOT/receipt-attack-zero-digest/zero-digest.err" \
     "all-zero historical decision digest did not fail explicitly"
   pass "absent, malformed, duplicate, wrong-origin, hand-written, and zero-digest resolution rows refuse"
+}
+
+test_historical_open_inventory_diagnostics_name_safe_remedies() {
+  local home origin hold receipt meta_tmp
+  home=$(make_home historical-open-remedy)
+  origin=sample-historical-open-review
+  mkdir -p "$home/data/$origin"
+  write_origin_meta "$home" "$origin"
+  printf '# Historical open review\n' > "$home/data/$origin/report.md"
+  hold=$(run_decisions "$home" hold "$origin" route \
+    --title "Choose the historical route" --reason "captain route choice pending" --repo sample) \
+    || fail "could not register historical-open hold fixture"
+  run_decisions "$home" complete "$origin" route >/dev/null \
+    || fail "could not complete historical-open inventory fixture"
+  receipt="$home/data/decision-hold-receipts/$hold.hold"
+  assert_present "$receipt" "historical-open fixture did not establish its cleanup receipt"
+  rm "$receipt"
+
+  if run_decisions "$home" verify "$origin" >"$home/open.out" 2>"$home/open.err"; then
+    fail "historical open inventory without a receipt unexpectedly verified"
+  fi
+  assert_grep "re-run complete $origin with its full recorded decision inventory" "$home/open.err" \
+    "repairable historical open inventory did not name the safe complete retry"
+  assert_grep "only while the hold remains open and the exact dispatch binding survives" "$home/open.err" \
+    "historical open remedy overstated when receipt reconstruction is safe"
+
+  meta_tmp="$home/state/$origin.meta.next"
+  grep -v '^endpoint_task_id=' "$home/state/$origin.meta" > "$meta_tmp"
+  mv "$meta_tmp" "$home/state/$origin.meta"
+  if run_decisions "$home" verify "$origin" >"$home/bindingless.out" 2>"$home/bindingless.err"; then
+    fail "binding-less historical inventory unexpectedly verified"
+  fi
+  assert_grep "preserve origin metadata and holds" "$home/bindingless.err" \
+    "binding-less historical refusal did not preserve the only authoritative evidence"
+  assert_grep "no safe automatic migration is shipped" "$home/bindingless.err" \
+    "binding-less historical refusal promised an unavailable migration"
+  pass "historical open and binding-less refusals name only safe operator remedies"
 }
 
 test_scout_teardown_always_requires_inventory_verification() {
@@ -691,4 +732,5 @@ test_none_inventory_and_resolved_prose_do_not_create_holds
 test_terminal_single_owner_status_decision_does_not_block_empty_inventory
 test_secondmate_hold_stays_in_authoritative_home
 test_resolve_matches_quoted_blocked_by_edges
+test_historical_open_inventory_diagnostics_name_safe_remedies
 test_resolution_receipt_attack_constructions_refuse
