@@ -4,8 +4,8 @@ Audience: maintainer verification.
 
 Canonical carrier verification date: 2026-07-31.
 
-`bash tests/fm-captain-resume.test.sh` verifies that every mechanism-driven refresh includes the required state sections and preserves every historical carrier.
-Its bounded output is `ok - canonical CAPTAIN-RESUME refresh is complete and preserves historical carriers` followed by `ok - failed CAPTAIN-RESUME refresh preserves the previous carrier`.
+`bash tests/fm-captain-resume.test.sh` verifies that a mechanism-driven refresh includes the required state sections, preserves every historical carrier, and refuses incomplete upstream evidence without replacing the prior carrier.
+Its bounded output is `ok - canonical CAPTAIN-RESUME refresh is complete and preserves historical carriers`, `ok - failed CAPTAIN-RESUME refresh preserves the previous carrier`, and `ok - truncated CAPTAIN-RESUME evidence preserves the previous carrier`.
 
 This record supports the active bounded-memory and whole-file curation guarantees for Firstmate's internal `/stow` skill.
 [`docs/configuration.md`](../configuration.md) owns the current operator-facing setting and estimate.
@@ -15,6 +15,7 @@ Task chronology, fixture paths, and delivery evidence remain outside this record
 ## Synthetic real-agent pass
 
 The development-only real-agent pass ran on 2026-07-30 with Pi 0.82.0 on `openai-codex/gpt-5.6-terra` at medium thinking.
+It predates the canonical carrier refresh contract and remains verification of the bounded-memory curation behavior only, not a verbatim rerun recipe for the current complete `/stow` skill.
 It used disposable primary and secondmate-shaped `FM_HOME` directories under the repository worktree only.
 No live Firstmate memory, project data, credential content, or external system was placed in either fixture or prompt.
 The following exact Bash shell body created the sanitized fixtures, invoked the model-qualified skill twice per home, and captured reports, hashes, and file modes:
