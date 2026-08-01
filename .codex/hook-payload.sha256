@@ -4,7 +4,7 @@
 b95e276a5a8b1bf66ff99ad8c2f139cb06e238b3c952c06a4fa0cc27a72b5676  bin/fm-operational-input.sh
 922ce3f87c7e2b8d348973d023efef5693145ced82bc1c8abc7464367f45f6d8  bin/fm-arm-pretool-check.sh
 92516be1fbc65940991872dc5c1304301bc45ae7da40259058cad4d14769afbc  bin/fm-arm-command-policy.mjs
-27a867176c6968c67e3360db27a775c636aea9b50602cc4f1169cfa75e7d77fd  bin/fm-cd-pretool-check.sh
+c75c1e421e831f5c7c40f417800faadfd36d023e1299b8904f08283df93b8b44  bin/fm-cd-pretool-check.sh
 f9f897ec09e764a3b7e4792385e10d8cecc08bc8f561dbdd3fb9ba3a9efbd88a  bin/fm-cd-command-policy.mjs
 f07ff17086aec1b94dafbd5bb7ff30c9228f6aa3853a9db34337db3b775d7b8a  bin/fm-turnend-guard.sh
 a0ad343a5e48fcffd2dfa43ca9130c6968efa0174427013db2b143e1423408ad  bin/fm-supervision-lib.sh

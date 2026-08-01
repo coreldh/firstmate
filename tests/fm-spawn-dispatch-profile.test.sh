@@ -488,6 +488,53 @@ test_codex_stale_secondmate_manifest_refuses_before_endpoint() {
   pass "Codex secondmate preflight refuses before endpoint or metadata creation"
 }
 
+test_codex_older_secondmate_syncs_before_preflight() {
+  local rec id parent sm old_head new_head out status
+  id=profile-codex-older-secondmate-z4d
+  rec=$(make_spawn_case profile-codex-older-secondmate codex "$id")
+  read_case_record "$rec"
+  parent="$CASE_DIR/parent-root"
+  sm="$CASE_DIR/older-secondmate"
+
+  git init -q "$parent"
+  git -C "$parent" branch -m main
+  mkdir -p "$parent/bin"
+  printf 'data/\nstate/\nconfig/\nprojects/\n.fm-secondmate-home\n' > "$parent/.gitignore"
+  printf '# Firstmate\n' > "$parent/AGENTS.md"
+  printf '#!/usr/bin/env bash\nexit 0\n' > "$parent/bin/legacy.sh"
+  chmod +x "$parent/bin/legacy.sh"
+  git -C "$parent" add -A
+  git -C "$parent" commit -qm old-secondmate-root
+  old_head=$(git -C "$parent" rev-parse HEAD)
+
+  install_codex_hook_root "$parent"
+  git -C "$parent" add -A
+  git -C "$parent" commit -qm current-secondmate-root
+  new_head=$(git -C "$parent" rev-parse HEAD)
+  git -C "$parent" worktree add -q --detach "$sm" "$old_head"
+  mkdir -p "$sm/data"
+  printf '%s\n' "$id" > "$sm/.fm-secondmate-home"
+  printf 'charter for %s\n' "$id" > "$sm/data/charter.md"
+  assert_absent "$sm/.codex/hook-payload.sha256" \
+    "older secondmate fixture unexpectedly started with a manifest"
+
+  out=$(FM_TEST_ROOT_OVERRIDE="$parent" \
+    run_spawn "$HOME_DIR" "$WT_DIR" "$FAKEBIN_DIR" "$LAUNCH_LOG" \
+      "$id" "$sm" --secondmate --harness codex)
+  status=$?
+
+  expect_code 0 "$status" "older secondmate should sync before Codex preflight"
+  assert_contains "$out" "spawned $id harness=codex kind=secondmate" \
+    "synced secondmate did not launch"
+  [ "$(git -C "$sm" rev-parse HEAD)" = "$new_head" ] \
+    || fail "older secondmate did not fast-forward before preflight"
+  assert_present "$sm/.codex/hook-payload.sha256" \
+    "post-sync secondmate did not receive the current manifest"
+  assert_present "$CASE_DIR/endpoint.log" \
+    "post-sync preflight did not permit endpoint creation"
+  pass "older Codex secondmate syncs before the post-sync manifest preflight"
+}
+
 test_grok_threads_model_and_reasoning_effort() {
   local rec id out status launch
   id=profile-grok-z5
@@ -766,6 +813,7 @@ test_codex_threads_model_and_effort
 test_codex_omits_invalid_max_effort
 test_codex_stale_parent_manifest_refuses_before_endpoint
 test_codex_stale_secondmate_manifest_refuses_before_endpoint
+test_codex_older_secondmate_syncs_before_preflight
 test_grok_threads_model_and_reasoning_effort
 test_grok_omits_invalid_max_reasoning_effort
 test_grok_omits_invalid_xhigh_reasoning_effort
