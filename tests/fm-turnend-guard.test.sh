@@ -706,67 +706,26 @@ test_grok_adapter_missing_jq_and_no_supervision_allow() {
   pass "fm-turnend-guard-grok: missing jq and no-supervision-needed stops stay silent and bounded"
 }
 
-test_codex_hook_uses_process_pwd_when_payload_cwd_is_outside_root() {
-  local settings command dir expected_root outside payload out status
+test_codex_hook_uses_prepared_root_when_payload_cwd_is_untrusted() {
+  local settings command dir nested payload out status
   settings="$ROOT/.codex/hooks.json"
   [ -f "$settings" ] || fail "tracked .codex/hooks.json is missing"
   command=$(jq -r '.hooks.Stop[0].hooks[0].command // empty' "$settings")
   [ -n "$command" ] || fail "Stop hook command is missing from .codex/hooks.json"
   dir=$(make_primary_dir "$TMP_ROOT/codex-hook-root")
-  mark_codex_hook_root "$dir"
-  expected_root=$(cd "$dir" && pwd -P)
-  outside="$TMP_ROOT/codex-hook-outside"
-  mkdir -p "$outside"
-  cat > "$dir/bin/fm-turnend-guard.sh" <<'EOF'
-#!/usr/bin/env bash
-printf 'guard=%s\n' "$0"
-cat
-EOF
-  chmod +x "$dir/bin/fm-turnend-guard.sh"
-  payload=$(jq -cn --arg cwd "$outside" '{cwd:$cwd,stop_hook_active:false}')
-  out=$(printf '%s' "$payload" | (cd "$dir" && bash -c "$command") 2>&1); status=$?
-  expect_code 0 "$status" "codex hook must execute successfully when payload cwd is outside the firstmate root"
-  assert_contains "$out" "guard=$expected_root/bin/fm-turnend-guard.sh" "codex hook must use the hook process root"
-  assert_contains "$out" "$payload" "codex hook must pass the original payload to the guard"
-  pass ".codex/hooks.json: Stop hook uses hook process root when payload cwd is outside"
-}
-
-test_codex_hook_ignores_nested_git_root_guard() {
-  local settings command dir nested subdir expected_root payload out status
-  settings="$ROOT/.codex/hooks.json"
-  [ -f "$settings" ] || fail "tracked .codex/hooks.json is missing"
-  command=$(jq -r '.hooks.Stop[0].hooks[0].command // empty' "$settings")
-  [ -n "$command" ] || fail "Stop hook command is missing from .codex/hooks.json"
-  dir=$(make_primary_dir "$TMP_ROOT/codex-hook-outer")
-  mark_codex_hook_root "$dir"
-  expected_root=$(cd "$dir" && pwd -P)
+  : > "$dir/state/task.meta"
   nested="$dir/projects/other"
   mkdir -p "$nested"
   git init -q "$nested"
   git -C "$nested" commit -q --allow-empty -m init
-  mkdir -p "$nested/bin" "$nested/.codex"
-  : > "$nested/AGENTS.md"
-  printf '{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"fm-turnend-guard.sh"}]}]}}\n' > "$nested/.codex/hooks.json"
-  cat > "$nested/bin/fm-turnend-guard.sh" <<'EOF'
-#!/usr/bin/env bash
-printf 'nested guard executed\n'
-exit 99
-EOF
-  chmod +x "$nested/bin/fm-turnend-guard.sh"
-  cat > "$dir/bin/fm-turnend-guard.sh" <<'EOF'
-#!/usr/bin/env bash
-printf 'guard=%s\n' "$0"
-cat
-EOF
-  chmod +x "$dir/bin/fm-turnend-guard.sh"
-  subdir="$nested/deep/path"
-  mkdir -p "$subdir"
-  payload=$(jq -cn --arg cwd "$subdir" '{cwd:$cwd,stop_hook_active:false}')
-  out=$(printf '%s' "$payload" | (cd "$dir" && bash -c "$command") 2>&1); status=$?
-  expect_code 0 "$status" "codex hook must not execute a nested project guard"
-  assert_contains "$out" "guard=$expected_root/bin/fm-turnend-guard.sh" "codex hook must keep using the outer firstmate guard"
-  assert_not_contains "$out" "nested guard executed" "codex hook must not execute nested project code"
-  pass ".codex/hooks.json: Stop hook ignores nested git root guard scripts"
+  payload=$(jq -cn --arg cwd "$nested" '{cwd:$cwd,stop_hook_active:false}')
+  out=$(printf '%s' "$payload" \
+    | TMPDIR="$TMP_ROOT" FM_CODEX_HOOK_ROOT="$ROOT" FM_CODEX_HOOK_SOURCE_ROOT="$dir" \
+      FM_CODEX_HOOK_PREPARED=1 FM_HOME="$dir" bash -c "$command" 2>&1); status=$?
+  expect_code 2 "$status" "codex hook must execute the trusted primary guard"
+  assert_contains "$out" "TURN WOULD END BLIND - SUPERVISION IS OFF" \
+    "codex hook did not preserve the trusted turn-end behavior"
+  pass ".codex/hooks.json: Stop hook ignores payload cwd and runs the prepared trusted guard"
 }
 
 test_opencode_plugin_anchors_guard_to_worktree() {
@@ -1140,8 +1099,7 @@ test_grok_adapter_native_true_allows_without_resume
 test_grok_adapter_snake_case_native_and_camel_precedence
 test_grok_adapter_invalid_inputs_start_neither_path
 test_grok_adapter_missing_jq_and_no_supervision_allow
-test_codex_hook_uses_process_pwd_when_payload_cwd_is_outside_root
-test_codex_hook_ignores_nested_git_root_guard
+test_codex_hook_uses_prepared_root_when_payload_cwd_is_untrusted
 test_opencode_plugin_anchors_guard_to_worktree
 test_pi_extension_injects_once_per_logical_agent_run
 test_pi_extension_retries_after_followup_delivery_failure

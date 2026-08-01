@@ -1676,6 +1676,14 @@ LAUNCH=${LAUNCH//__OPINPUT__/$sq_opinput}
 if [ "$HARNESS" = claude ] && [ -n "${CLAUDE_CONFIG_DIR:-}" ]; then
   LAUNCH="CLAUDE_CONFIG_DIR=$(shell_quote "$CLAUDE_CONFIG_DIR") $LAUNCH"
 fi
+if [ "$HARNESS" = codex ]; then
+  CODEX_HOOK_ROOT=$FM_ROOT
+  [ "$KIND" = secondmate ] && CODEX_HOOK_ROOT=$PROJ_ABS
+  sq_codex_hook_launch=$(shell_quote "$CODEX_HOOK_ROOT/bin/fm-codex-hook-launch.sh")
+  sq_codex_hook_root=$(shell_quote "$CODEX_HOOK_ROOT")
+  sq_codex_hook_stage_parent=$(shell_quote "$TASK_TMP")
+  LAUNCH="$sq_codex_hook_launch $sq_codex_hook_root $sq_codex_hook_stage_parent -- $LAUNCH"
+fi
 if [ "$KIND" = secondmate ]; then
   sq_home=$(shell_quote "$PROJ_ABS")
   sq_primary_home=$(shell_quote "$FM_HOME")

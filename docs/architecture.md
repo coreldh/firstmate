@@ -86,6 +86,22 @@ Stalled escalation delivery writes `state/.subsuper-inject-wedged` and attempts 
 On an unmarked return, `bin/fm-afk-return.sh` owns ordered shutdown, durable catch-up evidence, and the fail-closed gate that keeps ordinary work behind every live firstmate-actionable blocker.
 `fm-send.sh` selects a pre-Enter popup-settle for slash commands and for codex `$...` skill invocations using metadata-routed target `harness=` values, then adds its own `FM_SEND_SETTLE` pause after successful text sends so immediate peeks catch the receiving turn starting; the sub-supervisor uses only the shared submit core and does not pay that post-submit pause.
 
+## Codex hook payload boundary
+
+Firstmate-launched Codex workers enter through `bin/fm-codex-hook-launch.sh` before the Codex executable starts.
+The launcher copies the `.codex/hook-payload.sha256` closure from the main or secondmate tracked root into a private task stage, verifies the copied bytes, and passes the source and stage roots separately to every hook.
+On macOS with `/usr/bin/sandbox-exec`, the launched Codex process tree cannot write the source-root identity, the `bin/` and `.codex/` container identities, the hook declarations, the manifest-declared source files, or the complete prepared stage.
+The profile is deliberately path-specific, so unrelated files in the same tracked root remain outside this protection.
+
+Every command in `.codex/hooks.json` invokes `/bin/bash --noprofile --norc`, pins both the manifest digest and the runner digest, copies the runner to an opened and unlinked file descriptor, verifies those exact bytes, and then delegates to `bin/fm-codex-hook-run.sh`.
+The runner re-verifies the full staged closure before executing a manifest-declared target with the original tracked root as `FM_ROOT_OVERRIDE`.
+A manual Codex launch without Firstmate's prepared stage makes a fresh private copy, verifies that copy, makes it user-immutable where macOS provides `chflags`, and runs it under a stage-specific write-denial sandbox.
+Cleanup reverses every temporary mode or flag before deleting only the private stage.
+
+This boundary prevents a Firstmate-launched Codex descendant from mutating its own hook anchor and removes source-path verification races.
+It does not create a privilege boundary against the account owner or malware already running outside the sandbox as that account.
+[`verification/codex-hook-hardening.md`](verification/codex-hook-hardening.md) owns the measured macOS behavior, per-residual verdicts, exact reversals, and privileged follow-up plan.
+
 ## Busy state is semantic, per adapter
 
 `bin/fm-busy-lib.sh` is the single owner of what "this worker is busy" means, and `bin/fm-busy-event.sh` is the only writer of the per-task records it reads.
