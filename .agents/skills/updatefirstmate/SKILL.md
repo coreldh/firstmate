@@ -40,13 +40,13 @@ This touches only the firstmate repo and its own worktrees, never anything under
    When it printed `reread-firstmate: no`, nothing changed for you - skip the re-read.
 
 4. **Nudge each updated live secondmate.**
-   For every target listed on the `nudge-secondmates:` line (do nothing when it says `none`), send a one-line re-read nudge so that secondmate picks up its new instructions too:
+   For every target listed on the `nudge-secondmates:` line except a root named by a hook-manifest diagnostic (do nothing when it says `none`), send a one-line re-read nudge so that secondmate picks up its new instructions too:
    ```sh
    FM_HOME=<this-firstmate-home> bin/fm-send.sh <id> 'firstmate was updated to the latest - please re-read your AGENTS.md to pick up the new instructions.'
    ```
    Include `FM_HOME=<this-firstmate-home>` unless `FM_HOME` is already set to the active firstmate home.
    This is a gentle steer, not an interruption: the secondmate already got a safe tracked-files fast-forward, and the nudge never forces, tears down, or discards its work.
-   A secondmate that was skipped, already current, or has no live metadata is not on the list and needs no nudge.
+   A secondmate that was skipped, already current, has no live metadata, or was named by a hook-manifest diagnostic needs no nudge.
 
 5. **Report to the captain in plain outcomes.**
    Summarize what landed under `AGENTS.md` section 9 without firstmate's internal vocabulary: which parts of the fleet are now on the latest, and which were left as-is and why.

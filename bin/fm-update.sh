@@ -25,7 +25,8 @@
 #   - one status line per target (updated/already current/skipped)
 #   - HOOK_MANIFEST_STALE or HOOK_MANIFEST_ERROR after an unsafe post-FF check
 #   - reread-firstmate: yes|no    (did the running firstmate's instructions change)
-#   - nudge-secondmates: fm-<id>...|none   (updated live secondmates to nudge)
+#   - nudge-secondmates: fm-<id>...|none   (updated live secondmate candidates;
+#     the skill excludes roots named by a hook-manifest diagnostic)
 #
 # Usage: fm-update.sh [--help]
 set -eu
