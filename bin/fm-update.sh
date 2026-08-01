@@ -42,6 +42,31 @@ SECONDMATES_MD="$FM_HOME/data/secondmates.md"
 
 usage() { echo "usage: fm-update.sh [--help]" >&2; }
 
+check_hook_manifest_root() {
+  local root=$1 label=$2 hook_manifest_output hook_manifest_rc
+  if hook_manifest_output=$(FM_ROOT_OVERRIDE="$root" \
+    "$SCRIPT_DIR/fm-hook-manifest.sh" --check 2>&1); then
+    return 0
+  else
+    hook_manifest_rc=$?
+  fi
+  if [ "$hook_manifest_rc" -eq 1 ]; then
+    printf '%s\n' \
+      "HOOK_MANIFEST_STALE: $label ($root) advanced with an obsolete Codex hook payload manifest." \
+      "HOOK_MANIFEST_STALE: regenerate and review it with bin/fm-hook-manifest.sh before trusting hooks." \
+      "$hook_manifest_output" >&2
+  else
+    printf '%s\n' \
+      "HOOK_MANIFEST_ERROR: $label ($root) advanced but its Codex hook payload manifest could not be verified." \
+      "$hook_manifest_output" >&2
+  fi
+  return 0
+}
+
+fm_ff_after_update() {
+  check_hook_manifest_root "$2" "secondmate $1"
+}
+
 if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
   usage
   exit 0
@@ -56,22 +81,7 @@ if [ "$FF_STATUS" = "updated" ] && [ -n "$FF_INSTR" ]; then
   reread_firstmate="yes"
 fi
 if [ "$FF_STATUS" = "updated" ]; then
-  if hook_manifest_output=$(FM_ROOT_OVERRIDE="$FM_ROOT" \
-    "$SCRIPT_DIR/fm-hook-manifest.sh" --check 2>&1); then
-    :
-  else
-    hook_manifest_rc=$?
-    if [ "$hook_manifest_rc" -eq 1 ]; then
-      printf '%s\n' \
-        "HOOK_MANIFEST_STALE: the fast-forwarded Codex hook payload manifest is obsolete." \
-        "HOOK_MANIFEST_STALE: regenerate and review it with bin/fm-hook-manifest.sh before trusting hooks." \
-        "$hook_manifest_output" >&2
-    else
-      printf '%s\n' \
-        "HOOK_MANIFEST_ERROR: the fast-forwarded Codex hook payload manifest could not be verified." \
-        "$hook_manifest_output" >&2
-    fi
-  fi
+  check_hook_manifest_root "$FM_ROOT" firstmate
 fi
 
 # --- secondmates -----------------------------------------------------------

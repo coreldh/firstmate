@@ -25,7 +25,12 @@ esac
 case "${1:-}" in
   display-message) printf 'firstmate\n'; exit 0 ;;
   list-windows) exit 0 ;;
-  has-session|new-session|new-window|kill-window) exit 0 ;;
+  has-session|new-session|kill-window) exit 0 ;;
+  new-window)
+    [ -z "${FM_FAKE_ENDPOINT_LOG:-}" ] \
+      || printf 'endpoint-created\n' >> "$FM_FAKE_ENDPOINT_LOG"
+    exit 0
+    ;;
   send-keys)
     if [ -n "${FM_FAKE_LAUNCH_LOG:-}" ]; then
       prev=
@@ -72,28 +77,44 @@ enable_dispatch_profile() {
     > "$home/config/crew-dispatch.json"
 }
 
+install_codex_hook_root() {
+  local home=$1 payload
+  mkdir -p "$home/.codex" "$home/bin"
+  cp "$ROOT/.codex/hook-payload.sha256" "$home/.codex/hook-payload.sha256"
+  cp "$ROOT/.codex/hooks.json" "$home/.codex/hooks.json"
+  cp "$ROOT/bin/fm-hook-manifest.sh" "$home/bin/fm-hook-manifest.sh"
+  while read -r _ payload; do
+    mkdir -p "$home/$(dirname "$payload")"
+    cp "$ROOT/$payload" "$home/$payload"
+  done < "$ROOT/.codex/hook-payload.sha256"
+}
+
 make_seeded_secondmate_home() {
   local home=$1 id=$2
   mkdir -p "$home/bin" "$home/data"
+  install_codex_hook_root "$home"
   printf '# Firstmate\n' > "$home/AGENTS.md"
   printf '%s\n' "$id" > "$home/.fm-secondmate-home"
   printf 'charter for %s\n' "$id" > "$home/data/charter.md"
 }
 
 run_spawn() {
-  local home=$1 wt=$2 fakebin=$3 launchlog=$4
+  local home=$1 wt=$2 fakebin=$3 launchlog=$4 endpointlog
   shift 4
   : > "$launchlog"
+  endpointlog="$(dirname "$launchlog")/endpoint.log"
+  rm -f "$endpointlog"
   # CLAUDE_CONFIG_DIR is forwarded onto claude launches by fm-spawn, so pin it
   # explicitly (empty by default) instead of leaking the invoking shell's value,
   # which would make launch assertions depend on the developer's environment.
   # A test opts in to the set case via FM_TEST_CLAUDE_CONFIG_DIR.
-  FM_ROOT_OVERRIDE='' FM_HOME="$home" \
+  FM_ROOT_OVERRIDE="${FM_TEST_ROOT_OVERRIDE:-}" FM_HOME="$home" \
     FM_STATE_OVERRIDE="$home/state" FM_DATA_OVERRIDE="$home/data" \
     FM_PROJECTS_OVERRIDE="$home/projects" FM_CONFIG_OVERRIDE="$home/config" \
     FM_SPAWN_NO_GUARD=1 FM_FAKE_PANE_PATH="$wt" TMUX="fake,1,0" \
     CLAUDE_CONFIG_DIR="${FM_TEST_CLAUDE_CONFIG_DIR:-}" \
-    FM_FAKE_LAUNCH_LOG="$launchlog" GROK_HOME="$home/grok-home" PATH="$fakebin:$PATH" \
+    FM_FAKE_LAUNCH_LOG="$launchlog" FM_FAKE_ENDPOINT_LOG="$endpointlog" \
+    GROK_HOME="$home/grok-home" PATH="$fakebin:$PATH" \
     "$SPAWN" "$@" 2>&1
 }
 
@@ -308,7 +329,7 @@ test_active_dispatch_profile_requires_explicit_harness_for_scout() {
 }
 
 test_active_dispatch_profile_allows_explicit_harness() {
-  local rec id out status launch
+  local rec id out status launch wt_real
   id=profile-explicit-z13
   rec=$(make_spawn_case profile-explicit claude "$id")
   read_case_record "$rec"
@@ -321,10 +342,13 @@ test_active_dispatch_profile_allows_explicit_harness() {
   assert_contains "$out" "spawned $id harness=codex" "spawn did not report explicit codex harness"
   assert_meta_profile "$HOME_DIR/state/$id.meta" codex gpt-5 high
   launch=$(cat "$LAUNCH_LOG")
+  wt_real=$(cd "$WT_DIR" && pwd -P)
   assert_contains "$launch" "codex --model 'gpt-5' -c 'model_reasoning_effort=\"high\"' --dangerously-bypass-approvals-and-sandbox" \
     "explicit harness launch did not thread model and effort"
   assert_contains "$launch" "FM_CODEX_HOOK_ROOT='$ROOT'" \
     "codex crewmate launch did not anchor hooks to the tracked parent code root"
+  assert_contains "$launch" "FM_ROOT_OVERRIDE='$wt_real'" \
+    "codex crewmate launch did not bind hook scope to its canonical worktree"
   pass "active crew-dispatch profile allows an explicit resolved harness"
 }
 
@@ -409,6 +433,59 @@ test_codex_omits_invalid_max_effort() {
     "codex launch did not preserve the model flag when max effort was omitted"
   assert_not_contains "$launch" "model_reasoning_effort" "codex launch must omit unsupported max reasoning effort"
   pass "codex omits unsupported max effort instead of passing a bad config value"
+}
+
+test_codex_stale_parent_manifest_refuses_before_endpoint() {
+  local rec id trusted out status
+  id=profile-codex-stale-parent-z4b
+  rec=$(make_spawn_case profile-codex-stale-parent codex "$id")
+  read_case_record "$rec"
+  trusted="$CASE_DIR/trusted-root"
+  install_codex_hook_root "$trusted"
+  printf '\n# stale payload\n' >> "$trusted/bin/fm-harness.sh"
+
+  out=$(FM_TEST_ROOT_OVERRIDE="$trusted" \
+    run_spawn "$HOME_DIR" "$WT_DIR" "$FAKEBIN_DIR" "$LAUNCH_LOG" \
+      "$id" "$PROJ_DIR" --harness codex)
+  status=$?
+
+  expect_code 1 "$status" "stale parent hook manifest should refuse a Codex spawn"
+  assert_contains "$out" "Codex hook manifest preflight failed for firstmate parent" \
+    "stale parent refusal did not identify the preflight"
+  assert_contains "$out" "hook manifest drift: .codex/hook-payload.sha256" \
+    "stale parent refusal did not include manifest drift"
+  assert_absent "$CASE_DIR/endpoint.log" \
+    "stale parent manifest created a worker endpoint"
+  assert_absent "$HOME_DIR/state/$id.meta" \
+    "stale parent manifest wrote task metadata"
+  [ ! -s "$LAUNCH_LOG" ] || fail "stale parent manifest typed a launch command"
+  pass "Codex parent preflight refuses before endpoint or metadata creation"
+}
+
+test_codex_stale_secondmate_manifest_refuses_before_endpoint() {
+  local rec id sm out status
+  id=profile-codex-stale-secondmate-z4c
+  rec=$(make_spawn_case profile-codex-stale-secondmate codex "$id")
+  read_case_record "$rec"
+  sm="$CASE_DIR/secondmate-home"
+  make_seeded_secondmate_home "$sm" "$id"
+  printf '\n# stale payload\n' >> "$sm/bin/fm-harness.sh"
+
+  out=$(run_spawn "$HOME_DIR" "$WT_DIR" "$FAKEBIN_DIR" "$LAUNCH_LOG" \
+    "$id" "$sm" --secondmate --harness codex)
+  status=$?
+
+  expect_code 1 "$status" "stale secondmate hook manifest should refuse a Codex spawn"
+  assert_contains "$out" "Codex hook manifest preflight failed for secondmate $id" \
+    "stale secondmate refusal did not identify the selected root"
+  assert_contains "$out" "hook manifest drift: .codex/hook-payload.sha256" \
+    "stale secondmate refusal did not include manifest drift"
+  assert_absent "$CASE_DIR/endpoint.log" \
+    "stale secondmate manifest created a worker endpoint"
+  assert_absent "$HOME_DIR/state/$id.meta" \
+    "stale secondmate manifest wrote task metadata"
+  [ ! -s "$LAUNCH_LOG" ] || fail "stale secondmate manifest typed a launch command"
+  pass "Codex secondmate preflight refuses before endpoint or metadata creation"
 }
 
 test_grok_threads_model_and_reasoning_effort() {
@@ -669,6 +746,8 @@ test_active_dispatch_profile_does_not_block_secondmate_launch() {
   assert_meta_profile "$HOME_DIR/state/$id.meta" codex default default
   assert_contains "$(cat "$LAUNCH_LOG")" "FM_CODEX_HOOK_ROOT='$sm_real'" \
     "codex secondmate launch did not anchor hooks to the secondmate tracked code root"
+  assert_contains "$(cat "$LAUNCH_LOG")" "FM_ROOT_OVERRIDE='$sm_real'" \
+    "codex secondmate launch did not bind hook scope to its canonical home"
   pass "active crew-dispatch profile does not block secondmate launches"
 }
 
@@ -685,6 +764,8 @@ test_active_dispatch_profile_allows_raw_launch_command
 test_claude_threads_model_and_effort
 test_codex_threads_model_and_effort
 test_codex_omits_invalid_max_effort
+test_codex_stale_parent_manifest_refuses_before_endpoint
+test_codex_stale_secondmate_manifest_refuses_before_endpoint
 test_grok_threads_model_and_reasoning_effort
 test_grok_omits_invalid_max_reasoning_effort
 test_grok_omits_invalid_xhigh_reasoning_effort

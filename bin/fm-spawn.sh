@@ -575,6 +575,18 @@ shell_quote() {
   printf "'"
 }
 
+codex_hook_manifest_preflight() {
+  local root=$1 label=$2 out rc
+  if out=$(FM_ROOT_OVERRIDE="$root" "$SCRIPT_DIR/fm-hook-manifest.sh" --check 2>&1); then
+    return 0
+  else
+    rc=$?
+  fi
+  printf 'error: Codex hook manifest preflight failed for %s (%s), exit %s\n%s\n' \
+    "$label" "$root" "$rc" "$out" >&2
+  return 1
+}
+
 resolve_kimi_binary() {
   local candidate dir fallback
   candidate=$(command -v kimi 2>/dev/null || true)
@@ -797,6 +809,9 @@ if [ "$KIND" = secondmate ]; then
     SECONDMATE_PROJECTS=$SECONDMATE_REGISTRY_MATCH_PROJECTS
   fi
   WT="$PROJ_ABS"
+  if [ "$HARNESS" = codex ]; then
+    codex_hook_manifest_preflight "$PROJ_ABS" "secondmate $ID" || exit 1
+  fi
   # Local-HEAD sync: before launch, fast-forward this secondmate's worktree to the
   # PRIMARY checkout's current default-branch commit, so a freshly spawned or
   # recovery-respawned secondmate always runs the primary's version (AGENTS.md
@@ -816,6 +831,9 @@ if [ "$KIND" = secondmate ]; then
     esac
   else
     echo "warning: secondmate $ID sync skipped before launch: primary default-branch commit cannot be resolved" >&2
+  fi
+  if [ "$HARNESS" = codex ]; then
+    codex_hook_manifest_preflight "$PROJ_ABS" "secondmate $ID after sync" || exit 1
   fi
   mkdir -p "$PROJ_ABS/state" || {
     echo "error: could not create secondmate state directory for $PROJ_ABS" >&2
@@ -843,6 +861,9 @@ else
   PROJ_ABS="$(cd "$(resolve_project_dir_arg "$PROJ")" && pwd)"
   WT=""
   BRIEF="$DATA/$ID/brief.md"
+  if [ "$HARNESS" = codex ]; then
+    codex_hook_manifest_preflight "$FM_ROOT" "firstmate parent" || exit 1
+  fi
 fi
 [ -f "$BRIEF" ] || { echo "error: no brief at $BRIEF" >&2; exit 1; }
 BRIEF_DIR_REAL=$(cd "$(dirname "$BRIEF")" && pwd -P)
@@ -893,6 +914,7 @@ validate_spawn_worktree() {  # <source> <inspect-target>
     echo "error: $source did not yield an isolated worktree (resolved '$WT'; worktree root '${wt_top:-none}'; primary '$PROJ_ABS'); refusing to launch to avoid tangling the primary checkout. Inspect target $inspect_target" >&2
     exit 1
   fi
+  WT=$wt_real
 }
 
 herdr_projection_meta_field_exact() {  # <meta> <key>
@@ -1675,11 +1697,16 @@ if [ "$HARNESS" = codex ]; then
   CODEX_HOOK_ROOT=$FM_ROOT
   [ "$KIND" = secondmate ] && CODEX_HOOK_ROOT=$PROJ_ABS
   LAUNCH="FM_CODEX_HOOK_ROOT=$(shell_quote "$CODEX_HOOK_ROOT") $LAUNCH"
+  if [ "$KIND" != secondmate ]; then
+    LAUNCH="FM_ROOT_OVERRIDE=$(shell_quote "$WT") $LAUNCH"
+  fi
 fi
 if [ "$KIND" = secondmate ]; then
   sq_home=$(shell_quote "$PROJ_ABS")
   sq_primary_home=$(shell_quote "$FM_HOME")
-  LAUNCH="FM_ROOT_OVERRIDE= FM_STATE_OVERRIDE= FM_DATA_OVERRIDE= FM_PROJECTS_OVERRIDE= FM_CONFIG_OVERRIDE= FM_PUBLIC_FOLLOWUP_PRIMARY_HOME=$sq_primary_home FM_HOME=$sq_home $LAUNCH"
+  sq_root_override=
+  [ "$HARNESS" != codex ] || sq_root_override=$(shell_quote "$WT")
+  LAUNCH="FM_ROOT_OVERRIDE=$sq_root_override FM_STATE_OVERRIDE= FM_DATA_OVERRIDE= FM_PROJECTS_OVERRIDE= FM_CONFIG_OVERRIDE= FM_PUBLIC_FOLLOWUP_PRIMARY_HOME=$sq_primary_home FM_HOME=$sq_home $LAUNCH"
 fi
 # Export GOTMPDIR into the crewmate's pane shell so the agent and every child
 # process (go build, go test, ...) inherit it. Sent before the launch command so

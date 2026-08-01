@@ -317,13 +317,42 @@ test_warns_when_fast_forward_makes_hook_manifest_stale() {
   assert_contains "$out" "firstmate: updated " \
     "firstmate fast-forwarded the changed payload"
   assert_contains "$out" \
-    "HOOK_MANIFEST_STALE: the fast-forwarded Codex hook payload manifest is obsolete." \
+    "HOOK_MANIFEST_STALE: firstmate ($w/main) advanced with an obsolete Codex hook payload manifest." \
     "self-update warns about the stale hook manifest"
   assert_contains "$out" "hook manifest drift: .codex/hook-payload.sha256" \
     "self-update includes the generator diagnostic"
   [ -z "$(git -C "$w/main" status --porcelain)" ] \
     || fail "self-update --check dirtied the fast-forwarded checkout"
   pass "T12 post-fast-forward check warns without dirtying the checkout"
+}
+
+test_warns_for_an_updated_secondmate_root() {
+  local w out sm_real
+  w=$(new_world t13)
+  add_sm "$w" sm1
+  printf '\n# upstream payload change without regenerated manifest\n' \
+    >> "$w/seed/bin/fm-harness.sh"
+  git -C "$w/seed" add -A
+  git -C "$w/seed" commit -qm stale-secondmate-hook-manifest
+  git -C "$w/seed" push -q origin main
+  git -C "$w/main" pull -q --ff-only origin main
+  sm_real=$(cd "$w/sm1" && pwd -P)
+
+  out=$(run_update_with_diagnostics "$w")
+
+  assert_contains "$out" "firstmate: already current" \
+    "firstmate setup did not isolate the secondmate-only advance"
+  assert_contains "$out" "secondmate sm1: updated " \
+    "secondmate did not advance to the stale manifest"
+  assert_contains "$out" \
+    "HOOK_MANIFEST_STALE: secondmate sm1 ($sm_real) advanced with an obsolete Codex hook payload manifest." \
+    "self-update did not diagnose the updated secondmate root"
+  assert_not_contains "$out" "HOOK_MANIFEST_STALE: firstmate" \
+    "already-current firstmate incorrectly emitted an update diagnostic"
+  [ -z "$(git -C "$w/sm1" status --porcelain \
+    | awk '$0 != "?? .fm-secondmate-home" { print }')" ] \
+    || fail "secondmate --check dirtied the fast-forwarded checkout"
+  pass "T13 each updated secondmate root receives its own manifest diagnostic"
 }
 
 test_updates_main_and_secondmate
@@ -336,5 +365,6 @@ test_firstmate_wrong_branch_skipped
 test_firstmate_detached_head_skipped
 test_unsafe_secondmate_home_skipped_before_git_update
 test_warns_when_fast_forward_makes_hook_manifest_stale
+test_warns_for_an_updated_secondmate_root
 
 echo "# all fm-update tests passed"

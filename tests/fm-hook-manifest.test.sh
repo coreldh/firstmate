@@ -60,6 +60,15 @@ assert_four_consistent_guards() {
     || fail "hooks.json guards do not pin the generated manifest"
 }
 
+test_tracked_tree_is_current() {
+  local out
+  out=$("$GENERATOR" --check 2>&1) \
+    || fail "tracked hook manifest currency check failed: $out"
+  assert_contains "$out" "hook manifest: current" \
+    "tracked hook manifest check did not report current"
+  pass "tracked hook manifest and all four pins are current"
+}
+
 test_check_detects_drift_without_writing() {
   local fixture before_manifest before_hooks out rc
   fixture=$(new_fixture drift)
@@ -82,6 +91,61 @@ test_check_detects_drift_without_writing() {
   [ "$(shasum -a 256 "$fixture/.codex/hooks.json")" = "$before_hooks" ] \
     || fail "--check rewrote hooks.json"
   pass "drift is detected without tracked-file writes"
+}
+
+test_check_detects_manifest_only_drift() {
+  local fixture before_hooks out rc
+  fixture=$(new_fixture manifest-only-drift)
+  before_hooks=$(shasum -a 256 "$fixture/.codex/hooks.json")
+  printf '# stale stored manifest\n' >> "$fixture/.codex/hook-payload.sha256"
+
+  set +e
+  out=$(run_generator "$fixture" --check 2>&1)
+  rc=$?
+  set -e
+
+  [ "$rc" -eq 1 ] || fail "--check returned $rc for manifest-only drift, expected 1"
+  assert_contains "$out" "hook manifest drift: .codex/hook-payload.sha256" \
+    "--check did not report manifest-only drift"
+  assert_not_contains "$out" "hook manifest drift: .codex/hooks.json" \
+    "manifest-only drift incorrectly reported hooks.json drift"
+  [ "$(shasum -a 256 "$fixture/.codex/hooks.json")" = "$before_hooks" ] \
+    || fail "manifest-only --check rewrote hooks.json"
+  pass "stored manifest drift is detected independently from hook pins"
+}
+
+test_check_detects_hooks_only_drift() {
+  local fixture before_manifest out rc zeros
+  fixture=$(new_fixture hooks-only-drift)
+  before_manifest=$(shasum -a 256 "$fixture/.codex/hook-payload.sha256")
+  zeros=0000000000000000000000000000000000000000000000000000000000000000
+  awk -v digest="$zeros" '
+    BEGIN { prefix = "manifest_hash\\\" = \\\"" }
+    {
+      rest = $0
+      output = ""
+      while ((position = index(rest, prefix)) != 0) {
+        output = output substr(rest, 1, position + length(prefix) - 1) digest
+        rest = substr(rest, position + length(prefix) + 64)
+      }
+      print output rest
+    }
+  ' "$fixture/.codex/hooks.json" > "$fixture/.codex/hooks.json.changed"
+  mv "$fixture/.codex/hooks.json.changed" "$fixture/.codex/hooks.json"
+
+  set +e
+  out=$(run_generator "$fixture" --check 2>&1)
+  rc=$?
+  set -e
+
+  [ "$rc" -eq 1 ] || fail "--check returned $rc for hooks-only drift, expected 1"
+  assert_contains "$out" "hook manifest drift: .codex/hooks.json" \
+    "--check did not report hooks-only drift"
+  assert_not_contains "$out" "hook manifest drift: .codex/hook-payload.sha256" \
+    "hooks-only drift incorrectly reported manifest drift"
+  [ "$(shasum -a 256 "$fixture/.codex/hook-payload.sha256")" = "$before_manifest" ] \
+    || fail "hooks-only --check rewrote the manifest"
+  pass "hook pin drift is detected independently from the stored manifest"
 }
 
 test_missing_payload_refuses_before_writing() {
@@ -161,7 +225,10 @@ test_write_updates_four_guards_and_is_idempotent() {
   pass "write mode updates all four guards and a second run changes nothing"
 }
 
+test_tracked_tree_is_current
 test_check_detects_drift_without_writing
+test_check_detects_manifest_only_drift
+test_check_detects_hooks_only_drift
 test_missing_payload_refuses_before_writing
 test_symlink_payload_refuses_before_writing
 test_write_updates_four_guards_and_is_idempotent

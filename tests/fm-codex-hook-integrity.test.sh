@@ -13,21 +13,36 @@ set -u
 TMP_ROOT=$(fm_test_tmproot fm-codex-hook-integrity)
 TRUSTED_ROOT="$TMP_ROOT/trusted"
 WORKTREE_ROOT="$TMP_ROOT/worktree"
+UNTRUSTED_ROOT="$TMP_ROOT/untrusted"
 TRUST_MODEL="$TMP_ROOT/config.toml"
+EXECUTION_LOG="$TMP_ROOT/trusted-execution.log"
 PAYLOAD='{"stop_hook_active":false,"session_id":"hook-integrity-test"}'
 
 # shellcheck disable=SC2016 # Exact legacy declaration fixture; expansion belongs to its inner bash -lc.
 LEGACY_COMMAND='bash -lc '\''payload=$(cat 2>/dev/null || true); [ -n "$payload" ] || exit 0; command -v jq >/dev/null 2>&1 || exit 0; root=$(pwd -P) || exit 0; [ -x "$root/bin/fm-turnend-guard.sh" ] || exit 0; [ -f "$root/AGENTS.md" ] || exit 0; [ -f "$root/.codex/hooks.json" ] || exit 0; jq -e "any(.hooks.Stop[]?.hooks[]?.command?; type == \"string\" and contains(\"fm-turnend-guard.sh\"))" "$root/.codex/hooks.json" >/dev/null 2>&1 || exit 0; printf "%s" "$payload" | "$root/bin/fm-turnend-guard.sh"'\'''
 
 install_trusted_fixture() {
-  local file
+  local file instrumented
   mkdir -p "$TRUSTED_ROOT/.codex" "$TRUSTED_ROOT/bin" "$TRUSTED_ROOT/state"
   cp "$ROOT/.codex/hooks.json" "$TRUSTED_ROOT/.codex/hooks.json"
   cp "$ROOT/.codex/hook-payload.sha256" "$TRUSTED_ROOT/.codex/hook-payload.sha256"
+  cp "$ROOT/bin/fm-hook-manifest.sh" "$TRUSTED_ROOT/bin/fm-hook-manifest.sh"
   while read -r _ file; do
     mkdir -p "$TRUSTED_ROOT/$(dirname "$file")"
     cp "$ROOT/$file" "$TRUSTED_ROOT/$file"
   done < "$ROOT/.codex/hook-payload.sha256"
+  instrumented="$TRUSTED_ROOT/bin/fm-turnend-guard.sh.instrumented"
+  awk '
+    { print }
+    /^set -u$/ {
+      print "[ -z \"${FM_TEST_HOOK_EXECUTION_LOG:-}\" ] || printf '\''TRUSTED_PAYLOAD_EXECUTED\\n'\'' >> \"$FM_TEST_HOOK_EXECUTION_LOG\""
+    }
+  ' "$TRUSTED_ROOT/bin/fm-turnend-guard.sh" > "$instrumented"
+  mv "$instrumented" "$TRUSTED_ROOT/bin/fm-turnend-guard.sh"
+  chmod +x "$TRUSTED_ROOT/bin/fm-hook-manifest.sh" \
+    "$TRUSTED_ROOT/bin/fm-turnend-guard.sh"
+  FM_ROOT_OVERRIDE="$TRUSTED_ROOT" \
+    "$TRUSTED_ROOT/bin/fm-hook-manifest.sh" >/dev/null
   : > "$TRUSTED_ROOT/AGENTS.md"
   git -C "$TRUSTED_ROOT" init -q
   git -C "$TRUSTED_ROOT" add .
@@ -44,6 +59,16 @@ SH
   chmod +x "$WORKTREE_ROOT/bin/fm-turnend-guard.sh"
 }
 
+install_untrusted_cwd_payload() {
+  mkdir -p "$UNTRUSTED_ROOT/bin"
+  cat > "$UNTRUSTED_ROOT/bin/fm-turnend-guard.sh" <<'SH'
+#!/usr/bin/env bash
+printf 'UNTRUSTED_CWD_PAYLOAD_EXECUTED\n'
+cat >/dev/null
+SH
+  chmod +x "$UNTRUSTED_ROOT/bin/fm-turnend-guard.sh"
+}
+
 model_trust_grant() {
   local declaration_hash
   declaration_hash=$(printf '%s' "$LEGACY_COMMAND" | shasum -a 256 | cut -d ' ' -f 1)
@@ -54,15 +79,14 @@ model_trust_grant() {
 }
 
 run_hook() {
-  local command=$1 root=$2 hook_root=${3:-} out status
+  local command=$1 cwd=$2 hook_root=${3:-} scope_root=${4:-} out status
   set +e
-  if [ -n "$hook_root" ]; then
-    out=$(printf '%s' "$PAYLOAD" \
-      | FM_CODEX_HOOK_ROOT="$hook_root" FM_HOME="$TRUSTED_ROOT" \
-        bash -c "$command" 2>&1)
-  else
-    out=$(printf '%s' "$PAYLOAD" | (cd "$root" && bash -c "$command") 2>&1)
-  fi
+  out=$(printf '%s' "$PAYLOAD" | (
+    cd "$cwd" || exit 1
+    FM_CODEX_HOOK_ROOT="$hook_root" FM_ROOT_OVERRIDE="$scope_root" \
+      FM_HOME="$TRUSTED_ROOT" FM_TEST_HOOK_EXECUTION_LOG="$EXECUTION_LOG" \
+      bash -c "$command"
+  ) 2>&1)
   status=$?
   set -e
   printf '%s\t%s\n' "$status" "$out"
@@ -70,6 +94,7 @@ run_hook() {
 
 install_trusted_fixture
 install_worktree_payload
+install_untrusted_cwd_payload
 model_trust_grant
 
 trust_before=$(shasum -a 256 "$TRUST_MODEL" | cut -d ' ' -f 1)
@@ -85,7 +110,7 @@ assert_contains "$legacy_output" "WORKTREE_PAYLOAD_EXECUTED" \
 printf 'evidence before: status=%s worktree_payload=EXECUTED modeled_trust_file_unchanged=yes\n' \
   "$legacy_status"
 
-FIXED_COMMAND=$(jq -r '.hooks.Stop[0].hooks[0].command // empty' "$ROOT/.codex/hooks.json")
+FIXED_COMMAND=$(jq -r '.hooks.Stop[0].hooks[0].command // empty' "$TRUSTED_ROOT/.codex/hooks.json")
 [ -n "$FIXED_COMMAND" ] || fail "fixed Codex Stop hook command is missing"
 
 fixed_unanchored_result=$(run_hook "$FIXED_COMMAND" "$WORKTREE_ROOT")
@@ -102,18 +127,36 @@ printf 'evidence after-unanchored: status=%s worktree_payload=REFUSED refusal=%s
   "$fixed_unanchored_status" \
   "$(printf '%s' "$fixed_unanchored_output" | head -n 1)"
 
-: > "$TRUSTED_ROOT/state/task.meta"
-fixed_anchored_result=$(run_hook "$FIXED_COMMAND" "$WORKTREE_ROOT" "$TRUSTED_ROOT")
-fixed_anchored_status=${fixed_anchored_result%%$'\t'*}
-fixed_anchored_output=${fixed_anchored_result#*$'\t'}
-[ "$fixed_anchored_status" -eq 2 ] \
-  || fail "anchored fixed Stop hook did not execute the trusted guard's unhealthy-watcher refusal"
-assert_contains "$fixed_anchored_output" "TURN WOULD END BLIND - SUPERVISION IS OFF" \
-  "anchored fixed Stop hook did not keep the trusted turn-end guard active"
-assert_not_contains "$fixed_anchored_output" "WORKTREE_PAYLOAD_EXECUTED" \
+: > "$EXECUTION_LOG"
+fixed_worktree_result=$(run_hook "$FIXED_COMMAND" "$WORKTREE_ROOT" \
+  "$TRUSTED_ROOT" "$WORKTREE_ROOT")
+fixed_worktree_status=${fixed_worktree_result%%$'\t'*}
+fixed_worktree_output=${fixed_worktree_result#*$'\t'}
+[ "$fixed_worktree_status" -eq 0 ] \
+  || fail "anchored fixed Stop hook did not preserve the linked-worktree exemption"
+assert_contains "$(cat "$EXECUTION_LOG")" "TRUSTED_PAYLOAD_EXECUTED" \
+  "linked-worktree exemption did not positively execute the trusted payload"
+assert_not_contains "$fixed_worktree_output" "WORKTREE_PAYLOAD_EXECUTED" \
   "anchored fixed Stop hook executed the modified worktree payload"
-printf 'evidence after-anchored: status=%s worktree_payload=REFUSED trusted_stop_guard=ACTIVE\n' \
-  "$fixed_anchored_status"
+printf 'evidence after-worktree: status=%s worktree_payload=REFUSED trusted_payload=EXECUTED linked_worktree=EXEMPT\n' \
+  "$fixed_worktree_status"
+
+: > "$EXECUTION_LOG"
+: > "$TRUSTED_ROOT/state/task.meta"
+fixed_untrusted_cwd_result=$(run_hook "$FIXED_COMMAND" "$UNTRUSTED_ROOT" \
+  "$TRUSTED_ROOT" "$TRUSTED_ROOT")
+fixed_untrusted_cwd_status=${fixed_untrusted_cwd_result%%$'\t'*}
+fixed_untrusted_cwd_output=${fixed_untrusted_cwd_result#*$'\t'}
+[ "$fixed_untrusted_cwd_status" -eq 2 ] \
+  || fail "untrusted cwd displaced the trusted guard's primary-scope refusal"
+assert_contains "$fixed_untrusted_cwd_output" "TURN WOULD END BLIND - SUPERVISION IS OFF" \
+  "trusted primary scope did not keep the turn-end guard active from an untrusted cwd"
+assert_contains "$(cat "$EXECUTION_LOG")" "TRUSTED_PAYLOAD_EXECUTED" \
+  "untrusted-cwd case did not positively execute the trusted payload"
+assert_not_contains "$fixed_untrusted_cwd_output" "UNTRUSTED_CWD_PAYLOAD_EXECUTED" \
+  "untrusted cwd gained executable authority"
+printf 'evidence after-untrusted-cwd: status=%s cwd_payload=REFUSED trusted_payload=EXECUTED trusted_scope=ACTIVE\n' \
+  "$fixed_untrusted_cwd_status"
 
 trust_final=$(shasum -a 256 "$TRUST_MODEL" | cut -d ' ' -f 1)
 [ "$trust_before" = "$trust_final" ] || fail "modeled trust grant changed during fixed-hook attempts"

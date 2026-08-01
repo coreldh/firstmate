@@ -75,6 +75,7 @@ The guard covers the main primary and genuinely marked secondmate homes, exempts
 Codex persists project-hook trust against each declaration, not against scripts resolved by that declaration at run time.
 Firstmate therefore never treats the hook process working directory as executable authority.
 Every Firstmate-launched Codex crewmate receives `FM_CODEX_HOOK_ROOT` bound to its parent home's tracked code root, and a Codex secondmate receives the secondmate home's own tracked code root.
+The spawn also passes that agent's canonical worktree through `FM_ROOT_OVERRIDE`, which the trusted scope-aware entrypoints resolve at hook execution for primary-scope classification, so a linked child remains exempt and a later current-directory change cannot grant primary authority.
 The launched agent cannot change its parent Codex process environment, so editing a task worktree does not retarget the running hooks.
 An ordinary primary session without the launch binding falls back to its process working directory, but the same payload verification below still applies.
 
@@ -83,6 +84,7 @@ Missing hashing support, an unavailable configured root, an unsafe entry, or any
 The `Stop` hook therefore stays enabled and blocking while refusing unrecognized code instead of silently stepping aside.
 The manifest covers the complete executable dependency closures of the Codex `SessionStart`, Bash `PreToolUse`, and `Stop` hooks.
 Changing one of those dependencies requires updating the manifest and its pinned digest in `.codex/hooks.json`, which intentionally causes one hook review for the changed declaration; unchanged ordinary spawns reuse the same declaration and require no per-spawn review.
+Run `bin/fm-hook-manifest.sh` to regenerate both tracked files and run `bin/fm-hook-manifest.sh --check` for the read-only currency assertion used by spawn, update diagnostics, and tests.
 
 This boundary removes a crewmate's written authority to replace the executed payload, but it is not an operating-system privilege boundary.
 The account owner and any process already running as that account can still write the tracked anchor, the login shell profile still runs before the inline verification because Codex invokes `bash -lc`, and a writable fallback tree retains a check-to-execution race.
