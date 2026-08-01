@@ -406,6 +406,7 @@ SH
 make_seeded_home() {
   local home=$1 id=$2
   mkdir -p "$home/bin" "$home/data"
+  fm_install_codex_hook_root "$home"
   printf '# Firstmate\n' > "$home/AGENTS.md"
   printf '%s\n' "$id" > "$home/.fm-secondmate-home"
   printf 'charter\n' > "$home/data/charter.md"

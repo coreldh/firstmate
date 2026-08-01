@@ -138,6 +138,22 @@ fm_git_worktree() {
   git -C "$repo" worktree add --quiet -b "$branch" "$worktree"
 }
 
+# fm_install_codex_hook_root <dir>: copy the tracked Codex hook declaration,
+# manifest generator, and every covered payload into a positive spawn fixture.
+# The production preflight must stay fail-closed, so Codex-positive fixtures
+# carry the same trusted-root surface as a real firstmate home.
+fm_install_codex_hook_root() {
+  local dir=$1 payload
+  mkdir -p "$dir/.codex" "$dir/bin"
+  cp "$ROOT/.codex/hook-payload.sha256" "$dir/.codex/hook-payload.sha256"
+  cp "$ROOT/.codex/hooks.json" "$dir/.codex/hooks.json"
+  cp "$ROOT/bin/fm-hook-manifest.sh" "$dir/bin/fm-hook-manifest.sh"
+  while read -r _ payload; do
+    mkdir -p "$dir/$(dirname "$payload")"
+    cp "$ROOT/$payload" "$dir/$payload"
+  done < "$ROOT/.codex/hook-payload.sha256"
+}
+
 # --- state/<id>.meta writers ------------------------------------------------
 
 # fm_write_meta <file> <key=val> ...: write the given key=val lines to a meta

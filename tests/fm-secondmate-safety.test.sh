@@ -517,6 +517,7 @@ test_secondmate_spawn_resolves_punctuated_registry_projects() {
   mkdir -p "$home/data" "$home/state" "$home/config" "$home/projects"
   mkdir -p "$sub/data" "$sub/state" "$sub/config" "$sub/projects"
   mark_firstmate_home "$sub"
+  fm_install_codex_hook_root "$sub"
   printf 'punctuated\n' > "$sub/.fm-secondmate-home"
   printf '# Charter\n\nHandled work.\n' > "$sub/data/charter.md"
   sub_abs=$(cd "$sub" && pwd -P)

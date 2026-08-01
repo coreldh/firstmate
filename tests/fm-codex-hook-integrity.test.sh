@@ -10,6 +10,7 @@ set -u
 # shellcheck source=tests/lib.sh
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
+fm_git_identity fmtest fmtest@example.invalid
 TMP_ROOT=$(fm_test_tmproot fm-codex-hook-integrity)
 TRUSTED_ROOT="$TMP_ROOT/trusted"
 WORKTREE_ROOT="$TMP_ROOT/worktree"
