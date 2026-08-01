@@ -336,6 +336,14 @@ After successful teardown, record completion, retain only the configured recent 
 A secondmate is persistent and an empty queue is healthy.
 Retire one only on an explicit captain or main-firstmate decision, after loading `secondmate-provisioning`; its home must contain no work under way, and forced discard still requires explicit captain authority.
 
+### Project progress at harvest
+
+Every active project repository maintains `docs/Iteration_Progress.md`; reference-only stubs with no implementation work are outside this rule until activated.
+Every new progress row cites a real commit SHA that exists in that repository, verified with `git cat-file -e <sha>^{commit}`.
+At every harvest, reconcile the tracker against the live tree: correct or remove rows whose assertions the tree does not support, and add rows for completed work missing from the tracker.
+A stale tracker can hide completed work and trigger a false `not started` conclusion, so it complements and never replaces tree verification.
+Before concluding that work does not exist, inspect the tree rather than relying on the tracker alone.
+
 ### Scout outcome and promotion
 
 A completed scout must leave a self-contained report before its scratch worktree can be discarded; read and relay its findings, record the report as the Done artifact, and re-evaluate the queue.
