@@ -420,8 +420,12 @@ test_event_hints_follow_reconciled_current_state() {
 }
 
 test_scout_reports_include_teardown_reports() {
-  local home out
-  home=$(make_home teardown-reports)
+  local physical_home home out
+  physical_home=$(make_home teardown-reports-real)
+  physical_home=$(cd "$physical_home" && pwd -P)
+  mkdir -p "$TMP_ROOT/teardown-reports-link"
+  ln -s "$physical_home" "$TMP_ROOT/teardown-reports-link/home"
+  home="$TMP_ROOT/teardown-reports-link/home"
   mkdir -p "$home/data/reported-scout" "$home/data/untracked-scout"
   cat > "$home/data/backlog.md" <<EOF
 ## Done
@@ -430,14 +434,15 @@ EOF
   printf '# Reported Scout\n' > "$home/data/reported-scout/report.md"
   printf '# Untracked Scout\n' > "$home/data/untracked-scout/report.md"
   out=$(FM_HOME="$home" "$SNAPSHOT" --json)
-  printf '%s' "$out" | jq -e --arg home "$home" '
-    (.tasks | length) == 0
+  printf '%s' "$out" | jq -e --arg home "$physical_home" '
+    .fm_home == $home
+      and (.tasks | length) == 0
       and .scout_reports == [
         {id:"reported-scout",path:($home + "/data/reported-scout/report.md"),kind:"scout"},
         {id:"untracked-scout",path:($home + "/data/untracked-scout/report.md"),kind:"scout"}
       ]
-  ' >/dev/null || fail "durable scout reports should remain visible after meta teardown"
-  pass "snapshot includes durable scout reports after teardown"
+  ' >/dev/null || fail "snapshot home and durable scout reports should share one physical path space after meta teardown"
+  pass "snapshot home and durable scout reports remain physically consistent after teardown"
 }
 
 test_backlog_tasks_axi_forms_and_overrides() {

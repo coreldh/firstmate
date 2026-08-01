@@ -9,8 +9,9 @@
 # Top-level fields:
 #   schema: stable schema id.
 #   generated: UTC observation time for this fresh command execution.
-#   fm_home: resolved operational home.
-#   roots: resolved root/config/data/state/projects directories.
+#   fm_home: physical operational home with symlinks resolved.
+#   roots: effective root/config/data/state/projects directories. Defaults derive
+#     from physical fm_home; explicit override paths remain caller-owned values.
 #   backlog: {path,present,records[]} where records are ordered as written in
 #     data/backlog.md and cover In flight, Queued, and Done.
 #     Canonical tasks-axi rows are structured; free-form non-empty lines in
@@ -32,7 +33,7 @@
 #     endpoint.exists is the cheap backend endpoint-presence read.
 #     endpoint.agent_alive is populated for secondmates only, where it is useful
 #     return-channel supervision data; other tasks use "not_checked".
-#   scout_reports[]: present data/<id>/report.md pointers in this home.
+#   scout_reports[]: physical data/<id>/report.md pointers in this home.
 #   main_inventory: {valid,reason,orphan_in_flight[],unstructured_current_count} -
 #     main-home current-inventory checks shared with secondmate_home_summary_json
 #     (orphan structured in-flight ids with no state/<id>.meta, and unstructured
@@ -59,7 +60,9 @@ set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FM_ROOT="${FM_ROOT_OVERRIDE:-$(cd "$SCRIPT_DIR/.." && pwd)}"
-FM_HOME="${FM_HOME:-${FM_ROOT_OVERRIDE:-$FM_ROOT}}"
+FM_HOME_INPUT="${FM_HOME:-${FM_ROOT_OVERRIDE:-$FM_ROOT}}"
+FM_HOME=$(CDPATH='' cd -- "$FM_HOME_INPUT" 2>/dev/null && pwd -P) \
+  || { printf 'fm-fleet-snapshot: FM_HOME cannot be resolved: %s\n' "$FM_HOME_INPUT" >&2; exit 1; }
 STATE="${FM_STATE_OVERRIDE:-$FM_HOME/state}"
 DATA="${FM_DATA_OVERRIDE:-$FM_HOME/data}"
 CONFIG="${FM_CONFIG_OVERRIDE:-$FM_HOME/config}"
