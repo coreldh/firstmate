@@ -79,9 +79,11 @@ if [ "$FLEET" = 1 ] && [ -n "$TASK" ]; then
 fi
 command -v jq >/dev/null 2>&1 || { echo "fm-quota-delta.sh: jq not found" >&2; exit 2; }
 
-# Pair the last spawn record with the last close record and describe every window.
-# A task promoted in place (fm-promote.sh) keeps its id and its original spawn
-# record, so "last" is the right pick on both ends.
+# Pair the last spawn record only with a close captured at or after that spawn and
+# describe every window. Task ids are reusable, so an older close is not evidence
+# that the newest lifecycle ended. Capture time, rather than ledger position, owns
+# the order because the asynchronous spawn reader may append after a fast close.
+# A task promoted in place (fm-promote.sh) keeps its id and its original spawn.
 # shellcheck disable=SC2016  # single quotes are deliberate: jq expands its own $vars.
 ANALYSIS_JQ='
 def nz: if . == "" then null else . end;
@@ -100,8 +102,18 @@ def toEpoch:
        else null end) as $n
     | if $n == null then null else (try ($n | fromdateiso8601) catch null) end
   end;
-(map(select(.phase == "spawn")) | last) as $spawn
-| (map(select(.phase == "close")) | last) as $close
+. as $ledger
+| (map(select(.phase == "spawn")) | last) as $spawn
+| ($spawn.at | toEpoch) as $spawnAt
+| (if $spawn == null then
+     (map(select(.phase == "close")) | last)
+   else
+     ([ $ledger[]
+        | select(.phase == "close")
+        | (.at | toEpoch) as $closeAt
+        | select($spawnAt != null and $closeAt != null and $closeAt >= $spawnAt)
+      ] | last)
+   end) as $close
 | (($spawn // $close) // {}) as $any
 | (($close.attribution.provider) // ($spawn.attribution.provider)) as $prov
 | {
