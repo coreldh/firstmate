@@ -6,7 +6,7 @@ set -u
 # shellcheck disable=SC1091
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-CHURN="$ROOT/bin/fm-captain-churn.sh"
+CHURN="${FM_CAPTAIN_CHURN_UNDER_TEST:-$ROOT/bin/fm-captain-churn.sh}"
 DECISIONS="$ROOT/bin/fm-decision-hold.sh"
 TMP_ROOT=$(fm_test_tmproot fm-captain-churn)
 TASKS_AXI_BIN=$(command -v tasks-axi || true)
@@ -74,15 +74,34 @@ test_plain_captain_rows_refuse_provenance_independent_close() {
     --kind captain --repo sample >/dev/null || fail "could not create plain captain fixture"
 
   set +e
-  run_churn "$task_home" close "$id" --class non-question \
-    --subclass self-declared-disclosure > "$task_home/out" 2> "$task_home/err"
+  run_churn "$task_home" close "$id" --class already-answered \
+    --citation data/sample-ruling.md > "$task_home/out" 2> "$task_home/err"
   rc=$?
   set -e
   [ "$rc" -ne 0 ] || fail "plain kind-captain row bypassed the liveness refusal"
   assert_grep "REFUSED: backlog item $id carries a live captain choice" "$task_home/err" \
     "plain kind-captain refusal was not explicit"
   assert_queued "$task_home" "$id" "refused plain captain row was closed"
-  pass "plain captain rows refuse a self-certified non-question classification"
+  pass "plain captain rows reach the provenance-independent liveness refusal"
+}
+
+test_self_certified_non_question_refuses() {
+  local task_home id rc
+  task_home=$(make_home self-certifying)
+  id=sample-clinical-self-declared
+  tasks_in "$task_home" add "$id" "Choose whether sample distribution stays blocked" \
+    --kind captain --repo sample >/dev/null || fail "could not create self-certifying fixture"
+
+  set +e
+  run_churn "$task_home" close "$id" --class non-question \
+    --subclass self-declared-disclosure > "$task_home/out" 2> "$task_home/err"
+  rc=$?
+  set -e
+  [ "$rc" -ne 0 ] || fail "self-certified non-question closed a live captain row"
+  assert_grep "REFUSED: backlog item $id carries a live captain choice" "$task_home/err" \
+    "self-certifying prohibition did not fire"
+  assert_queued "$task_home" "$id" "self-certified captain row was closed"
+  pass "self-certified non-question input fires the liveness refusal"
 }
 
 test_decision_shaped_rows_refuse_the_same_way() {
@@ -219,10 +238,29 @@ test_non_captain_pointer_closes() {
   pass "legitimate non-captain pointer churn still closes"
 }
 
-test_plain_captain_rows_refuse_provenance_independent_close
-test_decision_shaped_rows_refuse_the_same_way
-test_live_inventory_refuses_non_captain_pointer
-test_proof_bearing_duplicate_origin_closes
-test_duplicate_without_survivor_trace_refuses
-test_duplicate_with_different_key_refuses
-test_non_captain_pointer_closes
+case "${FM_CAPTAIN_CHURN_TEST_CASE:-all}" in
+  n1)
+    test_plain_captain_rows_refuse_provenance_independent_close
+    ;;
+  n2)
+    test_proof_bearing_duplicate_origin_closes
+    test_duplicate_without_survivor_trace_refuses
+    test_duplicate_with_different_key_refuses
+    ;;
+  f2)
+    test_self_certified_non_question_refuses
+    ;;
+  all)
+    test_plain_captain_rows_refuse_provenance_independent_close
+    test_self_certified_non_question_refuses
+    test_decision_shaped_rows_refuse_the_same_way
+    test_live_inventory_refuses_non_captain_pointer
+    test_proof_bearing_duplicate_origin_closes
+    test_duplicate_without_survivor_trace_refuses
+    test_duplicate_with_different_key_refuses
+    test_non_captain_pointer_closes
+    ;;
+  *)
+    fail "unknown FM_CAPTAIN_CHURN_TEST_CASE: $FM_CAPTAIN_CHURN_TEST_CASE"
+    ;;
+esac

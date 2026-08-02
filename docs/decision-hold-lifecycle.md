@@ -58,7 +58,8 @@ The final verification commands and their exact summarized outputs follow.
 
 ```text
 $ bash tests/fm-captain-churn.test.sh
-ok - plain captain rows refuse a self-certified non-question classification
+ok - plain captain rows reach the provenance-independent liveness refusal
+ok - self-certified non-question input fires the liveness refusal
 ok - plain and decision-shaped captain rows share one liveness refusal
 ok - live decision inventories still refuse non-captain pointer churn
 ok - proof-bearing duplicate origin closes while its survivor stays open
