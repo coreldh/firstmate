@@ -28,6 +28,10 @@ It records the decision digest and routed task identities as a retry identity in
 An exact retry can finish a partial routing operation, while a changed decision or routed-task set is rejected.
 A failed intermediate step leaves the hold open.
 
+`bin/fm-captain-churn.sh` is the mutation boundary for the separate captain-backlog churn path.
+It refuses every open `kind: captain` row without depending on hold provenance and retains the live-origin inventory refusal for non-captain rows.
+Its only kind-captain exception validates a duplicate origin against an open same-key survivor whose body already preserves the retired identity, records that trace, and closes only the retired row.
+
 ## Structured read surfaces
 
 `bin/fm-fleet-snapshot.sh` parses canonical tasks-axi `(hold: ...)` and `(hold-kind: captain)` metadata alongside existing backlog fields.
@@ -43,6 +47,7 @@ The projection remains read-only and does not inspect historical prose.
 Verification date: 2026-07-14.
 Additional quoted `blocked_by` regression verification date: 2026-07-17.
 Plural blocker-readiness and mixed-home projection verification date: 2026-07-22.
+Captain-backlog churn closure verification date: 2026-08-01.
 
 The focused end-to-end regression uses only synthetic `sample` identities and decision text.
 It begins with a completed investigation and visual review whose genuine unresolved choice exists only in the report.
@@ -50,6 +55,17 @@ The initial Bearings snapshot correctly has no open decision, and the new teardo
 A later regression covers tasks-axi's quoted multi-entry `blocked_by` output so `resolve` matches the first, middle, and last ids and rejects a genuinely absent id.
 
 The final verification commands and their exact summarized outputs follow.
+
+```text
+$ bash tests/fm-captain-churn.test.sh
+ok - plain captain rows refuse a self-certified non-question classification
+ok - plain and decision-shaped captain rows share one liveness refusal
+ok - live decision inventories still refuse non-captain pointer churn
+ok - proof-bearing duplicate origin closes while its survivor stays open
+ok - duplicate carve-out refuses until the survivor preserves the retired origin
+ok - duplicate carve-out refuses rows with different decision keys
+ok - legitimate non-captain pointer churn still closes
+```
 
 ```text
 $ bash tests/fm-decision-hold-lifecycle.test.sh

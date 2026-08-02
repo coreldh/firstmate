@@ -2,7 +2,7 @@
 name: decision-hold-lifecycle
 description: >-
   Agent-only policy for completing investigations and visual reviews and closing genuine captain-backlog churn without losing unresolved captain decisions.
-  Load before treating an investigation, scout report, structured review, or Lavish review as complete, before ending a visual review that exposed a decision, and when recording or routing the captain's answer.
+  Load before treating an investigation, scout report, structured review, or Lavish review as complete, before ending a visual review that exposed a decision, when recording or routing the captain's answer, and before closing captain-backlog churn.
 user-invocable: false
 metadata:
   internal: true
@@ -36,9 +36,11 @@ The fleet may close only the following three genuine churn classes itself, and e
 These classes are permissions, not proof that no live choice remains.
 If a row matches a permitted class and any reading leaves a live choice, the prohibition wins and the row stays open.
 Do not close a row because of age, apparent obviousness, or count pressure, and treat uncertainty as a live choice.
-Before considering a permitted churn close, refuse the row when its own structured shape has `kind: captain`, `hold_kind: captain`, and an identity matching `<origin>-decision-<key>`.
-This durable-shape refusal survives origin teardown and does not depend on `state/<origin>.meta`.
-Also refuse any row bound to a live decision inventory, whether or not it has the durable shape.
+Use `bin/fm-captain-churn.sh close` for every churn close; direct `tasks-axi done` or manual backlog editing bypasses the required refusal and is forbidden.
+Before considering the already-answered or non-question permissions, refuse every open row whose structured `kind` is `captain`, regardless of its `hold_kind`, identity, origin state, or which supported command minted it.
+That kind-only refusal treats the row's live authority as decisive and its provenance fields as corroborating evidence only.
+The sole exception is a duplicate origin closed through `bin/fm-captain-churn.sh`: both rows are open `kind: captain` decisions with the same supplied decision key, one survivor remains open, and the survivor's body already preserves the exact retired origin.
+Also refuse any non-captain row bound to a live decision inventory.
 Never use a pointer row as a decision-inventory key.
 Rows refused by either condition stay open until the normal captain-answer path records and routes the answer through `bin/fm-decision-hold.sh resolve`.
 
@@ -53,5 +55,6 @@ Rows refused by either condition stay open until the normal captain-answer path 
 7. Put the captain's exact durable decision in a file and use the script's `resolve` command with every routed task.
 8. Confirm Bearings no longer shows the closed hold and that routed work remains in structured backlog state.
 
-`bin/fm-decision-hold.sh --help` owns command syntax, identity construction, completion attestation, retry behavior, and close ordering.
+`bin/fm-decision-hold.sh --help` owns unresolved-decision command syntax, identity construction, completion attestation, retry behavior, and answer close ordering.
+`bin/fm-captain-churn.sh --help` owns churn-close syntax, proof validation, and mutation ordering.
 `docs/decision-hold-lifecycle.md` records the mechanism and regression evidence without restating this policy.
