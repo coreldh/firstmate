@@ -21,6 +21,8 @@
 #       readable as a cost
 #   (h) --help renders each script's whole header and no code, since both
 #       render it by sed-ing a fixed line range out of themselves
+#   (i) a reused task id never pairs its newest spawn with an older close, while a
+#       delayed asynchronous spawn append for one legitimate lifecycle still pairs
 set -u
 
 # shellcheck source=tests/lib.sh
@@ -419,6 +421,68 @@ test_delta_names_a_missing_or_failed_capture() {
   pass "a missing or failed capture is reported as such, never as a zero cost"
 }
 
+test_delta_pairs_close_by_lifecycle_time() {
+  local home out rendered failures case_name
+  home="$TMP_ROOT/delta-pair-order/home"
+  mkdir -p "$home/data/close-before-spawn-before" \
+    "$home/data/close-after-spawn-before" \
+    "$home/data/close-before-spawn-after" \
+    "$home/data/close-after-spawn-after"
+
+  # The older close is both before the newest spawn in the ledger and earlier in
+  # time, which is the ordinary reused-id shape that originally produced a silent
+  # +25 point cost by pairing the newest spawn at 35 with the older close at 60.
+  {
+    ledger_line spawn 2026-07-28T22:00:00Z 20 2099-01-01T00:00:00Z
+    ledger_line close 2026-07-28T23:00:00Z 60 2099-01-01T00:00:00Z
+    ledger_line spawn 2026-07-29T22:00:00Z 35 2099-01-01T00:00:00Z
+  } > "$home/data/close-before-spawn-before/quota.jsonl"
+
+  # The older close was appended after the newest spawn but still belongs to the
+  # earlier lifecycle by capture time, so ledger position cannot make it a pair.
+  {
+    ledger_line spawn 2026-07-28T22:00:00Z 20 2099-01-01T00:00:00Z
+    ledger_line spawn 2026-07-29T22:00:00Z 35 2099-01-01T00:00:00Z
+    ledger_line close 2026-07-28T23:00:00Z 60 2099-01-01T00:00:00Z
+  } > "$home/data/close-after-spawn-before/quota.jsonl"
+
+  failures=
+  for case_name in close-before-spawn-before close-after-spawn-before; do
+    out=$(delta_json "$home" "$case_name")
+    rendered=$(env FM_DATA_OVERRIDE="$home/data" "$DELTA" "$case_name")
+    if [ "$(printf '%s' "$out" | jq -r '.close')" != null ] \
+      || [ "$(printf '%s' "$out" | jq -r '.computable')" != false ] \
+      || ! printf '%s' "$rendered" | grep -qF "close MISSING" \
+      || ! printf '%s' "$rendered" | grep -qF "NOT COMPUTABLE"; then
+      failures="${failures}${failures:+, }$case_name(close=$(printf '%s' "$out" | jq -c '.close'), cost=$(printf '%s' "$out" | jq -c '.providers[0].windows[0].cost_percent_points'))"
+    fi
+  done
+  [ -z "$failures" ] || fail "newest spawn paired with an older close: $failures"
+
+  # A spawn capture starts first but may append after its synchronous close if the
+  # asynchronous quota read finishes late, so lifecycle time must preserve this
+  # legitimate un-reused pair even though its ledger order is close then spawn.
+  {
+    ledger_line close 2026-07-29T23:00:00Z 60 2099-01-01T00:00:00Z
+    ledger_line spawn 2026-07-29T22:00:00Z 35 2099-01-01T00:00:00Z
+  } > "$home/data/close-before-spawn-after/quota.jsonl"
+
+  # The ordinary un-reused lifecycle has both ledger and capture time in order.
+  {
+    ledger_line spawn 2026-07-29T22:00:00Z 35 2099-01-01T00:00:00Z
+    ledger_line close 2026-07-29T23:00:00Z 60 2099-01-01T00:00:00Z
+  } > "$home/data/close-after-spawn-after/quota.jsonl"
+
+  for case_name in close-before-spawn-after close-after-spawn-after; do
+    out=$(delta_json "$home" "$case_name")
+    [ "$(printf '%s' "$out" | jq -r '.computable')" = true ] \
+      || fail "$case_name is a legitimate lifecycle and must stay computable"
+    [ "$(printf '%s' "$out" | jq -r '.providers[0].windows[0].cost_percent_points')" = 25 ] \
+      || fail "$case_name did not preserve the legitimate +25 point cost"
+  done
+  pass "delta pairs by lifecycle time across every close/spawn ordering"
+}
+
 # --- (g) end to end over the real spawn and teardown ------------------------
 
 make_lifecycle_fakebin() {  # <dir> -> fakebin
@@ -522,5 +586,6 @@ test_every_degradation_records_itself
 test_async_returns_immediately
 test_delta_reports_cost_and_refuses_across_a_reset
 test_delta_names_a_missing_or_failed_capture
+test_delta_pairs_close_by_lifecycle_time
 test_spawn_and_teardown_capture_end_to_end
 test_help_covers_the_whole_header
