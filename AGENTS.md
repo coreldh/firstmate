@@ -448,9 +448,8 @@ It tracks work items only, never agents; persistent secondmates never appear as 
 Work routed to a secondmate is recorded in that secondmate home's own backlog, not the main backlog.
 When a main-side thread such as a pending captain decision or relay reminder is worth durable tracking, file it as its own work item; use `tasks-axi hold <id> --reason "<reason>" --kind captain` for a captain-gated thread.
 Unresolved decisions discovered by investigations or visual reviews follow `decision-hold-lifecycle`, which owns their mandatory backlog lifecycle.
-The fleet closes only three mechanical captain-backlog churn classes itself, with a trace on every close: already answered rows name the durable captain ruling; rows that are not questions name whether they are pointers, self-declared disclosures, ruling records, aggregate duplicates, or overtaken by shipped code; and duplicate origins name one survivor whose body preserves every retired origin.
-NEVER close a live captain question: any row requiring the captain's judgement stays open regardless of age, apparent obviousness, or count pressure, and uncertainty means open because an open row remains visible while a wrongly closed row does not.
-Before any collapse, refuse to close a row bound to a live decision inventory, and never use a pointer row as a decision-inventory key; `decision-hold-lifecycle` and `bin/fm-decision-hold.sh` own the detailed lifecycle and mechanics.
+Before closing any captain-backlog churn, load `decision-hold-lifecycle`, which owns the permitted classes, required evidence, and refusal checks.
+NEVER close a live captain question: when a row matches a permitted churn class and any reading leaves a live choice, this prohibition wins regardless of age, apparent obviousness, or count pressure, and uncertainty means open because an open row remains visible while a wrongly closed row does not.
 Update the backlog on every dispatch, completion, and decision for a work item.
 Re-evaluate queued work after every teardown and heartbeat, dispatching items only when dependencies and time gates have cleared.
 

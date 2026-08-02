@@ -1,7 +1,7 @@
 ---
 name: decision-hold-lifecycle
 description: >-
-  Agent-only policy for completing investigations and visual reviews without losing unresolved captain decisions.
+  Agent-only policy for completing investigations and visual reviews and closing genuine captain-backlog churn without losing unresolved captain decisions.
   Load before treating an investigation, scout report, structured review, or Lavish review as complete, before ending a visual review that exposed a decision, and when recording or routing the captain's answer.
 user-invocable: false
 metadata:
@@ -24,6 +24,23 @@ Do not close a hold merely because the originating investigation completed, its 
 The hold remains the authoritative Captain's Call item until the captain's answer is durably recorded, dependent work is created in the same backlog and blocked by that hold, and `bin/fm-decision-hold.sh resolve` routes the answer by clearing those dependency edges before closing the hold.
 Resolved findings, recommendations that need no captain choice, and prose that merely sounds decision-like do not create holds.
 Bearings reads the resulting structured state and must never compensate by scraping historical reports, visual-review artifacts, terminal output, chat, or other prose.
+
+## Captain-backlog churn closure
+
+The fleet may close only the following three genuine churn classes itself, and every close must carry the stated trace.
+
+- An already answered row cites the durable captain ruling that settled the question; without that ruling, do not close it.
+- A row that is not a question names whether it is a pointer, self-declared disclosure, ruling record, aggregate duplicate, or overtaken by shipped code; an overtaken-by-code trace must cite the durable commit that settled the question, and without that commit, do not close it.
+- A duplicate origin names one survivor whose body preserves every retired origin.
+
+These classes are permissions, not proof that no live choice remains.
+If a row matches a permitted class and any reading leaves a live choice, the prohibition wins and the row stays open.
+Do not close a row because of age, apparent obviousness, or count pressure, and treat uncertainty as a live choice.
+Before considering a permitted churn close, refuse the row when its own structured shape has `kind: captain`, `hold_kind: captain`, and an identity matching `<origin>-decision-<key>`.
+This durable-shape refusal survives origin teardown and does not depend on `state/<origin>.meta`.
+Also refuse any row bound to a live decision inventory, whether or not it has the durable shape.
+Never use a pointer row as a decision-inventory key.
+Rows refused by either condition stay open until the normal captain-answer path records and routes the answer through `bin/fm-decision-hold.sh resolve`.
 
 ## Operating sequence
 
