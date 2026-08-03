@@ -9,8 +9,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR/fm-wake-lib.sh"
 # shellcheck source=bin/fm-custody-lib.sh
 . "$SCRIPT_DIR/fm-custody-lib.sh"
+# shellcheck source=bin/fm-classify-lib.sh
+. "$SCRIPT_DIR/fm-classify-lib.sh"
 
 DATA="${FM_DATA_OVERRIDE:-$FM_HOME/data}"
+FM_RECORD_RECONCILE_BIN=${FM_RECORD_RECONCILE_BIN:-$SCRIPT_DIR/fm-record-reconcile.sh}
 
 DRAIN_TMP=
 DRAIN_LOCK_HELD=false
@@ -29,6 +32,20 @@ RAW_ROWS=
 # drain's exit status.
 assert_watcher_liveness() {
   "$SCRIPT_DIR/fm-guard.sh" || true
+}
+
+terminal_wake_present() {  # <annotations>
+  local annotations=$1 event
+  case "$annotations" in
+    *"annotations omitted"*) return 0 ;;
+  esac
+  while IFS= read -r event; do
+    [ -n "$event" ] || continue
+    if status_is_done "$event" || status_is_awaiting_captain "$event"; then
+      return 0
+    fi
+  done < <(printf '%s\n' "$annotations" | sed -n 's/^wake annotation: latest wake-EVENT observed at drain, not current state\(; historical \/ not necessarily the triggering event\)\{0,1\}: [A-Za-z0-9._-]*\.status: //p')
+  return 1
 }
 
 # shellcheck disable=SC2317,SC2329 # Invoked by trap handlers below.
@@ -82,6 +99,12 @@ DRAIN_LOCK_HELD=false
 
 # Raw output and queue deletion are authoritative. Everything below is
 # best-effort and cannot restore, duplicate, hide, or fail the consumed rows.
-(fm_wake_print_annotations "$RAW_ROWS") || true
+annotations=$(fm_wake_print_annotations "$RAW_ROWS") || annotations=
+if [ -n "$annotations" ]; then
+  printf '%s\n' "$annotations"
+fi
+if terminal_wake_present "$annotations"; then
+  "$FM_RECORD_RECONCILE_BIN" >/dev/null 2>&1 || true
+fi
 assert_watcher_liveness
 exit 0

@@ -375,6 +375,7 @@ nm_headless_worker_health() {
     return 0
   fi
   case "$stat" in
+    *Z*) NM_WORKER_HEALTH=dead ;;
     *T*) NM_WORKER_HEALTH=suspended ;;
     *) NM_WORKER_HEALTH=live ;;
   esac
