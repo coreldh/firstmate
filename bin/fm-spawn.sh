@@ -972,6 +972,18 @@ shell_quote() {
   printf "'"
 }
 
+mint_worker_token() {
+  local token=
+  if command -v openssl >/dev/null 2>&1; then
+    token=$(openssl rand -hex 16 2>/dev/null || true)
+  elif [ -r /dev/urandom ]; then
+    token=$(od -An -N16 -tx1 /dev/urandom 2>/dev/null | tr -d '[:space:]')
+  fi
+  case "$token" in *[!0-9a-f]*) return 1 ;; esac
+  [ "${#token}" -eq 32 ] || return 1
+  printf '%s' "$token"
+}
+
 resolve_kimi_binary() {
   local candidate dir fallback
   candidate=$(command -v kimi 2>/dev/null || true)
@@ -1848,7 +1860,7 @@ if [ "$KIND" != secondmate ] && [ "$BACKEND" != orca ]; then
       p_real=$(real_path_or_raw "$p")
       if [ "$p_real" != "$PROJ_ABS_REAL" ]; then
         if [ -n "$candidate" ] && [ "$p_real" = "$candidate" ]; then
-          WT="$p"
+          WT="$p_real"
           break
         fi
         candidate="$p_real"
@@ -2185,6 +2197,11 @@ fi
 
 META_WINDOW=$T
 [ "$BACKEND" = orca ] && META_WINDOW=$W
+WT=$(real_path_or_raw "$WT")
+WORKER_TOKEN=$(mint_worker_token) || {
+  echo "error: could not mint a task-bound worker token; refusing to launch" >&2
+  exit 1
+}
 {
   echo "window=$META_WINDOW"
   echo "endpoint_task_id=$ID"
@@ -2197,6 +2214,7 @@ META_WINDOW=$T
   echo "tasktmp=$TASK_TMP"
   echo "model=${MODEL:-default}"
   echo "effort=${EFFORT:-default}"
+  echo "worker_token=$WORKER_TOKEN"
   [ -z "${BUSY_GEN:-}" ] || echo "busy_gen=$BUSY_GEN"
   # Default-off writes no traceparent= line (meta stays byte-identical).
   # backend= is written only for a non-default (non-tmux) backend, so the
@@ -2226,7 +2244,10 @@ META_WINDOW=$T
     echo "home=$PROJ_ABS"
     echo "projects=$SECONDMATE_PROJECTS"
   fi
-} > "$STATE/$ID.meta"
+} > "$STATE/$ID.meta" || {
+  echo "error: could not publish task metadata for $ID; refusing to launch" >&2
+  exit 1
+}
 [ "$BACKEND" = orca ] && ORCA_ABORT_CLEANUP=0
 
 sq_brief=$(shell_quote "$BRIEF")
@@ -2271,6 +2292,10 @@ if [ "$KIND" = secondmate ]; then
   # injected carrier and this on/off snapshot are guaranteed to agree.
   LAUNCH="FM_ROOT_OVERRIDE= FM_STATE_OVERRIDE= FM_DATA_OVERRIDE= FM_PROJECTS_OVERRIDE= FM_CONFIG_OVERRIDE= FM_PUBLIC_FOLLOWUP_PRIMARY_HOME=$sq_primary_home FM_HOME=$sq_home FM_TRACE_CONTEXT=$SPAWN_TRACE_EFFECTIVE FM_SUPERVISION_MODEL=$supervision_model $LAUNCH"
 fi
+# A worktree is a reusable execution slot, not a task identity. Carry the
+# incarnation token on the worker process itself so liveness can attribute CPU
+# and presence to exactly one metadata record even after the slot is reused.
+LAUNCH="FM_WORKER_TOKEN=$WORKER_TOKEN $LAUNCH"
 # Export GOTMPDIR into the crewmate's pane shell so the agent and every child
 # process (go build, go test, ...) inherit it. Sent before the launch command so
 # the env is set when the agent starts; the brief sleep lets the export land.
