@@ -1,0 +1,330 @@
+ok - plain-mid parser words match bash noninteractive argv
+ok - plain-mid parser words match bash interactive argv
+ok - plain-mid parser words match zsh noninteractive argv
+ok - plain-mid parser words match zsh interactive argv
+ok - plain-start parser words match bash noninteractive argv
+ok - plain-start parser words match bash interactive argv
+ok - plain-start parser words match zsh noninteractive argv
+ok - plain-start parser words match zsh interactive argv
+ok - single-mid parser words match bash noninteractive argv
+ok - single-mid parser words match bash interactive argv
+ok - single-mid parser words match zsh noninteractive argv
+ok - single-mid parser words match zsh interactive argv
+ok - double-mid parser words match bash noninteractive argv
+ok - double-mid parser words match bash interactive argv
+ok - double-mid parser words match zsh noninteractive argv
+ok - double-mid parser words match zsh interactive argv
+ok - double-start parser words match bash noninteractive argv
+ok - double-start parser words match bash interactive argv
+ok - double-start parser words match zsh noninteractive argv
+ok - double-start parser words match zsh interactive argv
+ok - 419 parser-derived printable ASCII state-position cases match real bash and zsh argv
+ok - separate-option-like-axis parser words match bash noninteractive argv
+ok - separate-option-like-axis parser words match bash interactive argv
+ok - separate-option-like-axis parser words match zsh noninteractive argv
+ok - separate-option-like-axis parser words match zsh interactive argv
+ok - supported raw effort syntax remains adapter-specific and observable
+ok - route-changing relaunch missing receipt refuses before relaunch effects
+ok - route-changing relaunch missing receipt integration call-site counterexample
+ok - route-changing relaunch mismatched receipt refuses before relaunch effects
+ok - route-changing relaunch mismatched receipt integration call-site counterexample
+ok - route-changing relaunch stale receipt refuses before relaunch effects
+ok - route-changing relaunch stale receipt integration call-site counterexample
+ok - route-changing relaunch unobserved receipt refuses before relaunch effects
+ok - route-changing relaunch unobserved receipt integration call-site counterexample
+ok - 01 missing receipt refuses before lease, endpoint, and metadata
+ok - 01 missing receipt integration call-site counterexample
+ok - 02 missing intent refuses before lease, endpoint, and metadata
+ok - 02 missing intent integration call-site counterexample
+ok - 03 empty receipt refuses before lease, endpoint, and metadata
+ok - 03 empty receipt integration call-site counterexample
+ok - 04 empty intent refuses before lease, endpoint, and metadata
+ok - 04 empty intent integration call-site counterexample
+ok - 05 task mismatch refuses before lease, endpoint, and metadata
+ok - 05 task mismatch integration call-site counterexample
+ok - 06 stale receipt refuses before lease, endpoint, and metadata
+ok - 06 stale receipt integration call-site counterexample
+ok - 07 future receipt refuses before lease, endpoint, and metadata
+ok - 07 future receipt integration call-site counterexample
+ok - 08 emitted model mismatch refuses before lease, endpoint, and metadata
+ok - 08 emitted model mismatch integration call-site counterexample
+ok - 09 emitted effort mismatch refuses before lease, endpoint, and metadata
+ok - 09 emitted effort mismatch integration call-site counterexample
+ok - 10 canonical config removed refuses before lease, endpoint, and metadata
+ok - 10 canonical config removed integration call-site counterexample
+ok - 11 raw shell expansion refuses before lease, endpoint, and metadata
+ok - 11 raw shell expansion integration call-site counterexample
+ok - 12 raw environment prefix refuses before lease, endpoint, and metadata
+ok - 12 raw environment prefix integration call-site counterexample
+ok - 13 raw non-standard model flag refuses before lease, endpoint, and metadata
+ok - 13 raw non-standard model flag integration call-site counterexample
+ok - 14 raw missing effort refuses before lease, endpoint, and metadata
+ok - 14 raw missing effort integration call-site counterexample
+ok - 15 intent hash mismatch refuses before lease, endpoint, and metadata
+ok - 15 intent hash mismatch integration call-site counterexample
+ok - 16 swapped brief refuses before lease, endpoint, and metadata
+ok - 16 swapped brief integration call-site counterexample
+ok - 17 required gate mismatch refuses before lease, endpoint, and metadata
+ok - 17 required gate mismatch integration call-site counterexample
+ok - 18 forbidden fallback refuses before lease, endpoint, and metadata
+ok - 18 forbidden fallback integration call-site counterexample
+ok - 19 supervisor mismatch refuses before lease, endpoint, and metadata
+ok - 19 supervisor mismatch integration call-site counterexample
+ok - 20 host mismatch refuses before lease, endpoint, and metadata
+ok - 20 host mismatch integration call-site counterexample
+ok - 21 candidate set mismatch refuses before lease, endpoint, and metadata
+ok - 21 candidate set mismatch integration call-site counterexample
+ok - 22 unknown receipt key refuses before lease, endpoint, and metadata
+ok - 22 unknown receipt key integration call-site counterexample
+ok - 23 missing multi-candidate quota refuses before lease, endpoint, and metadata
+ok - 23 missing multi-candidate quota integration call-site counterexample
+ok - 24 stale multi-candidate quota refuses before lease, endpoint, and metadata
+ok - 24 stale multi-candidate quota integration call-site counterexample
+ok - 25 singleton quota laundering refuses before lease, endpoint, and metadata
+ok - 25 singleton quota laundering integration call-site counterexample
+ok - 26 hostile final directory refuses before lease, endpoint, and metadata
+ok - 26 hostile final directory integration call-site counterexample
+ok - 27 hostile final symlink refuses before lease, endpoint, and metadata
+ok - 27 hostile final symlink integration call-site counterexample
+ok - 28 truncated receipt refuses before lease, endpoint, and metadata
+ok - 28 truncated receipt integration call-site counterexample
+ok - 29 canonical config byte mutation refuses before lease, endpoint, and metadata
+ok - 29 canonical config byte mutation integration call-site counterexample
+ok - 30 pending receipt symlink refuses before lease, endpoint, and metadata
+ok - 30 pending receipt symlink integration call-site counterexample
+ok - 31 selection order tamper refuses before lease, endpoint, and metadata
+ok - 31 selection order tamper integration call-site counterexample
+ok - 32 quota snapshot byte mutation refuses before lease, endpoint, and metadata
+ok - 32 quota snapshot byte mutation integration call-site counterexample
+ok - 33 quota snapshot symlink refuses before lease, endpoint, and metadata
+ok - 33 quota snapshot symlink integration call-site counterexample
+ok - 34 selected tuple outside candidates refuses before lease, endpoint, and metadata
+ok - 34 selected tuple outside candidates integration call-site counterexample
+ok - 35 rule index out of range refuses before lease, endpoint, and metadata
+ok - 35 rule index out of range integration call-site counterexample
+ok - 36 wrong quota schema refuses before lease, endpoint, and metadata
+ok - 36 wrong quota schema integration call-site counterexample
+ok - P1 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P1 raw plain-state punctuation integration call-site counterexample
+ok - P2 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P2 raw plain-state punctuation integration call-site counterexample
+ok - P3 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P3 raw plain-state punctuation integration call-site counterexample
+ok - P4 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P4 raw plain-state punctuation integration call-site counterexample
+ok - P5 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P5 raw plain-state punctuation integration call-site counterexample
+ok - P6 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P6 raw plain-state punctuation integration call-site counterexample
+ok - P7 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P7 raw plain-state punctuation integration call-site counterexample
+ok - P8 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P8 raw plain-state punctuation integration call-site counterexample
+ok - P9 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P9 raw plain-state punctuation integration call-site counterexample
+ok - P10 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P10 raw plain-state punctuation integration call-site counterexample
+ok - P11 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P11 raw plain-state punctuation integration call-site counterexample
+ok - P12 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P12 raw plain-state punctuation integration call-site counterexample
+ok - P13 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P13 raw plain-state punctuation integration call-site counterexample
+ok - P14 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P14 raw plain-state punctuation integration call-site counterexample
+ok - P15 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P15 raw plain-state punctuation integration call-site counterexample
+ok - P16 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P16 raw plain-state punctuation integration call-site counterexample
+ok - P17 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P17 raw plain-state punctuation integration call-site counterexample
+ok - P18 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P18 raw plain-state punctuation integration call-site counterexample
+ok - P19 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P19 raw plain-state punctuation integration call-site counterexample
+ok - P20 raw plain-state punctuation refuses before lease, endpoint, and metadata
+ok - P20 raw plain-state punctuation integration call-site counterexample
+ok - P21 raw embedded newline refuses before lease, endpoint, and metadata
+ok - P21 raw embedded newline integration call-site counterexample
+ok - P22 raw embedded carriage return refuses before lease, endpoint, and metadata
+ok - P22 raw embedded carriage return integration call-site counterexample
+ok - D1 raw double-quoted history expansion refuses before lease, endpoint, and metadata
+ok - D1 raw double-quoted history expansion integration call-site counterexample
+ok - D2 raw double-quoted backslash refuses before lease, endpoint, and metadata
+ok - D2 raw double-quoted backslash integration call-site counterexample
+ok - A1 raw leading equals refuses before lease, endpoint, and metadata
+ok - A1 raw leading equals integration call-site counterexample
+ok - C1 raw single-quoted control byte refuses before lease, endpoint, and metadata
+ok - C1 raw single-quoted control byte integration call-site counterexample
+ok - C2 raw plain-state tab refuses before lease, endpoint, and metadata
+ok - C2 raw plain-state tab integration call-site counterexample
+ok - C3 raw single-quoted tab refuses before lease, endpoint, and metadata
+ok - C3 raw single-quoted tab integration call-site counterexample
+ok - C4 raw double-quoted tab refuses before lease, endpoint, and metadata
+ok - C4 raw double-quoted tab integration call-site counterexample
+ok - N1 raw plain non-ASCII refuses before lease, endpoint, and metadata
+ok - N1 raw plain non-ASCII integration call-site counterexample
+ok - N2 raw single-quoted non-ASCII refuses before lease, endpoint, and metadata
+ok - N2 raw single-quoted non-ASCII integration call-site counterexample
+ok - N3 raw double-quoted non-ASCII refuses before lease, endpoint, and metadata
+ok - N3 raw double-quoted non-ASCII integration call-site counterexample
+ok - raw flag shape model missing value refuses before lease, endpoint, and metadata
+ok - raw flag shape model missing value integration call-site counterexample
+ok - raw flag shape model next value is a flag refuses before lease, endpoint, and metadata
+ok - raw flag shape model next value is a flag integration call-site counterexample
+ok - raw flag shape model short option value refuses before lease, endpoint, and metadata
+ok - raw flag shape model short option value integration call-site counterexample
+ok - raw flag shape model equals duplicate refuses before lease, endpoint, and metadata
+ok - raw flag shape model equals duplicate integration call-site counterexample
+ok - raw flag shape model equals empty refuses before lease, endpoint, and metadata
+ok - raw flag shape model equals empty integration call-site counterexample
+ok - raw flag shape fallback model separate refuses before lease, endpoint, and metadata
+ok - raw flag shape fallback model separate integration call-site counterexample
+ok - raw flag shape fallback model equals refuses before lease, endpoint, and metadata
+ok - raw flag shape fallback model equals integration call-site counterexample
+ok - raw flag shape claude settings separate refuses before lease, endpoint, and metadata
+ok - raw flag shape claude settings separate integration call-site counterexample
+ok - raw flag shape claude settings equals refuses before lease, endpoint, and metadata
+ok - raw flag shape claude settings equals integration call-site counterexample
+ok - raw flag shape claude agent separate refuses before lease, endpoint, and metadata
+ok - raw flag shape claude agent separate integration call-site counterexample
+ok - raw flag shape claude agents equals refuses before lease, endpoint, and metadata
+ok - raw flag shape claude agents equals integration call-site counterexample
+ok - raw flag shape effort missing value refuses before lease, endpoint, and metadata
+ok - raw flag shape effort missing value integration call-site counterexample
+ok - raw flag shape effort next value is a flag refuses before lease, endpoint, and metadata
+ok - raw flag shape effort next value is a flag integration call-site counterexample
+ok - raw flag shape effort short option value refuses before lease, endpoint, and metadata
+ok - raw flag shape effort short option value integration call-site counterexample
+ok - raw flag shape effort equals duplicate refuses before lease, endpoint, and metadata
+ok - raw flag shape effort equals duplicate integration call-site counterexample
+ok - raw flag shape effort equals empty refuses before lease, endpoint, and metadata
+ok - raw flag shape effort equals empty integration call-site counterexample
+ok - raw flag shape config missing value refuses before lease, endpoint, and metadata
+ok - raw flag shape config missing value integration call-site counterexample
+ok - raw flag shape config effort duplicate refuses before lease, endpoint, and metadata
+ok - raw flag shape config effort duplicate integration call-site counterexample
+ok - raw flag shape config effort empty refuses before lease, endpoint, and metadata
+ok - raw flag shape config effort empty integration call-site counterexample
+ok - raw flag shape config effort unmatched quote refuses before lease, endpoint, and metadata
+ok - raw flag shape config effort unmatched quote integration call-site counterexample
+ok - raw flag shape equals config effort duplicate refuses before lease, endpoint, and metadata
+ok - raw flag shape equals config effort duplicate integration call-site counterexample
+ok - raw flag shape equals config effort empty refuses before lease, endpoint, and metadata
+ok - raw flag shape equals config effort empty integration call-site counterexample
+ok - raw flag shape equals config effort unmatched quote refuses before lease, endpoint, and metadata
+ok - raw flag shape equals config effort unmatched quote integration call-site counterexample
+ok - raw flag shape codex config model separate refuses before lease, endpoint, and metadata
+ok - raw flag shape codex config model separate integration call-site counterexample
+ok - raw flag shape codex config model equals refuses before lease, endpoint, and metadata
+ok - raw flag shape codex config model equals integration call-site counterexample
+ok - raw flag shape codex profile separate refuses before lease, endpoint, and metadata
+ok - raw flag shape codex profile separate integration call-site counterexample
+ok - raw flag shape codex profile equals refuses before lease, endpoint, and metadata
+ok - raw flag shape codex profile equals integration call-site counterexample
+ok - raw flag shape codex oss provider refuses before lease, endpoint, and metadata
+ok - raw flag shape codex oss provider integration call-site counterexample
+ok - raw flag shape muse provider separate refuses before lease, endpoint, and metadata
+ok - raw flag shape muse provider separate integration call-site counterexample
+ok - raw flag shape muse account equals refuses before lease, endpoint, and metadata
+ok - raw flag shape muse account equals integration call-site counterexample
+ok - raw flag shape muse router separate refuses before lease, endpoint, and metadata
+ok - raw flag shape muse router separate integration call-site counterexample
+ok - raw flag shape muse backend equals refuses before lease, endpoint, and metadata
+ok - raw flag shape muse backend equals integration call-site counterexample
+ok - raw flag shape command wrapper env refuses before lease, endpoint, and metadata
+ok - raw flag shape command wrapper env integration call-site counterexample
+ok - raw flag shape command wrapper arch refuses before lease, endpoint, and metadata
+ok - raw flag shape command wrapper arch integration call-site counterexample
+ok - raw flag shape command wrapper taskset refuses before lease, endpoint, and metadata
+ok - raw flag shape command wrapper taskset integration call-site counterexample
+ok - raw flag shape command wrapper caffeinate refuses before lease, endpoint, and metadata
+ok - raw flag shape command wrapper caffeinate integration call-site counterexample
+ok - raw flag shape command wrapper xcrun refuses before lease, endpoint, and metadata
+ok - raw flag shape command wrapper xcrun integration call-site counterexample
+ok - raw flag shape claude thinking spelling refuses before lease, endpoint, and metadata
+ok - raw flag shape claude thinking spelling integration call-site counterexample
+ok - raw flag shape codex effort spelling refuses before lease, endpoint, and metadata
+ok - raw flag shape codex effort spelling integration call-site counterexample
+ok - raw flag shape opencode effort spelling refuses before lease, endpoint, and metadata
+ok - raw flag shape opencode effort spelling integration call-site counterexample
+ok - raw flag shape pi effort spelling refuses before lease, endpoint, and metadata
+ok - raw flag shape pi effort spelling integration call-site counterexample
+ok - raw flag shape muse thinking spelling refuses before lease, endpoint, and metadata
+ok - raw flag shape muse thinking spelling integration call-site counterexample
+ok - raw flag shape grok unsupported value refuses before lease, endpoint, and metadata
+ok - raw flag shape grok unsupported value integration call-site counterexample
+ok - raw option terminator refuses before lease, endpoint, and metadata
+ok - raw option terminator integration call-site counterexample
+ok - raw reserved placeholder refuses before lease, endpoint, and metadata
+ok - raw reserved placeholder integration call-site counterexample
+ok - raw cross-harness codex config refuses before lease, endpoint, and metadata
+ok - raw cross-harness codex config integration call-site counterexample
+ok - raw relative harness path refuses before lease, endpoint, and metadata
+ok - raw relative harness path integration call-site counterexample
+ok - raw absolute harness impostor refuses before lease, endpoint, and metadata
+ok - raw absolute harness impostor integration call-site counterexample
+ok - raw harness without effort syntax refuses before lease, endpoint, and metadata
+ok - raw harness without effort syntax integration call-site counterexample
+ok - 42 raw launch without executable refuses before lease, endpoint, and metadata
+ok - 42 raw launch without executable integration call-site counterexample
+ok - 43 raw harness contradiction refuses before lease, endpoint, and metadata
+ok - 43 raw harness contradiction integration call-site counterexample
+ok - 44 raw model contradiction refuses before lease, endpoint, and metadata
+ok - 44 raw model contradiction integration call-site counterexample
+ok - 45 raw effort contradiction refuses before lease, endpoint, and metadata
+ok - 45 raw effort contradiction integration call-site counterexample
+ok - 46 non-RFC3339 receipt timestamp refuses before lease, endpoint, and metadata
+ok - 46 non-RFC3339 receipt timestamp integration call-site counterexample
+ok - 47 wrong multi-candidate quota basis refuses before lease, endpoint, and metadata
+ok - 47 wrong multi-candidate quota basis integration call-site counterexample
+ok - 48 default source with index refuses before lease, endpoint, and metadata
+ok - 48 default source with index integration call-site counterexample
+ok - 49 default source without profile refuses before lease, endpoint, and metadata
+ok - 49 default source without profile integration call-site counterexample
+ok - 50 static source with config refuses before lease, endpoint, and metadata
+ok - 50 static source with config integration call-site counterexample
+ok - 51 static source with index refuses before lease, endpoint, and metadata
+ok - 51 static source with index integration call-site counterexample
+ok - 52 static source with wrong authority refuses before lease, endpoint, and metadata
+ok - 52 static source with wrong authority integration call-site counterexample
+ok - 53 static source with multiple candidates refuses before lease, endpoint, and metadata
+ok - 53 static source with multiple candidates integration call-site counterexample
+ok - 54 explicit source with index refuses before lease, endpoint, and metadata
+ok - 54 explicit source with index integration call-site counterexample
+ok - 55 explicit source with wrong authority refuses before lease, endpoint, and metadata
+ok - 55 explicit source with wrong authority integration call-site counterexample
+ok - 56 explicit source with multiple candidates refuses before lease, endpoint, and metadata
+ok - 56 explicit source with multiple candidates integration call-site counterexample
+ok - 57 unsupported authority source refuses before lease, endpoint, and metadata
+ok - 57 unsupported authority source integration call-site counterexample
+ok - 58 rule source with noninteger index refuses before lease, endpoint, and metadata
+ok - 58 rule source with noninteger index integration call-site counterexample
+ok - 59 rule source with malformed profile refuses before lease, endpoint, and metadata
+ok - 59 rule source with malformed profile integration call-site counterexample
+ok - 60 rule source with post-binding kind drift refuses before lease, endpoint, and metadata
+ok - 60 rule source with post-binding kind drift integration call-site counterexample
+ok - 61 pending receipt replaced after snapshot refuses before lease, endpoint, and metadata
+ok - 61 pending receipt replaced after snapshot integration call-site counterexample
+ok - 62 pending receipt directory after snapshot refuses before lease, endpoint, and metadata
+ok - 62 pending receipt directory after snapshot integration call-site counterexample
+ok - 63 existing generation directory has the wrong mode refuses before lease, endpoint, and metadata
+ok - 63 existing generation directory has the wrong mode integration call-site counterexample
+ok - 66 same-generation receipt collision refuses before lease, endpoint, and metadata
+ok - 66 same-generation receipt collision integration call-site counterexample
+ok - 67 pending replacement remains at its pathname refuses before lease, endpoint, and metadata
+ok - 67 pending replacement remains at its pathname integration call-site counterexample
+ok - 68 same-generation brief collision refuses before lease, endpoint, and metadata
+ok - 68 same-generation brief collision integration call-site counterexample
+ok - 69 hard-linked generation artifact refuses before lease, endpoint, and metadata
+ok - 69 hard-linked generation artifact integration call-site counterexample
+ok - 70 canonical config symlink before snapshot refuses before lease, endpoint, and metadata
+ok - 70 canonical config symlink before snapshot integration call-site counterexample
+ok - byte-identical generation publication is idempotent
+ok - route-changing secondmate relaunch commits before home mutation
+ok - canonical config replacement cannot change snapshotted candidate resolution
+ok - generation derives from the immutable validated snapshot
+ok - final freshness reads the immutable prepared receipt
+ok - successful metadata makes its current generation one-shot
+ok - consumed ledger rejects restored generation A after generation B
+# all 148 ROUTING_DECISION negatives refused before effects with 148 integration call-site counterexamples
