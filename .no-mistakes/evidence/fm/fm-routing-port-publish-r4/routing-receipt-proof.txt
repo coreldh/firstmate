@@ -1,0 +1,21 @@
+HEAD_AND_PARENT
+head=07df07189a9cbbeab96d8a8337c0c66980ae5a1a
+parent=1d7fafdd82cc2083707d465126ee15850bb7c5ae
+subject=docs(routing): correct retained call-site scope
+COMMITS_AFTER_INDEPENDENT_GATE_PARENT
+1
+INLINE_DIFF_NUMSTAT
+2	1	docs/verification/dispatch-auth.md
+BEHAVIORAL_PROOF_EXCERPT
+ok - routing receipt enforcement does not depend on dispatch config presence
+ok - FM_CONFIG_OVERRIDE cannot relocate routing receipt authority
+ok - raw launch consumes the verified receipt-bound brief
+ok - pi-signed shares Pi launch semantics while preserving its configured and recorded identity
+ok - consumed ledger rejects restored generation A after generation B
+# 147 fresh-dispatch negatives and 4 route-changing relaunch negatives refused through real fm-spawn
+# all 5/5 committed-handoff guards refused through fm-spawn; per-guard mutation evidence is recorded by the repair validation
+# all 6/6 documented raw harness heads succeeded through fm-spawn
+ok - fm-control relaunch: an explicit same-value route needs a receipt before control effects
+ok - fm-control relaunch: committed handoff validates its durable generation without re-aging
+ok - committed routing-refusal candidate inventory matches the dispatch sources
+FM_TEST_SUMMARY total=4 failed=0 skipped_gate=0 duration_ms=948360
