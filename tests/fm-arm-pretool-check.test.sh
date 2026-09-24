@@ -64,7 +64,7 @@ matrix_case R17 allow "printf '%s\\n' 'fm-watch.sh; a && b || c > out' | sed -n 
 matrix_case R18 allow "sh -c 'tmux send-keys -t lab \"bin/fm-watch-arm.sh &\" Enter'"
 matrix_case R19 allow "eval 'printf \"%s\\n\" \"bin/fm-watch-arm.sh &\"'"
 matrix_case R20 allow "bash -s sentinel <<< 'echo fm-watch.sh'"
-matrix_case R21 allow "bash -- -s sentinel <<< 'bin/fm-watch.sh'"
+matrix_case R21 allow "bash -- -s <<< 'bin/fm-watch.sh'"
 
 matrix_case D01 deny 'bin/fm-watch-arm.sh &'
 matrix_case D02 deny 'nohup bin/fm-watch-arm.sh'

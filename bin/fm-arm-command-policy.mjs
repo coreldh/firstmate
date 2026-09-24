@@ -620,7 +620,6 @@ function shellInvocation(position) {
   if (!["sh", "bash", "zsh"].includes(name)) return null;
   const words = position.words;
   let readsStdin = false;
-  let optionsEnded = false;
   for (let i = position.index + 1; i < words.length; i += 1) {
     const option = words[i];
     if (/^-[A-Za-z]*c[A-Za-z]*$/.test(option.value)) {
@@ -632,14 +631,14 @@ function shellInvocation(position) {
       i += 1;
       continue;
     }
-    if (!optionsEnded && /^-[A-Za-z]*s[A-Za-z]*$/.test(option.value)) readsStdin = true;
+    if (/^-[A-Za-z]*s[A-Za-z]*$/.test(option.value)) readsStdin = true;
     if (option.value === "--") {
       // `--` ends option parsing: after -s a later `-c` is only a positional
       // parameter, and a later `-s` never switches to reading stdin.
       if (readsStdin) return { kind: "stdin", payload: null, operand: words[i + 1] || null };
-      optionsEnded = true;
+      return words[i + 1] ? { kind: "script", payload: words[i + 1] } : { kind: "stdin", payload: null };
     }
-    if (option.value === "--" || /^[-+]/.test(option.value)) continue;
+    if (/^[-+]/.test(option.value)) continue;
     // With -s the shell still reads its program from stdin; the operand is only
     // a positional parameter, kept as `operand` so a protected path there still
     // fails closed.
