@@ -228,10 +228,11 @@ unit_start_refuses_without_operator_pane_handle() {
   if [ "$rc" -ne 0 ] && printf '%s' "$out" | grep -F 'target_source=UNAVAILABLE' >/dev/null \
     && ! printf '%s' "$out" | grep -F 'firstmate:0' >/dev/null \
     && [ ! -e "$st/state/.afk" ] && [ ! -e "$st/state/.afk-daemon-terminal" ] \
-    && [ -f "$st/state/.afk-contract" ]; then
-    pass "no handle: start refuses naming target_source=UNAVAILABLE, launches no daemon terminal, and keeps the record"
+    && [ -f "$st/state/.afk-contract" ] \
+    && grep -E '^\[[0-9T:+-]+\] startup refused: .*target_source=UNAVAILABLE' "$st/state/.supervise-daemon.log" >/dev/null 2>&1; then
+    pass "no handle: start refuses naming target_source=UNAVAILABLE on stderr and in the daemon log, launches no daemon terminal, and keeps the record"
   else
-    fail "no handle: start did not refuse cleanly (rc=$rc): $out"
+    fail "no handle: start did not refuse cleanly or left no durable record (rc=$rc): $out; log: $(cat "$st/state/.supervise-daemon.log" 2>/dev/null)"
   fi
   rm -rf "$st"
 }
