@@ -1,0 +1,57 @@
+D59 direct: deny	watcher-nested	a protected watcher command must not run through a wrapper, substitution, or compound command
+  codex: deny watcher-nested
+  claude: deny watcher-nested
+  grok: deny watcher-nested
+  opencode: deny watcher-nested
+  pi: deny watcher-nested
+D60 direct: deny	watcher-nested	a protected watcher command must not run through a wrapper, substitution, or compound command
+  codex: deny watcher-nested
+  claude: deny watcher-nested
+  grok: deny watcher-nested
+  opencode: deny watcher-nested
+  pi: deny watcher-nested
+D61 direct: deny	watcher-nested	a protected watcher command must not run through a wrapper, substitution, or compound command
+  codex: deny watcher-nested
+  claude: deny watcher-nested
+  grok: deny watcher-nested
+  opencode: deny watcher-nested
+  pi: deny watcher-nested
+D62 direct: deny	watcher-nested	a protected watcher command must not run through a wrapper, substitution, or compound command
+  codex: deny watcher-nested
+  claude: deny watcher-nested
+  grok: deny watcher-nested
+  opencode: deny watcher-nested
+  pi: deny watcher-nested
+D63 direct: deny	watcher-nested	a protected watcher command must not run through a wrapper, substitution, or compound command
+  codex: deny watcher-nested
+  claude: deny watcher-nested
+  grok: deny watcher-nested
+  opencode: deny watcher-nested
+  pi: deny watcher-nested
+D64 direct: deny	watcher-nested	a protected watcher command must not run through a wrapper, substitution, or compound command
+  codex: deny watcher-nested
+  claude: deny watcher-nested
+  grok: deny watcher-nested
+  opencode: deny watcher-nested
+  pi: deny watcher-nested
+D65 direct: deny	watcher-nested	a protected watcher command must not run through a wrapper, substitution, or compound command
+  codex: deny watcher-nested
+  claude: deny watcher-nested
+  grok: deny watcher-nested
+  opencode: deny watcher-nested
+  pi: deny watcher-nested
+R20 direct: allow
+  codex: allow silent
+  claude: allow silent
+  grok: allow silent
+  opencode: allow silent
+  pi: allow silent
+R21 direct: allow
+  codex: allow silent
+  claude: allow silent
+  grok: allow silent
+  opencode: allow silent
+  pi: allow silent
+D60 base behavior: {"decision":"allow"}
+Real bash -s: stdin ran with operand: sentinel
+RESULT: 9 cases matched direct policy and all five wrapper forms; base D60 allowed; Bash executed stdin with operand
