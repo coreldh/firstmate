@@ -267,8 +267,7 @@ test_typed_send_refuses_stale_pending_composer() {
   err="$dir/send.err"
   run_send "$dir" "$err" FM_FAKE_TMUX_COMPOSER=stale-until-enter -- t1 "/status"
   rc=$?
-  [ "$rc" -ne 0 ] && [ "$rc" -ne 3 ] ||
-    fail "a typed send onto a provably pending composer must fail, got exit $rc; typed:"$'\n'"$(cat "$dir/send.log")"$'\n'"keys:"$'\n'"$(cat "$dir/send.log.keys")"
+  expect_code 1 "$rc" "a typed send onto a provably pending composer must fail with exit 1"
   [ ! -s "$dir/send.log" ] || fail "a refused typed send still typed text:"$'\n'"$(cat "$dir/send.log")"
   [ ! -s "$dir/send.log.keys" ] || fail "a refused typed send still pressed keys:"$'\n'"$(cat "$dir/send.log.keys")"
   assert_contains "$(cat "$err")" "sess:fm-t1" "the refusal should name the target"
@@ -279,8 +278,7 @@ test_typed_send_refuses_stale_pending_composer() {
   err="$dir/send.err"
   run_send "$dir" "$err" FM_FAKE_TMUX_COMPOSER=stale-until-enter -- sess:win "hello there"
   rc=$?
-  [ "$rc" -ne 0 ] && [ "$rc" -ne 3 ] ||
-    fail "an explicit-target send onto a provably pending composer must fail, got exit $rc"
+  expect_code 1 "$rc" "an explicit-target send onto a provably pending composer must fail with exit 1"
   [ ! -s "$dir/send.log" ] || fail "a refused explicit-target send still typed text:"$'\n'"$(cat "$dir/send.log")"
   assert_contains "$(cat "$err")" "sess:win" "the explicit-target refusal should name the target"
   # A marked secondmate typed request is refused the same way and leaves no
@@ -290,8 +288,7 @@ test_typed_send_refuses_stale_pending_composer() {
   fm_write_secondmate_meta "$dir/home/state/domain.meta" "$dir/home" "sess:fm-domain"
   run_send "$dir" "$err" FM_FAKE_TMUX_COMPOSER=stale-until-enter -- fm-domain "/status"
   rc=$?
-  [ "$rc" -ne 0 ] && [ "$rc" -ne 3 ] ||
-    fail "a secondmate typed send onto a provably pending composer must fail, got exit $rc"
+  expect_code 1 "$rc" "a secondmate typed send onto a provably pending composer must fail with exit 1"
   [ ! -s "$dir/send.log" ] || fail "a refused secondmate typed send still typed text:"$'\n'"$(cat "$dir/send.log")"
   [ -z "$(find "$dir/home/state/pending-replies" -type f -not -name '.*' 2>/dev/null)" ] ||
     fail "a refused typed send should discard the just-created pending-reply expectation"
