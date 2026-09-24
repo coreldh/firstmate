@@ -1,0 +1,11 @@
+version: 2
+entered: 2026-09-24T23:30:42Z
+entered_epoch: 1790292642
+expected_return: -
+reach_channels: none
+reach_announced: No phone channel is configured; anything that needs you waits for your return.
+spend_max_concurrent_workers: 4
+confirmed: 2026-09-24T23:30:42Z
+confirmed_epoch: 1790292642
+words: |-
+  watch the fleet
