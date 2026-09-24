@@ -231,21 +231,8 @@ The single-line format makes submission unambiguous across harnesses; the carrie
   (`fm-wake-lib.sh`) instead of `flock`, which is absent on macOS.
 - **Dedupe across signal/stale/scan** - all three paths use the shared status presentation markers defined by `bin/fm-classify-lib.sh`, so a successfully classified span is not re-escalated by another path in the same digest.
   Never treat a reported unreadable state as classified; the shared library header owns that marker contract, and the marker does not clear or suppress possible-wedge aging for a nonterminal progress line.
-- **Auto-discovered supervisor pane** - the daemon resolves its own BACKEND
-  (tmux vs herdr) and TARGET independently, mirroring
-  `bin/fm-backend.sh`'s own runtime auto-detection. Backend: `FM_SUPERVISOR_BACKEND`
-  override, then `$TMUX_PANE` set (tmux), then `$HERDR_ENV=1` with
-  `$HERDR_PANE_ID` present (herdr), then a tmux fallback. Target:
-  `FM_SUPERVISOR_TARGET` override (a tmux target or a herdr
-  `"<session>:<pane-id>"` target), then `$TMUX_PANE`, then
-  `"${HERDR_SESSION:-default}:${HERDR_PANE_ID}"` under herdr. With none of
-  those handles the daemon refuses to arm and logs `target_source=UNAVAILABLE`
-  instead of guessing a pane (docs/configuration.md owns the contract). Both
-  resolution sources are logged at startup. Other runtime
-  backends, including zellij, orca, and cmux, are not yet supported as
-  supervisor backends; the daemon refuses loudly at startup instead of
-  misapplying tmux primitives to a pane that isn't one
-  (docs/herdr-backend.md "Away-mode supervisor support").
+- **Supervisor pane discovery** - use [the away-mode supervisor configuration](../../../docs/configuration.md#away-mode-supervisor-backend-fm_supervisor_backend--fm_supervisor_target) for the backend and target resolution contract, including refusal when no operator pane handle exists.
+  Check the daemon's startup result before treating away supervision as armed.
 
 ### Stale-artifact lifecycle
 
