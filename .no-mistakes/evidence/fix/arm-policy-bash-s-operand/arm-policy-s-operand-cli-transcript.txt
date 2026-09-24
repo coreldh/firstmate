@@ -1,0 +1,44 @@
+Watcher arm PreToolUse public CLI verification
+Invoked bin/fm-arm-pretool-check.sh --command for each submitted command.
+DENY means exit 2 and the stable policy reason on stderr; ALLOW means exit 0 and empty output.
+
+D59 heredoc: "bash -s sentinel <<'EOF'\nbin/fm-watch.sh\nEOF"
+  exit=2 decision=deny reason=watcher-nested
+
+D60 here-string: "bash -s sentinel <<< 'bin/fm-watch.sh'"
+  exit=2 decision=deny reason=watcher-nested
+
+D61 double-dash operands: "bash -s -- one two <<< 'bin/fm-watch-arm.sh &'"
+  exit=2 decision=deny reason=watcher-nested
+
+D62 clustered -xs: "bash -xs sentinel <<< 'bin/fm-watch.sh'"
+  exit=2 decision=deny reason=watcher-nested
+
+D63 sh -s: "sh -s sentinel <<< 'bin/fm-watch.sh'"
+  exit=2 decision=deny reason=watcher-nested
+
+D64 protected operand: 'bash -s bin/fm-watch.sh'
+  exit=2 decision=deny reason=watcher-nested
+
+D65 -s -- -c operand: "bash -s -- -c harmless <<< 'bin/fm-watch.sh'"
+  exit=2 decision=deny reason=watcher-nested
+
+R20 data-only stdin: "bash -s sentinel <<< 'echo fm-watch.sh'"
+  exit=0 decision=allow
+
+R21 leading -- -s: "bash -- -s sentinel <<< 'bin/fm-watch.sh'"
+  exit=0 decision=allow
+
+main-preserved leading -- -c: "bash -- -c 'bin/fm-watch.sh'"
+  exit=2 decision=deny reason=watcher-nested
+
+main-preserved leading -- -x: "bash -- -x <<< 'bin/fm-watch.sh'"
+  exit=2 decision=deny reason=watcher-nested
+
+main-preserved bash -n: 'bash -n bin/fm-watch.sh'
+  exit=2 decision=deny reason=watcher-nested
+
+main-preserved bash --noexec: 'bash --noexec bin/fm-watch.sh'
+  exit=2 decision=deny reason=watcher-nested
+Actual Bash stdin semantics: ['bash', '-s', 'sentinel'] -> program=stdin arg1=sentinel
+Actual Bash stdin semantics: ['bash', '-s', '--', '-c', 'harmless'] -> program=stdin arg1=-c arg2=harmless
