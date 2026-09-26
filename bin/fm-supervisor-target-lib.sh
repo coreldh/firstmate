@@ -19,6 +19,7 @@
 # fallback. They are never a discovery result: discover_supervisor_target prints
 # nothing when no operator pane handle exists, and the executed daemon refuses
 # to arm rather than aim pane escalation at a constant (kunchenguid/firstmate#1506).
+# shellcheck disable=SC2034 # Read by fm-supervise-daemon.sh's inject/alarm helpers after sourcing, not this lib.
 FM_SUPERVISOR_TARGET_DEFAULT="firstmate:0"
 FM_SUPERVISOR_BACKEND_DEFAULT="tmux"
 
