@@ -1,0 +1,20 @@
+COMMAND: fm-send.sh t1 /status
+exit=1
+stderr: ●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+●  WATCHER DOWN - SUPERVISION IS OFF
+●  1 task(s) in flight, but no watcher has a fresh beacon (last beat: never, grace 300s).
+●  Trust the emitted supervision protocol for this harness; do not use shell & for watcher repair.
+●  This is a supervision warning only; the requested message WILL still be sent.
+●  repair missing watcher supervision according to the session-start block for this harness; do not use shell &.
+●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+error: text not sent to sess:fm-t1: its composer already holds pending unsubmitted text, and typing would concatenate onto it; nothing was typed. Inspect with fm-peek.sh, clear or submit that text, then resend (tried meta=/Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3DXXSVV80Y3QGVEXPNXY1DZ/.fm-send-evidence.Nv7imy/home/state/t1.meta; backend=from-meta)
+typed_bytes=0 key_events= stale_draft_after=yes inbox_records=0
+COMMAND: fm-send.sh sess:win hello there
+exit=1
+stderr: WARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.
+error: text not sent to sess:win: its composer already holds pending unsubmitted text, and typing would concatenate onto it; nothing was typed. Inspect with fm-peek.sh, clear or submit that text, then resend (tried meta=/Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3DXXSVV80Y3QGVEXPNXY1DZ/.fm-send-evidence.Nv7imy/home/state/sess:win.meta; metadata window/terminal lookup; backend=tmux; endpoint=verified)
+typed_bytes=0 key_events= stale_draft_after=yes inbox_records=0
+COMMAND: fm-send.sh t1 --key Enter
+exit=0
+stderr: WARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.
+typed_bytes=0 key_events=Enter, stale_draft_after=no inbox_records=0
