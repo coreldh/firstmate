@@ -1,0 +1,1 @@
+[2026-09-25T23:09:06-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)

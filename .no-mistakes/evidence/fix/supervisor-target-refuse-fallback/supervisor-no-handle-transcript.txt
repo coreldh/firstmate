@@ -1,0 +1,8 @@
+Scenario: daemon launched with no operator pane handle
+exit=1
+error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane
+durable log:
+[2026-09-25T23:09:06-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)
+pid file present=no
+lock present=no
+RESULT: PASS

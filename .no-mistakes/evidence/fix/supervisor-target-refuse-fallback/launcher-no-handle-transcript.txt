@@ -1,0 +1,9 @@
+Scenario: away-mode launcher start with an entered posture and no operator pane handle
+exit=1
+fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon
+durable log:
+[2026-09-25T23:09:22-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start
+posture record present=yes
+away flag present=no
+daemon terminal record present=no
+RESULT: PASS
