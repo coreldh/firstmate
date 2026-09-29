@@ -103,7 +103,7 @@ Destructive, irreversible, and security-sensitive actions are never pre-authoriz
 
 ## The daemon, where it still runs
 
-On the harnesses that still launch the daemon (every verified harness except Pi and pi-signed, and except away mode on a home that runs the supervision host), the mechanics below are unchanged.
+On the harnesses that still launch the daemon (every verified harness except Pi and pi-signed, and except away mode on a home that runs the supervision host), the delivery mechanics below apply once startup succeeds.
 
 ### Operational prefix contract
 

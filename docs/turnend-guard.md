@@ -46,8 +46,7 @@ When the guard acts, the harness integration must do one of two things:
 The mid-turn pull warning uses the model-aware supervision verdict described below, while the turn-end guard keeps the PID-strict watcher predicate.
 
 Away and quiet mode are the one place the turn-end guard accepts a different supervisor.
-While `state/.afk` exists, in either mode (`bin/fm-wake-lib.sh`'s `fm_afk_mode`), the daemon owns supervision.
-A live identity-matched daemon with a fresh beacon then satisfies that boundary in place of a watcher process holding the lock.
+During away or quiet mode, the daemon may satisfy this boundary in place of a watcher process holding the lock; its ownership proof and the no-daemon result are defined under [Away and quiet mode daemon ownership](#away-and-quiet-mode-daemon-ownership).
 
 The guard remains a backstop.
 [`watcher-continuity.md`](watcher-continuity.md) owns normal continuity.
@@ -170,7 +169,7 @@ It keys the once-per-episode dedup on that condition rather than the beacon mtim
 
 ### Away and quiet mode daemon ownership
 
-While `state/.afk` exists the daemon (`bin/fm-supervise-daemon.sh`) owns supervision and runs the watcher one-shot, in either away or quiet mode.
+When `state/.afk` exists and the daemon (`bin/fm-supervise-daemon.sh`) is running, it owns supervision and runs the watcher one-shot, in either away or quiet mode.
 The watcher exits on every wake and the daemon starts its replacement.
 A turn boundary therefore regularly lands in a hand-off where no watcher process holds the lock and nothing is wrong.
 
