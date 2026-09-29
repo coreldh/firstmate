@@ -69,12 +69,16 @@
 # text through the target backend's verified submit core: typed ONCE, then
 # Enter retried (never retyped) until the backend confirms a submit or reports
 # an inconclusive send. Before typing, the target's composer is read once
-# through fm_backend_composer_state: an exact `pending` verdict (the composer
-# provably holds unsubmitted text, e.g. a parked draft) refuses with exit 1 and
-# nothing typed, because the payload would concatenate onto that text and the
-# composer clearing after Enter would read as a confirmed submit (#1474); any
-# other verdict, including `unknown`, proceeds unchanged. The --key path has no
-# such check: `--key Enter` is the documented way to submit pending text.
+# through fm_backend_composer_state: an exact `pending` verdict refuses with
+# exit 1 and nothing typed, because the payload could concatenate onto stale
+# text and the composer clearing after Enter would read as a confirmed submit
+# (#1474). A Herdr Cursor pane is the narrow exception: its busy follow-up
+# placeholder can read `pending` without user text, so fm-send proceeds only
+# when Cursor identity, the rendered busy signal, and the placeholder shape
+# agree; the submit core then owns its normal busy-pane confirmation. Any other
+# verdict, including `pending-unproven` and `unknown`, proceeds unchanged. The
+# --key path has no such check: `--key Enter` is the documented way to submit
+# pending text.
 # Typed-plane exit contract: 0 = submit confirmed;
 # 3 = the text was typed into the live endpoint and
 # Enter was sent, but the submit read-back stayed unconfirmed (verify the pane
@@ -548,6 +552,19 @@ fm_send_known_undelivered_cleanup() {
   else
     fm_pending_reply_reset_known_undelivered "$STATE" "$PENDING_REPLY_CORR"
   fi
+}
+fm_send_herdr_cursor_busy_placeholder() { # <target>
+  local target=$1 identity content capture
+  [ "$TARGET_BACKEND" = herdr ] || return 1
+  identity=$(fm_backend_herdr_composer_identity "$target" 2>/dev/null) || return 1
+  [ "${identity%%$'\t'*}" = cursor ] || return 1
+  [ "$(fm_backend_herdr_rendered_busy_state "$target" cursor 2>/dev/null)" = busy ] || return 1
+  # Ghost stripping leaves the caret-over-A cell; the full row must still be
+  # Cursor's follow-up hint for that cell to count as placeholder, not a draft.
+  content=$(fm_backend_herdr_composer_content "$target" 2>/dev/null) || return 1
+  [ "$content" = A ] || return 1
+  capture=$(fm_backend_herdr_visible_capture "$target") || return 1
+  printf '%s\n' "$capture" | grep -Eq '→[[:space:]]+Add a follow-up[[:space:]]+ctrl\+c to stop'
 }
 if [ -n "$TARGET_SELECTOR" ] && [ -n "$TARGET_META" ] && [ "$(fm_meta_get "$TARGET_META" kind)" = secondmate ]; then
   MARK_FROM_FIRSTMATE=1
@@ -1154,7 +1171,7 @@ else
   # classifier cannot positively identify every idle screen.
   pre_state=$(fm_backend_composer_state "$TARGET_BACKEND" "$T" "$EXPECTED_LABEL" 2>/dev/null) ||
     pre_state=unknown
-  if [ "$pre_state" = pending ]; then
+  if [ "$pre_state" = pending ] && ! fm_send_herdr_cursor_busy_placeholder "$T"; then
     fm_send_known_undelivered_cleanup ||
       echo "error: known-undelivered pending-reply state could not be reset for $TARGET_TASK_ID" >&2
     echo "error: text not sent to $T: its composer already holds pending unsubmitted text, and typing would concatenate onto it; nothing was typed. Inspect with fm-peek.sh, clear or submit that text, then resend (tried $RESOLUTION_TRIED)" >&2

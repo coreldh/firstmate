@@ -116,6 +116,50 @@ setup_case() { # <name> [harness] -> echoes case dir with home/state + t1 meta
   printf '%s\n' "$dir"
 }
 
+make_cursor_herdr_stub() { # <case-dir>
+  local fb="$1/fakebin"
+  cat > "$fb/herdr" <<'SH'
+#!/usr/bin/env bash
+set -u
+case "${1:-}" in
+  status)
+    printf '{"server":{"running":true}}\n' ;;
+  agent)
+    printf '{"result":{"agent":{"agent":"cursor","agent_status":"blocked"}}}\n' ;;
+  pane)
+    case "${2:-}" in
+      get)
+        printf '{"result":{"pane":{"pane_id":"w1:p2"}}}\n' ;;
+      read)
+        case " $* " in
+          *" --format ansi "*)
+            if [ "${FM_FAKE_HERDR_COMPOSER:-placeholder}" = draft ]; then
+              printf ' ⠘⠆ Running 59 tokens\n ▄▄▄▄▄▄▄▄▄▄\n  → stale draft                  ctrl+c to stop\n ▀▀▀▀▀▀▀▀▀▀\n  1 task\n  Cursor Grok 4.5 High · 7%%           Run Everything\n'
+            else
+              printf '%b' ' \033[0m\033[38;2;21;21;21m▄▄▄▄▄▄▄▄▄▄\033[0m\r\n \033[0m\033[48;2;21;21;21m \033[0m\033[2m\033[48;2;21;21;21m→ \033[0m\033[7m\033[48;2;21;21;21mA\033[0m\033[2m\033[48;2;21;21;21mdd a follow-up\033[0m\033[48;2;21;21;21m                   \033[0m\033[2m\033[48;2;21;21;21mctrl+c to stop\033[0m\033[48;2;21;21;21m \033[0m\r\n \033[0m\033[38;2;21;21;21m▀▀▀▀▀▀▀▀▀▀\033[0m\r\n  \033[0m\033[38;5;4m1 task\033[0m\r\n  \033[0m\033[2mCursor Grok 4.5 High\033[0m \033[0m\033[2m·\033[0m \033[0m\033[2m7%%\033[0m           \033[0m\033[38;5;5mRun Everything\033[0m\r\n'
+            fi
+            ;;
+          *)
+            if [ "${FM_FAKE_HERDR_COMPOSER:-placeholder}" = draft ]; then
+              printf ' ⠘⠆ Running 59 tokens\n ▄▄▄▄▄▄▄▄▄▄\n  → stale draft                  ctrl+c to stop\n ▀▀▀▀▀▀▀▀▀▀\n  1 task\n  Cursor Grok 4.5 High · 7%%           Run Everything\n'
+            else
+              printf ' ⠘⠆ Running 59 tokens\n ▄▄▄▄▄▄▄▄▄▄\n  → Add a follow-up                  ctrl+c to stop\n ▀▀▀▀▀▀▀▀▀▀\n  1 task\n  Cursor Grok 4.5 High · 7%%           Run Everything\n'
+            fi
+            ;;
+        esac
+        ;;
+      send-text)
+        printf '%s' "${4:-}" >> "$FM_SEND_LOG" ;;
+      send-keys)
+        printf '%s\n' "${4:-}" >> "$FM_SEND_LOG.keys" ;;
+    esac
+    ;;
+esac
+exit 0
+SH
+  chmod +x "$fb/herdr"
+}
+
 run_send() { # <case-dir> <err-file> [env...] -- <fm-send args...>
   local dir=$1 err=$2
   shift 2
@@ -408,6 +452,31 @@ test_typed_send_empty_and_unknown_composer_unchanged() {
   pass "fm-send typed plane: empty and unknown composers keep the type-then-verify behavior"
 }
 
+test_typed_send_allows_busy_cursor_placeholder_but_refuses_busy_draft() {
+  local dir err rc
+  dir=$(setup_case cursor-busy-placeholder cursor)
+  make_cursor_herdr_stub "$dir"
+  err="$dir/send.err"
+  run_send "$dir" "$err" FM_FAKE_HERDR_COMPOSER=placeholder FM_SEND_RETRIES=1 \
+    FM_SEND_SLEEP=0.01 FM_BACKEND_HERDR_SUBMIT_MIN_SLEEP=0 -- sess:w1:p2 "/status"
+  rc=$?
+  expect_code 3 "$rc" "a busy Cursor placeholder should pass the pre-type check and leave submit certainty to the Herdr submit path"
+  assert_equals "/status" "$(cat "$dir/send.log")" \
+    "a busy Cursor placeholder should receive the typed steer"
+  [ ! -d "$dir/home/state/t1.inbox" ] || fail "an explicit Herdr target should not fall back to the inbox"
+
+  dir=$(setup_case cursor-busy-draft cursor)
+  make_cursor_herdr_stub "$dir"
+  err="$dir/send.err"
+  run_send "$dir" "$err" FM_FAKE_HERDR_COMPOSER=draft -- sess:w1:p2 "/status"
+  rc=$?
+  expect_code 1 "$rc" "a real draft in a busy Cursor composer must still be refused"
+  [ ! -s "$dir/send.log" ] || fail "a typed steer concatenated onto a real Cursor draft"
+  assert_contains "$(cat "$err")" "sess:w1:p2" "the busy-draft refusal should name the explicit target"
+  assert_contains "$(cat "$err")" "pending" "the busy-draft refusal should preserve the pending-composer reason"
+  pass "fm-send typed plane: a busy Cursor placeholder is steerable while actual pending text remains guarded"
+}
+
 test_key_path_never_touches_inbox() {
   local dir err
   dir=$(setup_case keypath)
@@ -594,6 +663,7 @@ test_harness_invocations_stay_typed
 test_explicit_target_stays_typed
 test_typed_send_refuses_stale_pending_composer
 test_typed_send_empty_and_unknown_composer_unchanged
+test_typed_send_allows_busy_cursor_placeholder_but_refuses_busy_draft
 test_key_path_never_touches_inbox
 test_secondmate_marker_and_enqueue_delivery
 test_post_enqueue_bookkeeping_failure_is_not_retryable
