@@ -559,12 +559,28 @@ fm_send_herdr_cursor_busy_placeholder() { # <target>
   identity=$(fm_backend_herdr_composer_identity "$target" 2>/dev/null) || return 1
   [ "${identity%%$'\t'*}" = cursor ] || return 1
   [ "$(fm_backend_herdr_rendered_busy_state "$target" cursor 2>/dev/null)" = busy ] || return 1
-  # Ghost stripping leaves the caret-over-A cell; the full row must still be
-  # Cursor's follow-up hint for that cell to count as placeholder, not a draft.
+  # Ghost stripping leaves the caret-over-A cell; Cursor's follow-up hint must
+  # be on that selected composer row, not an earlier transcript row.
   content=$(fm_backend_herdr_composer_content "$target" 2>/dev/null) || return 1
   [ "$content" = A ] || return 1
   capture=$(fm_backend_herdr_visible_capture "$target") || return 1
-  printf '%s\n' "$capture" | grep -Eq '→[[:space:]]+Add a follow-up[[:space:]]+ctrl\+c to stop'
+  printf '%s\n' "$capture" | awk '
+    index($0, "▄▄▄") {
+      in_box = 1
+      placeholder = 0
+      selected_box = 0
+      next
+    }
+    in_box && index($0, "▀▀▀") {
+      selected_box = placeholder
+      in_box = 0
+      next
+    }
+    in_box && /→[[:space:]]+Add a follow-up[[:space:]]+ctrl\+c to stop/ {
+      placeholder = 1
+    }
+    END { exit selected_box ? 0 : 1 }
+  '
 }
 if [ -n "$TARGET_SELECTOR" ] && [ -n "$TARGET_META" ] && [ "$(fm_meta_get "$TARGET_META" kind)" = secondmate ]; then
   MARK_FROM_FIRSTMATE=1

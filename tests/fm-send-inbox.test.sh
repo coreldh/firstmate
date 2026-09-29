@@ -135,6 +135,8 @@ case "${1:-}" in
           *" --format ansi "*)
             if [ "${FM_FAKE_HERDR_COMPOSER:-placeholder}" = draft ]; then
               printf ' ⠘⠆ Running 59 tokens\n ▄▄▄▄▄▄▄▄▄▄\n  → stale draft                  ctrl+c to stop\n ▀▀▀▀▀▀▀▀▀▀\n  1 task\n  Cursor Grok 4.5 High · 7%%           Run Everything\n'
+            elif [ "${FM_FAKE_HERDR_COMPOSER:-placeholder}" = transcript-hint-draft ]; then
+              printf '%b' ' ⠘⠆ Running 59 tokens\n  → Add a follow-up                  ctrl+c to stop\n \033[0m\033[38;2;21;21;21m▄▄▄▄▄▄▄▄▄▄\033[0m\r\n \033[0m\033[48;2;21;21;21m \033[0m\033[2m\033[48;2;21;21;21m→ \033[0m\033[7m\033[48;2;21;21;21mA\033[0m\033[0m\033[2m\033[48;2;21;21;21m                   ctrl+c to stop\033[0m\r\n \033[0m\033[38;2;21;21;21m▀▀▀▀▀▀▀▀▀▀\033[0m\r\n  1 task\n  Cursor Grok 4.5 High · 7%%           Run Everything\n'
             else
               printf '%b' ' \033[0m\033[38;2;21;21;21m▄▄▄▄▄▄▄▄▄▄\033[0m\r\n \033[0m\033[48;2;21;21;21m \033[0m\033[2m\033[48;2;21;21;21m→ \033[0m\033[7m\033[48;2;21;21;21mA\033[0m\033[2m\033[48;2;21;21;21mdd a follow-up\033[0m\033[48;2;21;21;21m                   \033[0m\033[2m\033[48;2;21;21;21mctrl+c to stop\033[0m\033[48;2;21;21;21m \033[0m\r\n \033[0m\033[38;2;21;21;21m▀▀▀▀▀▀▀▀▀▀\033[0m\r\n  \033[0m\033[38;5;4m1 task\033[0m\r\n  \033[0m\033[2mCursor Grok 4.5 High\033[0m \033[0m\033[2m·\033[0m \033[0m\033[2m7%%\033[0m           \033[0m\033[38;5;5mRun Everything\033[0m\r\n'
             fi
@@ -142,6 +144,8 @@ case "${1:-}" in
           *)
             if [ "${FM_FAKE_HERDR_COMPOSER:-placeholder}" = draft ]; then
               printf ' ⠘⠆ Running 59 tokens\n ▄▄▄▄▄▄▄▄▄▄\n  → stale draft                  ctrl+c to stop\n ▀▀▀▀▀▀▀▀▀▀\n  1 task\n  Cursor Grok 4.5 High · 7%%           Run Everything\n'
+            elif [ "${FM_FAKE_HERDR_COMPOSER:-placeholder}" = transcript-hint-draft ]; then
+              printf ' ⠘⠆ Running 59 tokens\n  → Add a follow-up                  ctrl+c to stop\n ▄▄▄▄▄▄▄▄▄▄\n  → A                              ctrl+c to stop\n ▀▀▀▀▀▀▀▀▀▀\n  1 task\n  Cursor Grok 4.5 High · 7%%           Run Everything\n'
             else
               printf ' ⠘⠆ Running 59 tokens\n ▄▄▄▄▄▄▄▄▄▄\n  → Add a follow-up                  ctrl+c to stop\n ▀▀▀▀▀▀▀▀▀▀\n  1 task\n  Cursor Grok 4.5 High · 7%%           Run Everything\n'
             fi
@@ -474,6 +478,17 @@ test_typed_send_allows_busy_cursor_placeholder_but_refuses_busy_draft() {
   [ ! -s "$dir/send.log" ] || fail "a typed steer concatenated onto a real Cursor draft"
   assert_contains "$(cat "$err")" "sess:w1:p2" "the busy-draft refusal should name the explicit target"
   assert_contains "$(cat "$err")" "pending" "the busy-draft refusal should preserve the pending-composer reason"
+
+  dir=$(setup_case cursor-transcript-hint-draft cursor)
+  make_cursor_herdr_stub "$dir"
+  err="$dir/send.err"
+  run_send "$dir" "$err" FM_FAKE_HERDR_COMPOSER=transcript-hint-draft -- sess:w1:p2 "/status"
+  rc=$?
+  expect_code 1 "$rc" "a transcript hint outside the current Cursor composer row must not bypass the stale-draft guard"
+  [ ! -s "$dir/send.log" ] || fail "a typed steer was appended to the Cursor draft behind a stale transcript hint"
+  [ ! -s "$dir/send.log.keys" ] || fail "the rejected Cursor draft steer still pressed keys"
+  assert_contains "$(cat "$err")" "sess:w1:p2" "the transcript-hint refusal should name the explicit target"
+  [ ! -d "$dir/home/state/t1.inbox" ] || fail "the rejected typed steer must not fall back to the inbox"
   pass "fm-send typed plane: a busy Cursor placeholder is steerable while actual pending text remains guarded"
 }
 
