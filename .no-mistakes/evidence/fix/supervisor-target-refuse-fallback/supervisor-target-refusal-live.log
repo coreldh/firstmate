@@ -1,0 +1,16 @@
+LIVE: real bin/fm-supervise-daemon.sh, no pane handle
+exit=1
+stderr:
+error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane
+durable daemon log:
+[2026-09-29T08:48:56-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)
+pidfile=absent lock=absent
+
+LIVE: real bin/fm-afk-launch.sh, launcher guards and no pane handle
+precondition_exit=1 output:
+fm-afk-launch: an away-posture record is required; run enter before starting the daemon
+after enter, start_exit=1 output:
+fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon
+durable daemon log:
+[2026-09-29T08:48:57-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start
+afk_contract=present afk_flag=absent daemon_terminal=absent

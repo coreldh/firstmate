@@ -1,0 +1,75 @@
+scenario=daemon-no-handle-with-live-firstmate-decoy
+decoy-pane:
+UNRELATED: decoy firstmate pane
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+daemon_exit=1
+daemon_output:
+error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane
+daemon_log:
+[2026-09-29T09:03:15-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)
+pidfile=absent lock=absent
+
+scenario=launcher-existing-guard-runs-before-target-discovery
+launcher_exit=1
+fm-afk-launch: an away-posture record is required; run enter before starting the daemon
+
+scenario=launcher-no-handle-refusal-is-durable
+enter_exit=0
+Away posture recorded at 2026-09-29T15:03:16Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.
+Away posture (recorded):
+  entered: 2026-09-29T15:03:16Z
+  expected return: not given
+  spend cap: 4 concurrent workers
+  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.
+  your words (verbatim):
+    live no-handle refusal validation
+launcher_exit=1
+launcher_output:
+fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon
+durable_log:
+[2026-09-29T09:03:16-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start
+contract=present afk_flag=absent terminal_record=absent
+
+scenario=explicit-target
+[2026-09-29T09:03:16-0600] daemon starting (pid 52776); target=firstmate:0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-09-29T09:03:16-0600] daemon shutting down
+
+scenario=tmux-pane-handle
+[2026-09-29T09:03:16-0600] daemon starting (pid 53164); target=%0; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-09-29T09:03:18-0600] daemon shutting down
+
+scenario=herdr-marker-composes-explicit-session-and-pane
+daemon_exit=1
+output:
+error: supervisor target 'fm-lab-absent-validation:w1:p9' does not resolve to a herdr pane; set FM_SUPERVISOR_TARGET
+daemon_log:
+[2026-09-29T09:03:18-0600] startup failed: target 'fm-lab-absent-validation:w1:p9' not found (backend=herdr)
+
+cleanup=private-tmux-server-killed; lab-home-removed
+
+scenario=herdr-lab-preflight
+command=FM_HERDR_LAB_STATE_DIR=.validation-supervisor-target/herdr/current-state bin/fm-herdr-lab.sh prepare fm-lab-supervisor-target
+fm-herdr-lab: fleet-state tripwire requires exactly one running default session
+prepare_exit=1
