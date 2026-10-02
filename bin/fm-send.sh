@@ -72,12 +72,17 @@
 # through fm_backend_composer_state: an exact `pending` verdict refuses with
 # exit 1 and nothing typed, because the payload could concatenate onto stale
 # text and the composer clearing after Enter would read as a confirmed submit
-# (#1474). A Herdr Cursor pane is the narrow exception: its busy follow-up
+# (#1474). The refusal names the target and pending composer on stderr and
+# resets any just-created pending-reply expectation without an inbox fallback.
+# A Herdr Cursor pane is the narrow exception: its busy follow-up
 # placeholder can read `pending` without user text, so fm-send proceeds only
 # when Cursor identity, the rendered busy signal, and the placeholder shape
-# agree; the submit core then owns its normal busy-pane confirmation. Any other
-# verdict, including `pending-unproven` and `unknown`, proceeds unchanged. The
-# --key path has no such check: `--key Enter` is the documented way to submit
+# in the selected composer agree; a transcript hint cannot authorize a draft.
+# The submit core then owns its normal busy-pane confirmation. Any other
+# verdict, including `pending-unproven`, `unknown`, and a failed read, proceeds
+# unchanged. Text entered between this check and typing can still concatenate;
+# the check does not lock the composer. The --key path has no such check:
+# `--key Enter` is the documented way to submit
 # pending text.
 # Typed-plane exit contract: 0 = submit confirmed;
 # 3 = the text was typed into the live endpoint and
@@ -1179,13 +1184,8 @@ else
     *) retries=${FM_SEND_RETRIES:-3} ;;
   esac
   sleep_s=${FM_SEND_SLEEP:-0.4}
-  # Pre-type composer check (issue #1474): a composer that PROVABLY holds
-  # pending text is a parked draft. Typing onto it would submit the draft and
-  # this payload concatenated, and the composer clearing after that Enter reads
-  # exactly like a confirmed submit. Refuse before typing anything. Only the
-  # exact `pending` verdict refuses: `pending-unproven`, `unknown`, and an
-  # unreadable pane keep the type-then-verify behavior below, because the
-  # classifier cannot positively identify every idle screen.
+  # The TYPED header owns the pre-type guard, its Herdr Cursor exception,
+  # and the refusal contract; tests/fm-send-inbox.test.sh pins those boundaries.
   pre_state=$(fm_backend_composer_state "$TARGET_BACKEND" "$T" "$EXPECTED_LABEL" 2>/dev/null) ||
     pre_state=unknown
   if [ "$pre_state" = pending ] && ! fm_send_herdr_cursor_busy_placeholder "$T"; then
