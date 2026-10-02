@@ -536,7 +536,7 @@ Target detection uses `FM_SUPERVISOR_TARGET`, then `$TMUX_PANE`, then `"${HERDR_
 With none of those operator pane handles, away-mode pane escalation is unavailable and nothing is aimed at a guessed pane.
 The daemon then refuses to arm, naming `target_source=UNAVAILABLE` on stderr and in `state/.supervise-daemon.log`.
 `bin/fm-afk-launch.sh start` refuses before launching it with the same verdict on stderr and in that log.
-On the native Claude and Grok background-job path, the `state/.afk` flag is written before this daemon refusal; the [turn-end guard](turnend-guard.md#guard-predicates) blocks the away turn when no daemon owns supervision.
+On the native Claude and Grok background-job path, `bin/fm-afk-launch.sh start-native` writes the `state/.afk` flag before this daemon refusal, so away mode can be flagged with no daemon running; check the daemon's startup result before treating away supervision as armed. The [turn-end guard](turnend-guard.md#guard-predicates) accepts a live ordinary watcher with a fresh beacon before it checks daemon ownership, so it blocks the away turn only once no healthy watcher remains and work still needs supervision.
 
 Selecting any other supervisor backend, including `zellij`, `orca`, or `cmux`, refuses at daemon startup instead of trying tmux injection primitives against a non-tmux pane.
 
