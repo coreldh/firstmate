@@ -1,0 +1,1 @@
+Herdr lab prepare and provision refused: fleet-state tripwire requires exactly one running default session. No default session was started. cursor-agent and legacy agent absent from PATH. Claude reached workspace-trust dialog; consent unchanged. Private tmux server stopped.

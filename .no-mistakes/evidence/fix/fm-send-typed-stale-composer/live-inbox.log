@@ -1,0 +1,4 @@
+fm-gate-refuse: gate agent lifecycle permitted only against lab home /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l
+WARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.
+fm-send: doorbell skipped (composer visibly holds pending text); the steer is durably recorded at /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l/state/t1.inbox/001.msg and the watcher will re-ring
+exit=0

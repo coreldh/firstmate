@@ -1,0 +1,40 @@
+
+  >_ OpenAI Codex (v0.160.0)
+     ~/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS
+  permissions: YOLO mode
+
+  Show me the bit that’s being weird.
+
+/status
+
+  >_ OpenAI Codex (v0.160.0)
+
+  Visit https://chatgpt.com/codex/settings/usage for up-to-date
+  information on rate limits and credits
+
+  Server:              Local background server
+
+  Model:               gpt-6.1-sol (reasoning medium)
+  Model provider:      openai
+  Directory:           ~/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS
+  Permissions:         Full Access
+  Agents.md:           AGENTS.md
+  Account:             Pro 200
+  Collaboration mode:  Default
+  Session:             01a0fe3a-8c7d-71d2-80da-38354cab2a49
+
+  Weekly limit:        [█░░░░░░░░░░░░░░░░░░░] 6% left (resets 11:00 AM on 3 Oct)
+  Credits:             62500 credits
+
+
+
+
+
+
+
+
+
+› Ask Codex to do anything
+
+  gpt-6.1-sol medium · ~/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS
+  ← for agents · ? for shortcuts                                                              ⚠ 2 warnings · f2 to view

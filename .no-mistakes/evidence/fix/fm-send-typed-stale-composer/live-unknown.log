@@ -1,0 +1,4 @@
+fm-gate-refuse: gate agent lifecycle permitted only against lab home /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l
+WARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.
+error: text not submitted to primary:unknown (delivery unconfirmed; verdict=unknown; tried meta=/Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l/state/primary:unknown.meta; metadata window/terminal lookup; backend=tmux; endpoint=verified)
+exit=1

@@ -1,0 +1,188 @@
+<html><meta charset="utf-8"><title>Live fm-send verification</title><style>body{background:#111;color:#eee;font:16px system-ui;padding:24px}pre{background:#202020;padding:16px;overflow:auto;font:12px monospace}</style><h1>Live fm-send verification</h1><p>Real Codex 0.160.0 and bash in a private 120 by 40 tmux lab. Actual terminal captures.</p><h2>Draft before</h2><pre>
+  &gt;_ OpenAI Codex (v0.160.0)
+     ~/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS
+  permissions: YOLO mode
+
+  Show me the bit that’s being weird.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+› STALE_DRAFT_1474
+
+  gpt-6.1-sol medium · ~/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS
+                                                                                              ⚠ 2 warnings · f2 to view
+</pre><h2>Task refusal</h2><pre>fm-gate-refuse: gate agent lifecycle permitted only against lab home /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l
+●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+●  WATCHER DOWN - SUPERVISION IS OFF
+●  1 task(s) in flight, but no watcher has a fresh beacon (last beat: never, grace 300s).
+●  Trust the emitted supervision protocol for this harness; do not use shell &amp; for watcher repair.
+●  This is a supervision warning only; the requested message WILL still be sent.
+●  repair missing watcher supervision with a foreground checkpoint: bin/fm-watch-checkpoint.sh --seconds 180.
+●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+error: text not sent to primary:codex: its composer already holds pending unsubmitted text, and typing would concatenate onto it; nothing was typed. Inspect with fm-peek.sh, clear or submit that text, then resend (tried meta=/Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l/state/t1.meta; backend=from-meta)
+exit=1
+</pre><h2>Explicit refusal</h2><pre>fm-gate-refuse: gate agent lifecycle permitted only against lab home /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l
+WARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.
+error: text not sent to primary:codex: its composer already holds pending unsubmitted text, and typing would concatenate onto it; nothing was typed. Inspect with fm-peek.sh, clear or submit that text, then resend (tried explicit target &#x27;primary:codex&#x27; matched /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l/state/t1.meta; backend=tmux)
+exit=1
+</pre><h2>Secondmate refusal</h2><pre>fm-gate-refuse: gate agent lifecycle permitted only against lab home /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l
+WARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.
+error: text not sent to primary:codex: its composer already holds pending unsubmitted text, and typing would concatenate onto it; nothing was typed. Inspect with fm-peek.sh, clear or submit that text, then resend (tried meta=/Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l/state/domain.meta; backend=from-meta)
+exit=1
+</pre><h2>Draft after</h2><pre>
+  &gt;_ OpenAI Codex (v0.160.0)
+     ~/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS
+  permissions: YOLO mode
+
+  Show me the bit that’s being weird.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+› STALE_DRAFT_1474
+
+  gpt-6.1-sol medium · ~/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS
+                                                                                              ⚠ 2 warnings · f2 to view
+</pre><h2>State after refusals</h2><pre>l/state/.guard-watcher-stale-banner
+l/state/t1.meta
+l/state/domain.meta
+</pre><h2>Inbox send</h2><pre>fm-gate-refuse: gate agent lifecycle permitted only against lab home /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l
+WARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.
+fm-send: doorbell skipped (composer visibly holds pending text); the steer is durably recorded at /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l/state/t1.inbox/001.msg and the watcher will re-ring
+exit=0
+</pre><h2>Key submission</h2><pre>
+  &gt;_ OpenAI Codex (v0.160.0)
+     ~/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS
+  permissions: YOLO mode
+
+  Show me the bit that’s being weird.
+
+/status
+
+  &gt;_ OpenAI Codex (v0.160.0)
+
+  Visit https://chatgpt.com/codex/settings/usage for up-to-date
+  information on rate limits and credits
+
+  Server:              Local background server
+
+  Model:               gpt-6.1-sol (reasoning medium)
+  Model provider:      openai
+  Directory:           ~/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS
+  Permissions:         Full Access
+  Agents.md:           AGENTS.md
+  Collaboration mode:  Default
+
+
+
+
+
+
+
+
+
+
+› Ask Codex to do anything
+
+  gpt-6.1-sol medium · ~/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS
+  ← for agents · ? for shortcuts                                                              ⚠ 2 warnings · f2 to view</pre><h2>Empty composer</h2><pre>fm-gate-refuse: gate agent lifecycle permitted only against lab home /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l
+WARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.
+exit=0
+</pre><h2>Unknown composer</h2><pre>
+The default interactive shell is now zsh.
+To update your account to use zsh, please run `chsh -s /bin/zsh`.
+For more details, please visit https://support.apple.com/kb/HT208050.
+bash-3.2$ printf &quot;UNKNOWN_STEER_LANDED_1474\n&quot;
+UNKNOWN_STEER_LANDED_1474
+bash-3.2$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre><h2>Unknown submit outcome</h2><pre>fm-gate-refuse: gate agent lifecycle permitted only against lab home /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l
+WARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.
+error: text not submitted to primary:unknown (delivery unconfirmed; verdict=unknown; tried meta=/Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l/state/primary:unknown.meta; metadata window/terminal lookup; backend=tmux; endpoint=verified)
+exit=1
+</pre></html>

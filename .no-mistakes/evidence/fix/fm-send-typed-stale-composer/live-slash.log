@@ -1,0 +1,10 @@
+fm-gate-refuse: gate agent lifecycle permitted only against lab home /Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l
+●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+●  WATCHER DOWN - SUPERVISION IS OFF
+●  1 task(s) in flight, but no watcher has a fresh beacon (last beat: never, grace 300s).
+●  Trust the emitted supervision protocol for this harness; do not use shell & for watcher repair.
+●  This is a supervision warning only; the requested message WILL still be sent.
+●  repair missing watcher supervision with a foreground checkpoint: bin/fm-watch-checkpoint.sh --seconds 180.
+●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+error: text not sent to primary:codex: its composer already holds pending unsubmitted text, and typing would concatenate onto it; nothing was typed. Inspect with fm-peek.sh, clear or submit that text, then resend (tried meta=/Users/admin/.no-mistakes/worktrees/8054e8b95bcd/01M3Z2TFC6PPGF671NVQW0H4YS/l/state/t1.meta; backend=from-meta)
+exit=1
