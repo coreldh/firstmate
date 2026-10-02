@@ -16,7 +16,7 @@
 
 # Library-mode defaults for the daemon's sourced inject/alarm helpers, which
 # read FM_SUPERVISOR_TARGET/FM_SUPERVISOR_BACKEND with these as the unset
-# fallback. They are never a discovery result: discover_supervisor_target prints
+# fallback. The target default is never a discovery result: discover_supervisor_target prints
 # nothing when no operator pane handle exists, and the executed daemon refuses
 # to arm rather than aim pane escalation at a constant (kunchenguid/firstmate#1506).
 # shellcheck disable=SC2034 # Read by fm-supervise-daemon.sh's inject/alarm helpers after sourcing, not this lib.
