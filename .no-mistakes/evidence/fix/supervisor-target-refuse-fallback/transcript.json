@@ -1,0 +1,311 @@
+[
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/socket"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/socket\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "tmux-dir",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/socket"
+    ],
+    "rc": 0,
+    "stdout": "/tmp/fml.jvV7Fc\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "new-session",
+      "-d",
+      "-s",
+      "firstmate",
+      "-c",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC",
+      "sleep 600"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "display-message",
+      "-p",
+      "-t",
+      "firstmate:0",
+      "#{pane_id}"
+    ],
+    "rc": 0,
+    "stdout": "%0\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "display-message",
+      "-p",
+      "-t",
+      "%0",
+      "#{socket_path},#{pid},0"
+    ],
+    "rc": 0,
+    "stdout": "/private/tmp/fml.jvV7Fc/tmux-501/fm-lab,56974,0\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/daemon-no-handle"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/daemon-no-handle\n",
+    "stderr": ""
+  },
+  {
+    "scenario": "daemon-no-handle",
+    "command": [
+      "bin/fm-supervise-daemon.sh"
+    ],
+    "env_overrides": {},
+    "was_running": false,
+    "rc": 1,
+    "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n",
+    "log": "[2026-10-02T14:07:34-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+    "state": [
+      ".supervise-daemon.log"
+    ]
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/launcher-no-handle"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/launcher-no-handle\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-afk-launch.sh",
+      "enter",
+      "--words",
+      "isolated validation only"
+    ],
+    "rc": 0,
+    "stdout": "Away posture recorded at 2026-10-02T20:07:34Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.\nAway posture (recorded):\n  entered: 2026-10-02T20:07:34Z\n  expected return: not given\n  spend cap: 4 concurrent workers\n  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.\n  your words (verbatim):\n    isolated validation only\n",
+    "stderr": ""
+  },
+  {
+    "scenario": "launcher-no-handle",
+    "command": [
+      "bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "env_overrides": {},
+    "was_running": false,
+    "rc": 1,
+    "stderr": "fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon\n",
+    "log": "[2026-10-02T14:07:35-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start\n",
+    "state": [
+      ".afk-contract",
+      ".supervise-daemon.log"
+    ]
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/launcher-record-guard"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/launcher-record-guard\n",
+    "stderr": ""
+  },
+  {
+    "scenario": "launcher-record-guard",
+    "command": [
+      "bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "env_overrides": {},
+    "was_running": false,
+    "rc": 1,
+    "stderr": "fm-afk-launch: an away-posture record is required; run enter before starting the daemon\n",
+    "log": "",
+    "state": []
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/explicit-target"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/explicit-target\n",
+    "stderr": ""
+  },
+  {
+    "scenario": "explicit-target",
+    "command": [
+      "bin/fm-supervise-daemon.sh"
+    ],
+    "env_overrides": {
+      "FM_SUPERVISOR_TARGET": "%0",
+      "FM_SUPERVISOR_BACKEND": "tmux",
+      "TMUX": "/private/tmp/fml.jvV7Fc/tmux-501/fm-lab,56974,0",
+      "TMUX_PANE": "%999999"
+    },
+    "was_running": true,
+    "rc": 0,
+    "stderr": "",
+    "log": "[2026-10-02T14:07:35-0600] daemon starting (pid 57658); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T14:07:37-0600] daemon shutting down\n",
+    "state": [
+      ".inactive-outcome-reconcile",
+      ".last-check",
+      ".last-heartbeat",
+      ".last-watcher-beat",
+      ".secondmate-liveness-tick",
+      ".supervise-daemon.log",
+      ".supervise-daemon.watcher.err",
+      ".watcher-down",
+      "home-summary.json",
+      "terminal-outcomes"
+    ]
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/inherited-tmux"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/inherited-tmux\n",
+    "stderr": ""
+  },
+  {
+    "scenario": "inherited-tmux",
+    "command": [
+      "bin/fm-supervise-daemon.sh"
+    ],
+    "env_overrides": {
+      "TMUX": "/private/tmp/fml.jvV7Fc/tmux-501/fm-lab,56974,0",
+      "TMUX_PANE": "%0"
+    },
+    "was_running": true,
+    "rc": 0,
+    "stderr": "",
+    "log": "[2026-10-02T14:07:37-0600] daemon starting (pid 58319); target=%0; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T14:07:38-0600] daemon shutting down\n",
+    "state": [
+      ".inactive-outcome-reconcile",
+      ".last-check",
+      ".last-heartbeat",
+      ".last-watcher-beat",
+      ".secondmate-liveness-tick",
+      ".supervise-daemon.log",
+      ".supervise-daemon.watcher.err",
+      ".watcher-down",
+      "home-summary.json",
+      "terminal-outcomes"
+    ]
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/native-no-handle"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/native-no-handle\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-afk-launch.sh",
+      "enter"
+    ],
+    "rc": 0,
+    "stdout": "Away posture recorded at 2026-10-02T20:07:38Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. No away instructions were recorded; the away session acts on standing authority only, and anything that needs you waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.\nAway posture (recorded):\n  entered: 2026-10-02T20:07:38Z\n  expected return: not given\n  spend cap: 4 concurrent workers\n  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.\n  your words: (none)\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-afk-launch.sh",
+      "start-native"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-afk-start.sh"
+    ],
+    "rc": 1,
+    "stdout": "afk: starting supervise daemon in foreground; keep this command as a tracked background session\n",
+    "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n"
+  },
+  {
+    "scenario": "native-no-handle",
+    "afk_flag": true,
+    "log": "[2026-10-02T14:07:40-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+    "pidfile": false,
+    "lock": false
+  },
+  {
+    "command": [
+      "bin/fm-herdr-lab.sh",
+      "name",
+      "target-refusal"
+    ],
+    "rc": 0,
+    "stdout": "fm-lab-target-refusal-59582-12261\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-herdr-lab.sh",
+      "prepare",
+      "fm-lab-target-refusal-59582-12261"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "fm-herdr-lab: fleet-state tripwire requires exactly one running default session\n"
+  },
+  {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "kill-server"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "teardown",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-live-target/socket"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

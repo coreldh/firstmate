@@ -1,0 +1,137 @@
+[
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-launcher-live"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-launcher-live\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "tmux-dir",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-launcher-live"
+    ],
+    "rc": 0,
+    "stdout": "/tmp/fml.nCGTdX\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "new-session",
+      "-d",
+      "-s",
+      "operator",
+      "sleep 600"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "display-message",
+      "-p",
+      "-t",
+      "operator:0",
+      "#{socket_path},#{pid},0"
+    ],
+    "rc": 0,
+    "stdout": "/private/tmp/fml.nCGTdX/tmux-501/fm-lab,67969,0\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "display-message",
+      "-p",
+      "-t",
+      "operator:0",
+      "#{pane_id}"
+    ],
+    "rc": 0,
+    "stdout": "%0\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-afk-launch.sh",
+      "enter"
+    ],
+    "rc": 0,
+    "stdout": "Away posture recorded at 2026-10-02T20:09:33Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. No away instructions were recorded; the away session acts on standing authority only, and anything that needs you waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.\nAway posture (recorded):\n  entered: 2026-10-02T20:09:33Z\n  expected return: not given\n  spend cap: 4 concurrent workers\n  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.\n  your words: (none)\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": "fm-afk-launch: daemon launched in detached tmux session 'fm-afk-daemon-2381468063-68238-31599-1790971774', supervising %0\n"
+  },
+  {
+    "started_log": "[2026-10-02T14:09:34-0600] daemon starting (pid 68547); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=on; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n",
+    "daemon_terminal": "tmux\tfm-afk-daemon-2381468063-68238-31599-1790971774\t\n",
+    "afk": true
+  },
+  {
+    "command": [
+      "bin/fm-afk-launch.sh",
+      "stop"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": "fm-afk-launch: terminal close command failed, but exact absence was confirmed\nfm-afk-launch: away-posture record archived at /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-launcher-live/state/afk-contracts/1790971773.afk-contract\nfm-afk-launch: away mode stopped; daemon terminal torn down, .afk cleared, and the posture record archived\n"
+  },
+  {
+    "stopped_log": "[2026-10-02T14:09:34-0600] daemon starting (pid 68547); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=on; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T14:09:35-0600] daemon shutting down\n",
+    "remaining_state": [
+      ".fm-lab-tmux-dir",
+      ".inactive-outcome-reconcile",
+      ".last-check",
+      ".last-heartbeat",
+      ".last-watcher-beat",
+      ".secondmate-liveness-tick",
+      ".supervise-daemon.log",
+      ".supervise-daemon.watcher.err",
+      ".watcher-down",
+      "afk-contracts",
+      "home-summary.json",
+      "terminal-outcomes"
+    ]
+  },
+  {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "kill-server"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "teardown",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-launcher-live"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

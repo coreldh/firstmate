@@ -1,0 +1,1 @@
+[2026-10-02T14:08:49-0600] daemon starting (pid 64055); target=firstmate:0; target_source=FALLBACK(firstmate:0); backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s

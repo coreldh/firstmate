@@ -1,0 +1,134 @@
+[
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-regression/home"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-regression/home\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "tmux-dir",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-regression/home"
+    ],
+    "rc": 0,
+    "stdout": "/tmp/fml.TCrHVv\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "new-session",
+      "-d",
+      "-s",
+      "firstmate",
+      "sleep 600"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "display-message",
+      "-p",
+      "-t",
+      "firstmate:0",
+      "#{socket_path},#{pid},0"
+    ],
+    "rc": 0,
+    "stdout": "/private/tmp/fml.TCrHVv/tmux-501/fm-lab,64051,0\n",
+    "stderr": ""
+  },
+  {
+    "scenario": "baseline-no-handle",
+    "log": "[2026-10-02T14:08:49-0600] daemon starting (pid 64055); target=firstmate:0; target_source=FALLBACK(firstmate:0); backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n",
+    "stderr": "warn: could not auto-discover supervisor pane (no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV/HERDR_PANE_ID); falling back to 'firstmate:0' \u2014 verify this is firstmate's pane\n",
+    "result": "baseline reproduced unwanted arm"
+  },
+  {
+    "command": [
+      "bash",
+      "-c",
+      ". bin/fm-supervisor-target-lib.sh; discover_supervisor_target"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "",
+    "case": "none"
+  },
+  {
+    "command": [
+      "bash",
+      "-c",
+      ". bin/fm-supervisor-target-lib.sh; discover_supervisor_target"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "",
+    "case": "partial-herdr"
+  },
+  {
+    "command": [
+      "bash",
+      "-c",
+      ". bin/fm-supervisor-target-lib.sh; discover_supervisor_target"
+    ],
+    "rc": 0,
+    "stdout": "fm-lab-discovery:w1:p9",
+    "stderr": "",
+    "case": "herdr-identity"
+  },
+  {
+    "command": [
+      "bash",
+      "-c",
+      ". bin/fm-supervisor-target-lib.sh; discover_supervisor_target"
+    ],
+    "rc": 0,
+    "stdout": "%42",
+    "stderr": "",
+    "case": "tmux-wins"
+  },
+  {
+    "command": [
+      "bash",
+      "-c",
+      ". bin/fm-supervisor-target-lib.sh; discover_supervisor_target"
+    ],
+    "rc": 0,
+    "stdout": "chosen:0",
+    "stderr": "",
+    "case": "explicit-wins"
+  },
+  {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "kill-server"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "bin/fm-lab-home.sh",
+      "teardown",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z3B8GPATG6DATDSPKBZ9QC/.validation-regression/home"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

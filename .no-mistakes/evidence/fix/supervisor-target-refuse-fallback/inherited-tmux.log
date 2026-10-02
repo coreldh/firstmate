@@ -1,0 +1,2 @@
+[2026-10-02T14:07:37-0600] daemon starting (pid 58319); target=%0; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T14:07:38-0600] daemon shutting down
