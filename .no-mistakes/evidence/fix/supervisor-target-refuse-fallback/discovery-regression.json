@@ -1,0 +1,35 @@
+[
+  {
+    "revision": "base",
+    "exit": 1,
+    "stdout": "firstmate:0"
+  },
+  {
+    "revision": "target",
+    "case": "no-handle",
+    "exit": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "revision": "target",
+    "case": "partial-herdr",
+    "exit": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "revision": "target",
+    "case": "pane-without-herdr",
+    "exit": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "revision": "target",
+    "case": "herdr-resolution",
+    "exit": 0,
+    "stdout": "fm-lab-target-refusal:w1:p9",
+    "stderr": ""
+  }
+]

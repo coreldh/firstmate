@@ -1,0 +1,322 @@
+$ unrelated-firstmate-pane
+exit=0
+stdout:
+%0|/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l/t/tmux-501/fm-lab
+
+stderr:
+
+
+$ discovery-no-handle
+exit=1
+stdout:
+
+stderr:
+
+
+daemon-no-handle-existing-firstmate
+exit=1
+error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane
+
+.supervise-daemon.log
+[2026-10-02T15:26:20-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)
+
+daemon-explicit-precedence
+exit=0
+
+.home-summary-error.yztQF9
+
+.home-summary-refresh.lock [directory]
+.home-summary-refresh.lock.owner.4cuYSs [directory]
+.home-summary.json.D45EHV
+
+.inactive-outcome-reconcile
+epoch=1790976381
+cursor=
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.log
+[2026-10-02T15:26:20-0600] daemon starting (pid 45412); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T15:26:22-0600] daemon shutting down
+
+.supervise-daemon.watcher.err
+
+.watcher-down
+pending:downtime:45473.1790976382.NEVuuZ
+
+terminal-outcomes [directory]
+daemon-tmux-precedence
+exit=0
+
+.heartbeat-streak
+0
+
+.inactive-outcome-reconcile
+epoch=1790976381
+cursor=
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.log
+[2026-10-02T15:26:22-0600] daemon starting (pid 46055); target=%0; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T15:26:23-0600] daemon shutting down
+
+.supervise-daemon.watcher.err
+
+.watch-deliveries.log
+46144	Fri Oct  2 15:26:22 2026     bash /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/bin/fm-watch.sh	check: rearm-resurface
+
+.watcher-down
+announced:downtime:45473.1790976382.NEVuuZ
+
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:22Z",
+  "generated_epoch": 1790976382,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+$ launcher-missing-record-guard
+exit=1
+stdout:
+
+stderr:
+fm-afk-launch: the away daemon is not launched on this codex home, which runs the supervision host (docs/supervision-host.md); the away-posture record is the posture here (run bin/fm-afk-launch.sh enter and stop)
+
+.heartbeat-streak
+0
+
+.inactive-outcome-reconcile
+epoch=1790976381
+cursor=
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.watcher.err
+
+.watch-deliveries.log
+46144	Fri Oct  2 15:26:22 2026     bash /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/bin/fm-watch.sh	check: rearm-resurface
+
+.watcher-down
+announced:downtime:45473.1790976382.NEVuuZ
+
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:22Z",
+  "generated_epoch": 1790976382,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+$ enter
+exit=0
+stdout:
+Away posture recorded at 2026-10-02T21:26:25Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.
+Away posture (recorded):
+  entered: 2026-10-02T21:26:25Z
+  expected return: not given
+  spend cap: 4 concurrent workers
+  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.
+  your words (verbatim):
+    Disposable refusal validation
+Supervision host: no engine runs the away session on this home (config/supervision-host names 'off', which is not a verified supervision engine (verified: claude)), so every away wake reaches this conversation; name a verified engine in config/supervision-host (for example "claude").
+
+stderr:
+
+
+$ launcher-no-handle
+exit=1
+stdout:
+
+stderr:
+fm-afk-launch: the away daemon is not launched on this codex home, which runs the supervision host (docs/supervision-host.md); the away-posture record is the posture here (run bin/fm-afk-launch.sh enter and stop)
+
+.afk-contract
+version: 2
+entered: 2026-10-02T21:26:25Z
+entered_epoch: 1790976385
+expected_return: -
+reach_channels: none
+reach_announced: No phone channel is configured; anything that needs you waits for your return.
+spend_max_concurrent_workers: 4
+confirmed: 2026-10-02T21:26:25Z
+confirmed_epoch: 1790976385
+words: |-
+  Disposable refusal validation
+
+.heartbeat-streak
+0
+
+.inactive-outcome-reconcile
+epoch=1790976381
+cursor=
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.watcher.err
+
+.watch-deliveries.log
+46144	Fri Oct  2 15:26:22 2026     bash /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/bin/fm-watch.sh	check: rearm-resurface
+
+.watcher-down
+announced:downtime:45473.1790976382.NEVuuZ
+
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:22Z",
+  "generated_epoch": 1790976382,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+Traceback (most recent call last):
+  File "/Users/admin/.no-mistakes/evidence/01M3Z7YFRS4QVQKKSD63H7KXD4/drive.py", line 79, in <module>
+    assert p.returncode==1 and 'target_source=UNAVAILABLE' in p.stderr
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

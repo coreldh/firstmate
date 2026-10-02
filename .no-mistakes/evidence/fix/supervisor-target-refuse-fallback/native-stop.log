@@ -1,22 +1,10 @@
-$ launcher-no-handle
-exit=1
+$ native-stop
+exit=0
 stdout:
 
 stderr:
-fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon
-
-.afk-contract
-version: 2
-entered: 2026-10-02T21:26:47Z
-entered_epoch: 1790976407
-expected_return: -
-reach_channels: none
-reach_announced: No phone channel is configured; anything that needs you waits for your return.
-spend_max_concurrent_workers: 4
-confirmed: 2026-10-02T21:26:47Z
-confirmed_epoch: 1790976407
-words: |-
-  Disposable refusal validation
+fm-afk-launch: away-posture record archived at /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l/state/afk-contracts/1790976411.afk-contract
+fm-afk-launch: away mode stopped; no daemon terminal was running, .afk cleared, and the posture record archived
 
 .heartbeat-streak
 0
@@ -33,9 +21,6 @@ cursor=
 
 .secondmate-liveness-tick
 
-.supervise-daemon.log
-[2026-10-02T15:26:48-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start
-
 .supervise-daemon.watcher.err
 
 .watch-deliveries.log
@@ -44,6 +29,7 @@ cursor=
 .watcher-down
 announced:downtime:48282.1790976405.jZEEob
 
+afk-contracts [directory]
 home-summary.json
 {
   "schema": "fm-secondmate-home-summary.v1",

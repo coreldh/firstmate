@@ -1,0 +1,855 @@
+$ unrelated-firstmate-pane
+exit=0
+stdout:
+%0|/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l/t/tmux-501/fm-lab
+
+stderr:
+
+
+$ discovery-no-handle
+exit=1
+stdout:
+
+stderr:
+
+
+daemon-no-handle-existing-firstmate
+exit=1
+error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane
+
+.supervise-daemon.log
+[2026-10-02T15:26:44-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)
+
+daemon-explicit-precedence
+exit=0
+
+.inactive-outcome-reconcile
+epoch=1790976405
+cursor=
+
+.last-check
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.log
+[2026-10-02T15:26:44-0600] daemon starting (pid 48215); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T15:26:45-0600] daemon shutting down
+
+.supervise-daemon.watcher.err
+
+.watcher-down
+pending:downtime:48282.1790976405.jZEEob
+
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:45Z",
+  "generated_epoch": 1790976405,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+daemon-tmux-precedence
+exit=0
+
+.heartbeat-streak
+0
+
+.inactive-outcome-reconcile
+epoch=1790976405
+cursor=
+
+.last-check
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.log
+[2026-10-02T15:26:46-0600] daemon starting (pid 48866); target=%0; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T15:26:47-0600] daemon shutting down
+
+.supervise-daemon.watcher.err
+
+.watch-deliveries.log
+48929	Fri Oct  2 15:26:46 2026     bash /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/bin/fm-watch.sh	check: rearm-resurface
+
+.watcher-down
+announced:downtime:48282.1790976405.jZEEob
+
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:45Z",
+  "generated_epoch": 1790976405,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+$ launcher-missing-record-guard
+exit=1
+stdout:
+
+stderr:
+fm-afk-launch: an away-posture record is required; run enter before starting the daemon
+
+.heartbeat-streak
+0
+
+.inactive-outcome-reconcile
+epoch=1790976405
+cursor=
+
+.last-check
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.watcher.err
+
+.watch-deliveries.log
+48929	Fri Oct  2 15:26:46 2026     bash /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/bin/fm-watch.sh	check: rearm-resurface
+
+.watcher-down
+announced:downtime:48282.1790976405.jZEEob
+
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:45Z",
+  "generated_epoch": 1790976405,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+$ enter
+exit=0
+stdout:
+Away posture recorded at 2026-10-02T21:26:47Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.
+Away posture (recorded):
+  entered: 2026-10-02T21:26:47Z
+  expected return: not given
+  spend cap: 4 concurrent workers
+  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.
+  your words (verbatim):
+    Disposable refusal validation
+
+stderr:
+
+
+$ launcher-no-handle
+exit=1
+stdout:
+
+stderr:
+fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon
+
+.afk-contract
+version: 2
+entered: 2026-10-02T21:26:47Z
+entered_epoch: 1790976407
+expected_return: -
+reach_channels: none
+reach_announced: No phone channel is configured; anything that needs you waits for your return.
+spend_max_concurrent_workers: 4
+confirmed: 2026-10-02T21:26:47Z
+confirmed_epoch: 1790976407
+words: |-
+  Disposable refusal validation
+
+.heartbeat-streak
+0
+
+.inactive-outcome-reconcile
+epoch=1790976405
+cursor=
+
+.last-check
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.log
+[2026-10-02T15:26:48-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start
+
+.supervise-daemon.watcher.err
+
+.watch-deliveries.log
+48929	Fri Oct  2 15:26:46 2026     bash /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/bin/fm-watch.sh	check: rearm-resurface
+
+.watcher-down
+announced:downtime:48282.1790976405.jZEEob
+
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:45Z",
+  "generated_epoch": 1790976405,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+$ launcher-valid-pane
+exit=0
+stdout:
+
+stderr:
+fm-afk-launch: daemon launched in detached tmux session 'fm-afk-daemon-901149257-49877-4872-1790976408', supervising %0
+
+.afk
+away
+1790976409
+
+.afk-contract
+version: 2
+entered: 2026-10-02T21:26:47Z
+entered_epoch: 1790976407
+expected_return: -
+reach_channels: none
+reach_announced: No phone channel is configured; anything that needs you waits for your return.
+spend_max_concurrent_workers: 4
+confirmed: 2026-10-02T21:26:47Z
+confirmed_epoch: 1790976407
+words: |-
+  Disposable refusal validation
+
+.afk-daemon-terminal
+tmux	fm-afk-daemon-901149257-49877-4872-1790976408	
+
+.heartbeat-streak
+0
+
+.inactive-outcome-reconcile
+epoch=1790976405
+cursor=
+
+.last-check
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.lock [directory]
+.supervise-daemon.lock.owner.lWO6By [directory]
+.supervise-daemon.log
+[2026-10-02T15:26:49-0600] daemon starting (pid 50189); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=on; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+
+.supervise-daemon.pid
+50189
+
+.supervise-daemon.watcher.err
+
+.watch-deliveries.log
+48929	Fri Oct  2 15:26:46 2026     bash /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/bin/fm-watch.sh	check: rearm-resurface
+
+.watcher-down
+announced:downtime:48282.1790976405.jZEEob
+
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:45Z",
+  "generated_epoch": 1790976405,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+$ launcher-stop
+exit=0
+stdout:
+
+stderr:
+fm-afk-launch: terminal close command failed, but exact absence was confirmed
+fm-afk-launch: away-posture record archived at /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l/state/afk-contracts/1790976407.afk-contract
+fm-afk-launch: away mode stopped; daemon terminal torn down, .afk cleared, and the posture record archived
+
+.heartbeat-streak
+0
+
+.inactive-outcome-reconcile
+epoch=1790976405
+cursor=
+
+.last-check
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.log
+[2026-10-02T15:26:49-0600] daemon starting (pid 50189); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=on; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T15:26:50-0600] daemon shutting down
+
+.supervise-daemon.watcher.err
+
+.watch-deliveries.log
+48929	Fri Oct  2 15:26:46 2026     bash /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/bin/fm-watch.sh	check: rearm-resurface
+
+.watcher-down
+announced:downtime:48282.1790976405.jZEEob
+
+afk-contracts [directory]
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:45Z",
+  "generated_epoch": 1790976405,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+$ native-preparation
+exit=0
+stdout:
+
+stderr:
+
+.afk
+away
+1790976411
+
+.afk-contract
+version: 2
+entered: 2026-10-02T21:26:51Z
+entered_epoch: 1790976411
+expected_return: -
+reach_channels: none
+reach_announced: No phone channel is configured; anything that needs you waits for your return.
+spend_max_concurrent_workers: 4
+confirmed: 2026-10-02T21:26:51Z
+confirmed_epoch: 1790976411
+words: |-
+  Disposable native refusal validation
+
+.afk-daemon-terminal
+none	-	native
+
+.heartbeat-streak
+0
+
+.inactive-outcome-reconcile
+epoch=1790976405
+cursor=
+
+.last-check
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.watcher.err
+
+.watch-deliveries.log
+48929	Fri Oct  2 15:26:46 2026     bash /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/bin/fm-watch.sh	check: rearm-resurface
+
+.watcher-down
+announced:downtime:48282.1790976405.jZEEob
+
+afk-contracts [directory]
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:45Z",
+  "generated_epoch": 1790976405,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+native-daemon-refusal
+exit=1
+error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane
+
+.afk
+away
+1790976411
+
+.afk-contract
+version: 2
+entered: 2026-10-02T21:26:51Z
+entered_epoch: 1790976411
+expected_return: -
+reach_channels: none
+reach_announced: No phone channel is configured; anything that needs you waits for your return.
+spend_max_concurrent_workers: 4
+confirmed: 2026-10-02T21:26:51Z
+confirmed_epoch: 1790976411
+words: |-
+  Disposable native refusal validation
+
+.afk-daemon-terminal
+none	-	native
+
+.heartbeat-streak
+0
+
+.inactive-outcome-reconcile
+epoch=1790976405
+cursor=
+
+.last-check
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.log
+[2026-10-02T15:26:52-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)
+
+.supervise-daemon.watcher.err
+
+.watch-deliveries.log
+48929	Fri Oct  2 15:26:46 2026     bash /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/bin/fm-watch.sh	check: rearm-resurface
+
+.watcher-down
+announced:downtime:48282.1790976405.jZEEob
+
+afk-contracts [directory]
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:45Z",
+  "generated_epoch": 1790976405,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+$ native-stop
+exit=0
+stdout:
+
+stderr:
+fm-afk-launch: away-posture record archived at /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l/state/afk-contracts/1790976411.afk-contract
+fm-afk-launch: away mode stopped; no daemon terminal was running, .afk cleared, and the posture record archived
+
+.heartbeat-streak
+0
+
+.inactive-outcome-reconcile
+epoch=1790976405
+cursor=
+
+.last-check
+
+.last-heartbeat
+
+.last-watcher-beat
+
+.secondmate-liveness-tick
+
+.supervise-daemon.watcher.err
+
+.watch-deliveries.log
+48929	Fri Oct  2 15:26:46 2026     bash /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/bin/fm-watch.sh	check: rearm-resurface
+
+.watcher-down
+announced:downtime:48282.1790976405.jZEEob
+
+afk-contracts [directory]
+home-summary.json
+{
+  "schema": "fm-secondmate-home-summary.v1",
+  "hold_classifier_schema": "fm-captain-hold-buckets.v1",
+  "contributions": {
+    "known": 0,
+    "checked": 0,
+    "counts": {
+      "captain": 0,
+      "fleet": 0,
+      "maintainer": 0,
+      "nobody": 0
+    },
+    "unmeasured": 0,
+    "complete": false,
+    "proven_clear": false,
+    "stale_verdicts": 0,
+    "missing_verdicts": 0,
+    "unreadable_records": 1,
+    "valid_until": 900,
+    "captain": [],
+    "captain_omitted": 0
+  },
+  "generated": "2026-10-02T21:26:45Z",
+  "generated_epoch": 1790976405,
+  "home": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z7YFRS4QVQKKSD63H7KXD4/.l",
+  "valid": false,
+  "reason": "missing structured backlog",
+  "invalidity": {
+    "kind": "missing_backlog",
+    "ids": []
+  },
+  "state": "unknown",
+  "active_children": [],
+  "decisions_open": [],
+  "holds": [],
+  "queued": [],
+  "landed": [],
+  "endpoints": [],
+  "counts": {
+    "active_children": 0,
+    "decisions_open": 0,
+    "holds": 0,
+    "queued": 0,
+    "landed": 0,
+    "endpoints": 0
+  },
+  "omitted": []
+}
+
+terminal-outcomes [directory]
+All driven scenarios passed.
