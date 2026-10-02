@@ -556,6 +556,7 @@ fm_send_known_undelivered_cleanup() {
 fm_send_herdr_cursor_busy_placeholder() { # <target>
   local target=$1 identity content capture
   [ "$TARGET_BACKEND" = herdr ] || return 1
+  fm_backend_source herdr || return 1
   identity=$(fm_backend_herdr_composer_identity "$target" 2>/dev/null) || return 1
   [ "${identity%%$'\t'*}" = cursor ] || return 1
   [ "$(fm_backend_herdr_rendered_busy_state "$target" cursor 2>/dev/null)" = busy ] || return 1

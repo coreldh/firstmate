@@ -457,7 +457,7 @@ test_typed_send_empty_and_unknown_composer_unchanged() {
 }
 
 test_typed_send_allows_busy_cursor_placeholder_but_refuses_busy_draft() {
-  local dir err rc
+  local dir err rc composer
   dir=$(setup_case cursor-busy-placeholder cursor)
   make_cursor_herdr_stub "$dir"
   err="$dir/send.err"
@@ -489,6 +489,28 @@ test_typed_send_allows_busy_cursor_placeholder_but_refuses_busy_draft() {
   [ ! -s "$dir/send.log.keys" ] || fail "the rejected Cursor draft steer still pressed keys"
   assert_contains "$(cat "$err")" "sess:w1:p2" "the transcript-hint refusal should name the explicit target"
   [ ! -d "$dir/home/state/t1.inbox" ] || fail "the rejected typed steer must not fall back to the inbox"
+
+  for composer in placeholder draft transcript-hint-draft; do
+    dir=$(setup_case "cursor-selector-$composer" cursor)
+    make_cursor_herdr_stub "$dir"
+    fm_write_meta "$dir/home/state/t1.meta" "window=sess:w1:p2" "backend=herdr" "kind=ship" "harness=cursor"
+    err="$dir/send.err"
+    run_send "$dir" "$err" "FM_FAKE_HERDR_COMPOSER=$composer" FM_SEND_RETRIES=1 \
+      FM_SEND_SLEEP=0.01 FM_BACKEND_HERDR_SUBMIT_MIN_SLEEP=0 -- t1 "/status"
+    rc=$?
+    if [ "$composer" = placeholder ]; then
+      expect_code 3 "$rc" "a metadata-selected busy Cursor placeholder should reach the Herdr submit path"
+      assert_equals "/status" "$(cat "$dir/send.log")" \
+        "a metadata-selected busy Cursor placeholder should receive the typed steer"
+    else
+      expect_code 1 "$rc" "a metadata-selected Cursor $composer must be refused"
+      [ ! -s "$dir/send.log" ] || fail "a metadata-selected Cursor $composer received typed text"
+      [ ! -s "$dir/send.log.keys" ] || fail "a metadata-selected Cursor $composer received keys"
+      assert_contains "$(cat "$err")" "sess:w1:p2" "the metadata-selected draft refusal should name the target"
+      assert_contains "$(cat "$err")" "pending" "the metadata-selected draft refusal should name the pending composer"
+    fi
+    [ ! -d "$dir/home/state/t1.inbox" ] || fail "a metadata-selected typed steer must not fall back to the inbox"
+  done
   pass "fm-send typed plane: a busy Cursor placeholder is steerable while actual pending text remains guarded"
 }
 
