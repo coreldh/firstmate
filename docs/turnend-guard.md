@@ -173,7 +173,9 @@ When `state/.afk` exists and the daemon (`bin/fm-supervise-daemon.sh`) is runnin
 The watcher exits on every wake and the daemon starts its replacement.
 A turn boundary therefore regularly lands in a hand-off where no watcher process holds the lock and nothing is wrong.
 
-The turn-end guard therefore accepts `fm_afk_daemon_owns_supervision` from `bin/fm-wake-lib.sh` as proof of supervision on that path.
+The guard allows a turn with no supervision need and accepts a healthy ordinary watcher before checking daemon ownership, even while `state/.afk` exists.
+An away flag left after daemon startup refusal therefore does not by itself block a turn; the guard blocks only when work needs supervision and neither a healthy watcher nor the daemon proof below satisfies the boundary.
+The turn-end guard accepts `fm_afk_daemon_owns_supervision` from `bin/fm-wake-lib.sh` as proof of supervision on the daemon path.
 The proof requires both of these:
 
 - `state/.afk` must exist; the predicate does not distinguish away from quiet mode.
