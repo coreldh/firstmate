@@ -1,0 +1,20 @@
+Command: bin/fm-afk-launch.sh enter; bin/fm-afk-launch.sh start
+Exit: 1
+Stderr:
+fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon
+
+Log:
+[2000-01-01T00:00:00+0000] prior entry retained
+[2026-10-02T15:15:09-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start
+
+Observable assertions:
+{
+  "exit_1": true,
+  "stderr_unavailable": true,
+  "append_only_log": true,
+  "record_unchanged": true,
+  "no_flag": true,
+  "no_terminal_record": true,
+  "no_daemon_pid": true,
+  "sessions_unchanged": true
+}

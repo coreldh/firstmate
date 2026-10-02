@@ -1,0 +1,104 @@
+[
+  {
+    "name": "no-handle",
+    "pass": true,
+    "checks": {
+      "exit_exactly_1": true,
+      "stderr_unavailable": true,
+      "log_unavailable": true,
+      "never_armed": true,
+      "pid_removed": true,
+      "lock_released": true
+    }
+  },
+  {
+    "name": "refusal-retry",
+    "pass": true,
+    "checks": {
+      "exit_1": true,
+      "unavailable_again": true,
+      "no_singleton_collision": true
+    }
+  },
+  {
+    "name": "discovery-empty",
+    "pass": true,
+    "checks": {
+      "exit_1": true,
+      "zero_stdout_bytes": true
+    }
+  },
+  {
+    "name": "launcher-refusal",
+    "pass": true,
+    "checks": {
+      "exit_1": true,
+      "stderr_unavailable": true,
+      "append_only_log": true,
+      "record_unchanged": true,
+      "no_flag": true,
+      "no_terminal_record": true,
+      "no_daemon_pid": true,
+      "sessions_unchanged": true
+    }
+  },
+  {
+    "name": "missing-record",
+    "pass": true,
+    "checks": {
+      "refused": true,
+      "record_guard_first": true,
+      "no_target_refusal": true,
+      "no_daemon_log": true
+    }
+  },
+  {
+    "name": "pending-return",
+    "pass": true,
+    "checks": {
+      "refused": true,
+      "return_guard_first": true,
+      "no_target_refusal": true,
+      "no_daemon_log": true
+    }
+  },
+  {
+    "name": "explicit-handle",
+    "pass": true,
+    "checks": {
+      "armed": true,
+      "explicit_target_used": true,
+      "clean_shutdown": true,
+      "pid_removed": true
+    }
+  },
+  {
+    "name": "inherited-tmux",
+    "pass": true,
+    "checks": {
+      "armed": true,
+      "inherited_pane_source": true,
+      "clean_shutdown": true
+    }
+  },
+  {
+    "name": "native-no-handle",
+    "pass": true,
+    "checks": {
+      "native_prepared": true,
+      "daemon_refused": true,
+      "flag_remains_as_documented": true,
+      "refusal_logged": true,
+      "no_armed_start": true,
+      "no_pid_or_lock": true
+    }
+  },
+  {
+    "name": "base-regression",
+    "pass": true,
+    "checks": {
+      "old_behavior_reproduced": true,
+      "fixed_version_refuses": true
+    }
+  }
+]

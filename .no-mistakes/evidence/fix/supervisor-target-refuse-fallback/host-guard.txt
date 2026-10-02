@@ -1,0 +1,10 @@
+Exit: 1
+fm-afk-launch: the away daemon is not launched on this codex home, which runs the supervision host (docs/supervision-host.md); the away-posture record is the posture here (run bin/fm-afk-launch.sh enter and stop)
+
+Observable assertions:
+{
+  "refused": true,
+  "host_guard_first": true,
+  "no_unavailable_refusal": true,
+  "no_daemon_log": true
+}

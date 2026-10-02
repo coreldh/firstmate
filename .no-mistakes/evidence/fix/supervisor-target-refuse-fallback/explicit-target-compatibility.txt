@@ -1,0 +1,13 @@
+Exploratory invalid-target assertion was corrected: this is existing tmux behavior, not a regression from the no-handle change.
+Base log:
+[2026-10-02T15:17:30-0600] daemon starting (pid 12338); target=%999999; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T15:17:32-0600] daemon shutting down
+
+Target log:
+[2026-10-02T15:16:30-0600] daemon starting (pid 8568); target=%999999; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T15:17:04-0600] daemon shutting down
+
+{
+  "base_also_arms_missing_explicit_target": true,
+  "target_behavior_unchanged": true
+}

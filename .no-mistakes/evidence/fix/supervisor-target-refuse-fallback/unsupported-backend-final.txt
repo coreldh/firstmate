@@ -1,0 +1,13 @@
+Exit: 1
+error: away-mode daemon does not support supervisor backend 'orca' yet (supported: tmux herdr); set FM_SUPERVISOR_BACKEND=tmux|herdr and FM_SUPERVISOR_TARGET to run firstmate's own pane under a supported backend
+
+Durable log:
+[2026-10-02T15:17:52-0600] startup failed: unsupported supervisor backend 'orca' (source=FM_SUPERVISOR_BACKEND)
+
+Observable assertions:
+{
+  "refused": true,
+  "expected_guard": true,
+  "never_armed": true,
+  "ownership_released": true
+}

@@ -1,0 +1,18 @@
+start-native exit: 0
+
+fm-afk-start exit: 1
+afk: starting supervise daemon in foreground; keep this command as a tracked background session
+error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane
+
+Durable log:
+[2026-10-02T15:15:12-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)
+
+Observable assertions:
+{
+  "native_prepared": true,
+  "daemon_refused": true,
+  "flag_remains_as_documented": true,
+  "refusal_logged": true,
+  "no_armed_start": true,
+  "no_pid_or_lock": true
+}

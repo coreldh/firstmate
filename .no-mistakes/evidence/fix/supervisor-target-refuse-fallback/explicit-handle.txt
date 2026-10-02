@@ -1,0 +1,16 @@
+Command: /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z793827DR4CNNK5GB0VA0M/bin/fm-supervise-daemon.sh
+Environment: FM_HOME=/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z793827DR4CNNK5GB0VA0M/.validation-live/explicit-handle; pane overrides={'TMUX': '.validation-live/tmux.sock,0,0', 'FM_SUPERVISOR_TARGET': '%0', 'TMUX_PANE': '%999999', 'FM_SUPERVISOR_BACKEND': 'tmux'}
+Exit: 0; armed observed: True
+Stderr:
+
+Durable daemon log:
+[2026-10-02T15:15:09-0600] daemon starting (pid 638); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T15:15:09-0600] daemon shutting down
+
+Observable assertions:
+{
+  "armed": true,
+  "explicit_target_used": true,
+  "clean_shutdown": true,
+  "pid_removed": true
+}

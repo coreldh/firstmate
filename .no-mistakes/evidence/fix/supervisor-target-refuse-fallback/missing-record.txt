@@ -1,0 +1,10 @@
+Exit: 1
+fm-afk-launch: an away-posture record is required; run enter before starting the daemon
+
+Observable assertions:
+{
+  "refused": true,
+  "record_guard_first": true,
+  "no_target_refusal": true,
+  "no_daemon_log": true
+}

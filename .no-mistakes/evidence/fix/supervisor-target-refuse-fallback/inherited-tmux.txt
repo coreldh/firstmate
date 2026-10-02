@@ -1,0 +1,13 @@
+Command: tmux -S .validation-live/tmux.sock new-session -d -s operator <real daemon>
+Log:
+[2026-10-02T15:15:09-0600] daemon starting (pid 782); target=%1; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T15:15:11-0600] daemon shutting down
+
+Stderr:
+
+Observable assertions:
+{
+  "armed": true,
+  "inherited_pane_source": true,
+  "clean_shutdown": true
+}

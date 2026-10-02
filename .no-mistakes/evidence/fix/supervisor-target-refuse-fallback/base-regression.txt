@@ -1,0 +1,15 @@
+Command: /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z793827DR4CNNK5GB0VA0M/.validation-live/base-code/bin/fm-supervise-daemon.sh
+Environment: FM_HOME=/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z793827DR4CNNK5GB0VA0M/.validation-live/base-no-handle; pane overrides={'TMUX': '.validation-live/tmux.sock,0,0'}
+Exit: 0; armed observed: True
+Stderr:
+warn: could not auto-discover supervisor pane (no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV/HERDR_PANE_ID); falling back to 'firstmate:0' — verify this is firstmate's pane
+
+Durable daemon log:
+[2026-10-02T15:15:13-0600] daemon starting (pid 1777); target=firstmate:0; target_source=FALLBACK(firstmate:0); backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T15:15:14-0600] daemon shutting down
+
+Observable assertions:
+{
+  "old_behavior_reproduced": true,
+  "fixed_version_refuses": true
+}

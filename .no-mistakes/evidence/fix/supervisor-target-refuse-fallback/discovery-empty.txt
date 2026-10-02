@@ -1,0 +1,8 @@
+Exit: 1
+Stdout bytes: b''
+Stderr: 
+Observable assertions:
+{
+  "exit_1": true,
+  "zero_stdout_bytes": true
+}

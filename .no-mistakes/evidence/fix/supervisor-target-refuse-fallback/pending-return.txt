@@ -1,0 +1,10 @@
+Exit: 1
+fm-afk-launch: return catch-up is still pending; run bin/fm-afk-return.sh check before re-entering away mode
+
+Observable assertions:
+{
+  "refused": true,
+  "return_guard_first": true,
+  "no_target_refusal": true,
+  "no_daemon_log": true
+}

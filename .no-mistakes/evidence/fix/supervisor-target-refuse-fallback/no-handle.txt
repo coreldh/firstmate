@@ -1,0 +1,20 @@
+Command: /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z793827DR4CNNK5GB0VA0M/bin/fm-supervise-daemon.sh
+Environment: FM_HOME=/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3Z793827DR4CNNK5GB0VA0M/.validation-live/no-handle; pane overrides={'TMUX': '.validation-live/tmux.sock,0,0'}
+Exit: 1; armed observed: False
+Stderr:
+error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane
+
+Durable daemon log:
+[2026-10-02T15:15:07-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)
+
+Unrelated existing pane: %0 sleep
+
+Observable assertions:
+{
+  "exit_exactly_1": true,
+  "stderr_unavailable": true,
+  "log_unavailable": true,
+  "never_armed": true,
+  "pid_removed": true,
+  "lock_released": true
+}
