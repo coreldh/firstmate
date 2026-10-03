@@ -185,7 +185,7 @@ That is the same identity discipline the watcher lock uses.
 A recycled pid, a lock left behind by a killed daemon, and a daemon that never recorded its identity all fail it.
 
 A daemon that cannot record its own identity at startup logs a warning and keeps running, because a supervisor must not refuse to run over an unreadable `ps`.
-That warning is what names the cause when the guard then keeps blocking away/quiet-mode turn boundaries for the rest of that daemon's life.
+The warning explains why the daemon cannot satisfy the ownership proof; a healthy ordinary watcher can still allow the turn.
 
 The proof covers ownership only, never freshness.
 The guard still requires a fresh beacon, with these results:
