@@ -1780,8 +1780,8 @@ fm_super_main() {
   # The recorded identity is what proves this daemon still owns supervision after
   # its watcher child exits (fm_afk_daemon_owns_supervision, read by the turn-end
   # guard). Startup continues without it - a supervising daemon must not refuse to
-  # run because ps was unreadable - but say so, because the guard then keeps
-  # treating away-mode turn boundaries as unsupervised.
+  # run because ps was unreadable - but say so, because the guard then cannot
+  # accept this daemon as proof at away-mode turn boundaries.
   if ! fm_pid_identity "${BASHPID:-$$}" > "$LOCK/pid-identity" 2>/dev/null; then
     rm -f "$LOCK/pid-identity" 2>/dev/null || true
     log "warn: could not record this daemon's process identity; the turn-end guard cannot recognize away-mode supervision"
