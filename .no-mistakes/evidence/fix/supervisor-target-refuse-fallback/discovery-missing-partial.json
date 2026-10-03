@@ -1,0 +1,183 @@
+{
+  "cases": [
+    {
+      "env": {},
+      "library_interface": {
+        "command": [
+          "bash",
+          "-c",
+          ". bin/fm-supervisor-target-lib.sh; discover_supervisor_target"
+        ],
+        "rc": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      "real_daemon": {
+        "command": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh",
+        "env": {
+          "TMUX": "/private/tmp/fml.A6vIYB/tmux-501/fm-lab,0,0"
+        },
+        "rc": 1,
+        "armed": false,
+        "running_before_stop": false,
+        "before_stop": {
+          "files": [
+            ".supervise-daemon.log"
+          ],
+          "daemon_log": "[2026-10-02T23:42:26-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+          "terminal_record": "",
+          "afk": "",
+          "contract": ""
+        },
+        "after_stop": {
+          "files": [
+            ".supervise-daemon.log"
+          ],
+          "daemon_log": "[2026-10-02T23:42:26-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+          "terminal_record": "",
+          "afk": "",
+          "contract": ""
+        },
+        "stdout": "",
+        "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n"
+      }
+    },
+    {
+      "env": {
+        "HERDR_ENV": "1"
+      },
+      "library_interface": {
+        "command": [
+          "bash",
+          "-c",
+          ". bin/fm-supervisor-target-lib.sh; discover_supervisor_target"
+        ],
+        "rc": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      "real_daemon": {
+        "command": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh",
+        "env": {
+          "HERDR_ENV": "1",
+          "TMUX": "/private/tmp/fml.A6vIYB/tmux-501/fm-lab,0,0"
+        },
+        "rc": 1,
+        "armed": false,
+        "running_before_stop": false,
+        "before_stop": {
+          "files": [
+            ".supervise-daemon.log"
+          ],
+          "daemon_log": "[2026-10-02T23:42:27-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+          "terminal_record": "",
+          "afk": "",
+          "contract": ""
+        },
+        "after_stop": {
+          "files": [
+            ".supervise-daemon.log"
+          ],
+          "daemon_log": "[2026-10-02T23:42:27-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+          "terminal_record": "",
+          "afk": "",
+          "contract": ""
+        },
+        "stdout": "",
+        "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n"
+      }
+    },
+    {
+      "env": {
+        "HERDR_PANE_ID": "w1:p9"
+      },
+      "library_interface": {
+        "command": [
+          "bash",
+          "-c",
+          ". bin/fm-supervisor-target-lib.sh; discover_supervisor_target"
+        ],
+        "rc": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      "real_daemon": {
+        "command": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh",
+        "env": {
+          "HERDR_PANE_ID": "w1:p9",
+          "TMUX": "/private/tmp/fml.A6vIYB/tmux-501/fm-lab,0,0"
+        },
+        "rc": 1,
+        "armed": false,
+        "running_before_stop": false,
+        "before_stop": {
+          "files": [
+            ".supervise-daemon.log"
+          ],
+          "daemon_log": "[2026-10-02T23:42:27-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+          "terminal_record": "",
+          "afk": "",
+          "contract": ""
+        },
+        "after_stop": {
+          "files": [
+            ".supervise-daemon.log"
+          ],
+          "daemon_log": "[2026-10-02T23:42:27-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+          "terminal_record": "",
+          "afk": "",
+          "contract": ""
+        },
+        "stdout": "",
+        "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n"
+      }
+    },
+    {
+      "env": {
+        "HERDR_ENV": "0",
+        "HERDR_PANE_ID": "w1:p9"
+      },
+      "library_interface": {
+        "command": [
+          "bash",
+          "-c",
+          ". bin/fm-supervisor-target-lib.sh; discover_supervisor_target"
+        ],
+        "rc": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      "real_daemon": {
+        "command": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh",
+        "env": {
+          "HERDR_ENV": "0",
+          "HERDR_PANE_ID": "w1:p9",
+          "TMUX": "/private/tmp/fml.A6vIYB/tmux-501/fm-lab,0,0"
+        },
+        "rc": 1,
+        "armed": false,
+        "running_before_stop": false,
+        "before_stop": {
+          "files": [
+            ".supervise-daemon.log"
+          ],
+          "daemon_log": "[2026-10-02T23:42:27-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+          "terminal_record": "",
+          "afk": "",
+          "contract": ""
+        },
+        "after_stop": {
+          "files": [
+            ".supervise-daemon.log"
+          ],
+          "daemon_log": "[2026-10-02T23:42:27-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+          "terminal_record": "",
+          "afk": "",
+          "contract": ""
+        },
+        "stdout": "",
+        "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n"
+      }
+    }
+  ]
+}

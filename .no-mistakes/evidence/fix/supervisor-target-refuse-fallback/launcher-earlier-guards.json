@@ -1,0 +1,36 @@
+{
+  "missing_record": {
+    "command": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "fm-afk-launch: an away-posture record is required; run enter before starting the daemon\n"
+  },
+  "catchup": {
+    "command": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "fm-afk-launch: return catch-up is still pending; run bin/fm-afk-return.sh check before re-entering away mode\n"
+  },
+  "host": {
+    "command": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "fm-afk-launch: the away daemon is not launched on this codex home, which runs the supervision host (docs/supervision-host.md); the away-posture record is the posture here (run bin/fm-afk-launch.sh enter and stop)\n"
+  },
+  "state": {
+    "files": [],
+    "daemon_log": "",
+    "terminal_record": "",
+    "afk": "",
+    "contract": ""
+  }
+}

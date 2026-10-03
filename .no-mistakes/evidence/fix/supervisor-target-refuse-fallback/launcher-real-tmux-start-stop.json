@@ -1,0 +1,94 @@
+{
+  "enter": {
+    "command": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+      "enter",
+      "--words",
+      "Observe only this lab."
+    ],
+    "rc": 0,
+    "stdout": "Away posture recorded at 2026-10-03T05:40:44Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.\nAway posture (recorded):\n  entered: 2026-10-03T05:40:44Z\n  expected return: not given\n  spend cap: 4 concurrent workers\n  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.\n  your words (verbatim):\n    Observe only this lab.\n",
+    "stderr": ""
+  },
+  "start": {
+    "command": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": "fm-afk-launch: daemon launched in detached tmux session 'fm-afk-daemon-1662344222-50865-23918-1791006044', supervising %0\n"
+  },
+  "running_state": {
+    "files": [
+      ".afk",
+      ".afk-contract",
+      ".afk-daemon-terminal",
+      ".supervise-daemon.lock",
+      ".supervise-daemon.lock.owner.yH6tdf",
+      ".supervise-daemon.log",
+      ".supervise-daemon.pid",
+      ".supervise-daemon.watcher.err"
+    ],
+    "daemon_log": "[2026-10-02T23:40:45-0600] daemon starting (pid 51188); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=on; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n",
+    "terminal_record": "tmux\tfm-afk-daemon-1662344222-50865-23918-1791006044\t\n",
+    "afk": "away\n1791006045\n",
+    "contract": "version: 2\nentered: 2026-10-03T05:40:44Z\nentered_epoch: 1791006044\nexpected_return: -\nreach_channels: none\nreach_announced: No phone channel is configured; anything that needs you waits for your return.\nspend_max_concurrent_workers: 4\nconfirmed: 2026-10-03T05:40:44Z\nconfirmed_epoch: 1791006044\nwords: |-\n  Observe only this lab.\n"
+  },
+  "sessions": {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "list-sessions",
+      "-F",
+      "#{session_name}"
+    ],
+    "rc": 0,
+    "stdout": "explicit\nfirstmate\nfm-afk-daemon-1662344222-50865-23918-1791006044\n",
+    "stderr": ""
+  },
+  "pane_count": {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "list-panes",
+      "-t",
+      "firstmate",
+      "-F",
+      "#{pane_id}"
+    ],
+    "rc": 0,
+    "stdout": "%0\n",
+    "stderr": ""
+  },
+  "stop": {
+    "command": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+      "stop"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": "fm-afk-launch: terminal close command failed, but exact absence was confirmed\nfm-afk-launch: away-posture record archived at /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/.validation-supervisor-target-live/launcher-tmux/state/afk-contracts/1791006044.afk-contract\nfm-afk-launch: away mode stopped; daemon terminal torn down, .afk cleared, and the posture record archived\n"
+  },
+  "stopped_state": {
+    "files": [
+      ".inactive-outcome-reconcile",
+      ".last-check",
+      ".last-heartbeat",
+      ".last-watcher-beat",
+      ".secondmate-liveness-tick",
+      ".supervise-daemon.log",
+      ".supervise-daemon.watcher.err",
+      ".watcher-down",
+      "afk-contracts",
+      "home-summary.json",
+      "terminal-outcomes"
+    ],
+    "daemon_log": "[2026-10-02T23:40:45-0600] daemon starting (pid 51188); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=on; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T23:40:46-0600] daemon shutting down\n",
+    "terminal_record": "",
+    "afk": "",
+    "contract": ""
+  }
+}

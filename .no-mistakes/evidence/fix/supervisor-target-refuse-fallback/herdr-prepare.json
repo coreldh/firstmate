@@ -1,0 +1,13 @@
+{
+  "session": "fm-lab-target-refuse-52168-27418",
+  "prepare": {
+    "command": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-herdr-lab.sh",
+      "prepare",
+      "fm-lab-target-refuse-52168-27418"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "fm-herdr-lab: fleet-state tripwire requires exactly one running default session\n"
+  }
+}

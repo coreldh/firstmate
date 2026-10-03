@@ -1,0 +1,6 @@
+selectors: test_discover_supervisor_backend_precedence, test_discover_supervisor_target_herdr, test_daemon_refuses_to_arm_without_operator_pane_handle, test_daemon_arms_on_each_verifiable_operator_pane_handle
+exit=0
+ok - discover_supervisor_backend: override > TMUX_PANE > HERDR_ENV+HERDR_PANE_ID > tmux fallback
+ok - discover_supervisor_target: override > TMUX_PANE > herdr '<session>:<pane-id>' composition > no target
+ok - daemon refuses to arm pane escalation when no operator pane handle exists (#1506 defect A)
+ok - daemon still arms on an explicit target, a tmux pane, and a herdr pane

@@ -1,0 +1,130 @@
+BASE e31bc6e620ca532c2e0e0b72f3fd7c0869a12270 without pane handles
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/.validation-supervisor-target-live/baseline/bin/fm-supervise-daemon.sh
+Scenario environment: {"TMUX": "/private/tmp/fml.A6vIYB/tmux-501/fm-lab,0,0"}
+Exit status: 0
+warn: could not auto-discover supervisor pane (no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV/HERDR_PANE_ID); falling back to 'firstmate:0' — verify this is firstmate's pane
+
+before_stop state files: .supervise-daemon.lock, .supervise-daemon.lock.owner.Vk8vNJ, .supervise-daemon.log, .supervise-daemon.pid, .supervise-daemon.watcher.err
+[2026-10-02T23:42:28-0600] daemon starting (pid 86288); target=firstmate:0; target_source=FALLBACK(firstmate:0); backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+
+after_stop state files: .inactive-outcome-reconcile, .last-check, .last-heartbeat, .last-watcher-beat, .secondmate-liveness-tick, .supervise-daemon.log, .supervise-daemon.watcher.err, .watcher-down, home-summary.json, terminal-outcomes
+[2026-10-02T23:42:28-0600] daemon starting (pid 86288); target=firstmate:0; target_source=FALLBACK(firstmate:0); backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T23:42:29-0600] daemon shutting down
+
+
+CANDIDATE 246ac8155213d273c91174c3e9fe9f7d3accde78 with the same real fallback pane available
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh
+Scenario environment: {"TMUX": "/private/tmp/fml.A6vIYB/tmux-501/fm-lab,0,0"}
+Exit status: 1
+error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane
+
+before_stop state files: .supervise-daemon.log
+[2026-10-02T23:42:30-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)
+
+after_stop state files: .supervise-daemon.log
+[2026-10-02T23:42:30-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)
+
+
+LAUNCHER no-handle attempt 1
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh start
+Exit status: 1
+fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon
+
+
+LAUNCHER no-handle attempt 2
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh start
+Exit status: 1
+fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon
+
+
+Launcher final state files: .afk-contract, .supervise-daemon.log
+[2026-10-02T23:40:38-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start
+[2026-10-02T23:40:38-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start
+
+EARLIER GUARD missing_record
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh start
+Exit status: 1
+fm-afk-launch: an away-posture record is required; run enter before starting the daemon
+
+
+EARLIER GUARD catchup
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh start
+Exit status: 1
+fm-afk-launch: return catch-up is still pending; run bin/fm-afk-return.sh check before re-entering away mode
+
+
+EARLIER GUARD host
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh start
+Exit status: 1
+fm-afk-launch: the away daemon is not launched on this codex home, which runs the supervision host (docs/supervision-host.md); the away-posture record is the posture here (run bin/fm-afk-launch.sh enter and stop)
+
+
+VALID IDENTITY 1
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh
+Scenario environment: {"FM_SUPERVISOR_TARGET": "%1", "TMUX_PANE": "%0", "TMUX": "/private/tmp/fml.w44hX9/tmux-501/fm-lab,0,0"}
+Exit status: 0
+
+before_stop state files: .supervise-daemon.lock, .supervise-daemon.lock.owner.QySjYc, .supervise-daemon.log, .supervise-daemon.pid, .supervise-daemon.watcher.err
+[2026-10-02T23:40:39-0600] daemon starting (pid 48421); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+
+after_stop state files: .last-heartbeat, .last-watcher-beat, .secondmate-liveness-tick, .supervise-daemon.log, .supervise-daemon.watcher.err, .wake-queue.lock, .wake-queue.lock.owner.Y1HYQV, .watcher-down, .watcher-down.lock.owner.MqWaZu
+[2026-10-02T23:40:39-0600] daemon starting (pid 48421); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T23:40:40-0600] daemon shutting down
+
+
+VALID IDENTITY 2
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh
+Scenario environment: {"FM_SUPERVISOR_TARGET": "%1", "TMUX": "/private/tmp/fml.w44hX9/tmux-501/fm-lab,0,0"}
+Exit status: 0
+
+before_stop state files: .supervise-daemon.lock, .supervise-daemon.lock.owner.432GYJ, .supervise-daemon.log, .supervise-daemon.pid, .supervise-daemon.watcher.err
+[2026-10-02T23:40:41-0600] daemon starting (pid 48910); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+
+after_stop state files: .inactive-outcome-reconcile, .last-heartbeat, .last-watcher-beat, .secondmate-liveness-tick, .supervise-daemon.log, .supervise-daemon.watcher.err, .watcher-down, home-summary.json, terminal-outcomes
+[2026-10-02T23:40:41-0600] daemon starting (pid 48910); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T23:40:42-0600] daemon shutting down
+
+
+VALID IDENTITY 3
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh
+Scenario environment: {"TMUX_PANE": "%0", "HERDR_ENV": "1", "HERDR_PANE_ID": "unrelated", "TMUX": "/private/tmp/fml.w44hX9/tmux-501/fm-lab,0,0"}
+Exit status: 0
+
+before_stop state files: .supervise-daemon.lock, .supervise-daemon.lock.owner.6wLAh9, .supervise-daemon.log, .supervise-daemon.pid, .supervise-daemon.watcher.err
+[2026-10-02T23:40:42-0600] daemon starting (pid 49835); target=%0; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+
+after_stop state files: .inactive-outcome-reconcile, .last-check, .last-heartbeat, .last-watcher-beat, .secondmate-liveness-tick, .supervise-daemon.log, .supervise-daemon.watcher.err, .watcher-down, home-summary.json, terminal-outcomes
+[2026-10-02T23:40:42-0600] daemon starting (pid 49835); target=%0; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T23:40:43-0600] daemon shutting down
+
+
+LAUNCHER real tmux start
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh start
+Exit status: 0
+fm-afk-launch: daemon launched in detached tmux session 'fm-afk-daemon-1662344222-50865-23918-1791006044', supervising %0
+
+
+[2026-10-02T23:40:45-0600] daemon starting (pid 51188); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=on; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+
+Operator pane inventory after start
+$ tmux -L fm-lab list-panes -t firstmate -F #{pane_id}
+Exit status: 0
+%0
+
+
+LAUNCHER real tmux stop
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh stop
+Exit status: 0
+fm-afk-launch: terminal close command failed, but exact absence was confirmed
+fm-afk-launch: away-posture record archived at /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/.validation-supervisor-target-live/launcher-tmux/state/afk-contracts/1791006044.afk-contract
+fm-afk-launch: away mode stopped; daemon terminal torn down, .afk cleared, and the posture record archived
+
+
+[2026-10-02T23:40:45-0600] daemon starting (pid 51188); target=%0; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=on; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T23:40:46-0600] daemon shutting down
+
+HERDR isolated lab prepare
+$ /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-herdr-lab.sh prepare fm-lab-target-refuse-52168-27418
+Exit status: 1
+fm-herdr-lab: fleet-state tripwire requires exactly one running default session
+

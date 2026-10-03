@@ -1,0 +1,134 @@
+{
+  "cases": [
+    {
+      "command": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh",
+      "env": {
+        "FM_SUPERVISOR_TARGET": "%1",
+        "TMUX_PANE": "%0",
+        "TMUX": "/private/tmp/fml.w44hX9/tmux-501/fm-lab,0,0"
+      },
+      "rc": 0,
+      "armed": true,
+      "running_before_stop": true,
+      "before_stop": {
+        "files": [
+          ".supervise-daemon.lock",
+          ".supervise-daemon.lock.owner.QySjYc",
+          ".supervise-daemon.log",
+          ".supervise-daemon.pid",
+          ".supervise-daemon.watcher.err"
+        ],
+        "daemon_log": "[2026-10-02T23:40:39-0600] daemon starting (pid 48421); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n",
+        "terminal_record": "",
+        "afk": "",
+        "contract": ""
+      },
+      "after_stop": {
+        "files": [
+          ".last-heartbeat",
+          ".last-watcher-beat",
+          ".secondmate-liveness-tick",
+          ".supervise-daemon.log",
+          ".supervise-daemon.watcher.err",
+          ".wake-queue.lock",
+          ".wake-queue.lock.owner.Y1HYQV",
+          ".watcher-down",
+          ".watcher-down.lock.owner.MqWaZu"
+        ],
+        "daemon_log": "[2026-10-02T23:40:39-0600] daemon starting (pid 48421); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T23:40:40-0600] daemon shutting down\n",
+        "terminal_record": "",
+        "afk": "",
+        "contract": ""
+      },
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh",
+      "env": {
+        "FM_SUPERVISOR_TARGET": "%1",
+        "TMUX": "/private/tmp/fml.w44hX9/tmux-501/fm-lab,0,0"
+      },
+      "rc": 0,
+      "armed": true,
+      "running_before_stop": true,
+      "before_stop": {
+        "files": [
+          ".supervise-daemon.lock",
+          ".supervise-daemon.lock.owner.432GYJ",
+          ".supervise-daemon.log",
+          ".supervise-daemon.pid",
+          ".supervise-daemon.watcher.err"
+        ],
+        "daemon_log": "[2026-10-02T23:40:41-0600] daemon starting (pid 48910); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n",
+        "terminal_record": "",
+        "afk": "",
+        "contract": ""
+      },
+      "after_stop": {
+        "files": [
+          ".inactive-outcome-reconcile",
+          ".last-heartbeat",
+          ".last-watcher-beat",
+          ".secondmate-liveness-tick",
+          ".supervise-daemon.log",
+          ".supervise-daemon.watcher.err",
+          ".watcher-down",
+          "home-summary.json",
+          "terminal-outcomes"
+        ],
+        "daemon_log": "[2026-10-02T23:40:41-0600] daemon starting (pid 48910); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T23:40:42-0600] daemon shutting down\n",
+        "terminal_record": "",
+        "afk": "",
+        "contract": ""
+      },
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh",
+      "env": {
+        "TMUX_PANE": "%0",
+        "HERDR_ENV": "1",
+        "HERDR_PANE_ID": "unrelated",
+        "TMUX": "/private/tmp/fml.w44hX9/tmux-501/fm-lab,0,0"
+      },
+      "rc": 0,
+      "armed": true,
+      "running_before_stop": true,
+      "before_stop": {
+        "files": [
+          ".supervise-daemon.lock",
+          ".supervise-daemon.lock.owner.6wLAh9",
+          ".supervise-daemon.log",
+          ".supervise-daemon.pid",
+          ".supervise-daemon.watcher.err"
+        ],
+        "daemon_log": "[2026-10-02T23:40:42-0600] daemon starting (pid 49835); target=%0; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n",
+        "terminal_record": "",
+        "afk": "",
+        "contract": ""
+      },
+      "after_stop": {
+        "files": [
+          ".inactive-outcome-reconcile",
+          ".last-check",
+          ".last-heartbeat",
+          ".last-watcher-beat",
+          ".secondmate-liveness-tick",
+          ".supervise-daemon.log",
+          ".supervise-daemon.watcher.err",
+          ".watcher-down",
+          "home-summary.json",
+          "terminal-outcomes"
+        ],
+        "daemon_log": "[2026-10-02T23:40:42-0600] daemon starting (pid 49835); target=%0; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T23:40:43-0600] daemon shutting down\n",
+        "terminal_record": "",
+        "afk": "",
+        "contract": ""
+      },
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

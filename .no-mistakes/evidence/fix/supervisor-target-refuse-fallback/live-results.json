@@ -1,65 +1,37 @@
 [
   {
-    "name": "La versi\u00f3n anterior arma por error contra un firstmate:0 ajeno; control de regresi\u00f3n",
+    "name": "daemon-no-handle-native-refusal",
     "result": "pass",
-    "live": true,
-    "evidence": "baseline-fallback-state.json: real pre-fix daemon armed at unrelated firstmate:0 on the private tmux server",
-    "reason": ""
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M403X5GM3ZBZW2G6DGAMHVVR/daemon-no-handle-native-refusal.json"
   },
   {
-    "name": "Descubrimiento sin identidad devuelve 1 y ning\u00fan destino",
+    "name": "launcher-no-handle-refusal",
     "result": "pass",
-    "live": true,
-    "evidence": "product-transcript.json: executed discovery returns 1 with zero stdout bytes, including incomplete Herdr identity",
-    "reason": ""
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M403X5GM3ZBZW2G6DGAMHVVR/launcher-no-handle-refusal.json"
   },
   {
-    "name": "El daemon rechaza sin identidad aunque exista firstmate:0, registra el motivo y libera su propiedad",
+    "name": "launcher-earlier-guards",
     "result": "pass",
-    "live": true,
-    "evidence": "no-handle-1.stderr.log, no-handle-2-state.json, product-transcript.json: two refusals, lock/pid cleanup, unrelated pane untouched",
-    "reason": ""
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M403X5GM3ZBZW2G6DGAMHVVR/launcher-earlier-guards.json"
   },
   {
-    "name": "start rechaza sin identidad y conserva el registro, sin crear indicador ni terminal",
+    "name": "daemon-valid-tmux-identities",
     "result": "pass",
-    "live": true,
-    "evidence": "launcher-refusal-2-state.json and product-transcript.json: start refused twice, record unchanged, no terminal or away flag",
-    "reason": ""
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M403X5GM3ZBZW2G6DGAMHVVR/daemon-valid-tmux-identities.json"
   },
   {
-    "name": "Las condiciones previas del launcher siguen rechazando antes del descubrimiento",
+    "name": "launcher-real-tmux-start-stop",
     "result": "pass",
-    "live": true,
-    "evidence": "guard-*-state.json and product-transcript.json: missing record, pending return, and real Codex host opt-in guards precede discovery",
-    "reason": ""
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M403X5GM3ZBZW2G6DGAMHVVR/launcher-real-tmux-start-stop.json"
   },
   {
-    "name": "La identidad expl\u00edcita y TMUX_PANE real conservan el arranque y la prioridad",
+    "name": "discovery-missing-partial",
     "result": "pass",
-    "live": true,
-    "evidence": "explicit-state.json, explicit-default-backend-state.json, inherited-tmux-state.json: real panes arm, override outranks another inherited pane, explicit target retains implicit tmux transport, graceful stop cleans ownership",
-    "reason": ""
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M403X5GM3ZBZW2G6DGAMHVVR/discovery-missing-partial.json"
   },
   {
-    "name": "El launcher arranca y detiene el daemon real sin dividir el panel del operador",
+    "name": "baseline-regression-comparison",
     "result": "pass",
-    "live": true,
-    "evidence": "real-launch-running-state.json, real-launch-stopped-state.json: launcher created the real daemon separately, preserved operator geometry, then stopped it",
-    "reason": ""
-  },
-  {
-    "name": "La secuencia start-native conserva la limitaci\u00f3n documentada despu\u00e9s del rechazo",
-    "result": "pass",
-    "live": true,
-    "evidence": "native-sequence-refused-state.json: real start-native/start sequence keeps the documented away flag after daemon refusal; native Claude/Grok background tool not exercised",
-    "reason": ""
-  },
-  {
-    "name": "La identidad Herdr conserva el arranque en una sesi\u00f3n aislada real",
-    "result": "untested",
-    "live": false,
-    "evidence": "herdr-lab-prepare.log",
-    "reason": "Se intent\u00f3 prepare de fm-lab-supervisor-01m3zy con el helper obligatorio. Rechaz\u00f3 porque no existe exactamente una sesi\u00f3n default en ejecuci\u00f3n para la tripwire. El contrato exige prepare antes de provision; crear o arrancar default est\u00e1 fuera de la autoridad de esta fase. El operador debe proporcionar una sesi\u00f3n default saludable y repetir; no se us\u00f3 una CLI simulada ni se alter\u00f3 default."
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M403X5GM3ZBZW2G6DGAMHVVR/baseline-regression-comparison.json"
   }
 ]

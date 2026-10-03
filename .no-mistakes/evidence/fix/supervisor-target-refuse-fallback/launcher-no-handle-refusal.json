@@ -1,0 +1,43 @@
+{
+  "enter": {
+    "command": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+      "enter",
+      "--words",
+      "Keep all checks isolated."
+    ],
+    "rc": 0,
+    "stdout": "Away posture recorded at 2026-10-03T05:40:38Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.\nAway posture (recorded):\n  entered: 2026-10-03T05:40:38Z\n  expected return: not given\n  spend cap: 4 concurrent workers\n  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.\n  your words (verbatim):\n    Keep all checks isolated.\n",
+    "stderr": ""
+  },
+  "attempts": [
+    {
+      "command": [
+        "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+        "start"
+      ],
+      "rc": 1,
+      "stdout": "",
+      "stderr": "fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon\n"
+    },
+    {
+      "command": [
+        "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+        "start"
+      ],
+      "rc": 1,
+      "stdout": "",
+      "stderr": "fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon\n"
+    }
+  ],
+  "final": {
+    "files": [
+      ".afk-contract",
+      ".supervise-daemon.log"
+    ],
+    "daemon_log": "[2026-10-02T23:40:38-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start\n[2026-10-02T23:40:38-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start\n",
+    "terminal_record": "",
+    "afk": "",
+    "contract": "version: 2\nentered: 2026-10-03T05:40:38Z\nentered_epoch: 1791006038\nexpected_return: -\nreach_channels: none\nreach_announced: No phone channel is configured; anything that needs you waits for your return.\nspend_max_concurrent_workers: 4\nconfirmed: 2026-10-03T05:40:38Z\nconfirmed_epoch: 1791006038\nwords: |-\n  Keep all checks isolated.\n"
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "fallback_exists": {
+    "command": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "display-message",
+      "-p",
+      "-t",
+      "firstmate:0",
+      "#{pane_id}"
+    ],
+    "rc": 0,
+    "stdout": "%0\n",
+    "stderr": ""
+  },
+  "enter": {
+    "command": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+      "enter",
+      "--words",
+      "Observe only the disposable validation home."
+    ],
+    "rc": 0,
+    "stdout": "Away posture recorded at 2026-10-03T05:40:35Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.\nAway posture (recorded):\n  entered: 2026-10-03T05:40:35Z\n  expected return: not given\n  spend cap: 4 concurrent workers\n  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.\n  your words (verbatim):\n    Observe only the disposable validation home.\n",
+    "stderr": ""
+  },
+  "start_native": {
+    "command": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+      "start-native"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "attempts": [
+    {
+      "command": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh",
+      "env": {
+        "TMUX": "/private/tmp/fml.w44hX9/tmux-501/fm-lab,0,0"
+      },
+      "rc": 1,
+      "armed": false,
+      "running_before_stop": false,
+      "before_stop": {
+        "files": [
+          ".afk",
+          ".afk-contract",
+          ".afk-daemon-terminal",
+          ".supervise-daemon.log"
+        ],
+        "daemon_log": "[2026-10-02T23:40:37-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+        "terminal_record": "none\t-\tnative\n",
+        "afk": "away\n1791006036\n",
+        "contract": "version: 2\nentered: 2026-10-03T05:40:35Z\nentered_epoch: 1791006035\nexpected_return: -\nreach_channels: none\nreach_announced: No phone channel is configured; anything that needs you waits for your return.\nspend_max_concurrent_workers: 4\nconfirmed: 2026-10-03T05:40:35Z\nconfirmed_epoch: 1791006035\nwords: |-\n  Observe only the disposable validation home.\n"
+      },
+      "after_stop": {
+        "files": [
+          ".afk",
+          ".afk-contract",
+          ".afk-daemon-terminal",
+          ".supervise-daemon.log"
+        ],
+        "daemon_log": "[2026-10-02T23:40:37-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+        "terminal_record": "none\t-\tnative\n",
+        "afk": "away\n1791006036\n",
+        "contract": "version: 2\nentered: 2026-10-03T05:40:35Z\nentered_epoch: 1791006035\nexpected_return: -\nreach_channels: none\nreach_announced: No phone channel is configured; anything that needs you waits for your return.\nspend_max_concurrent_workers: 4\nconfirmed: 2026-10-03T05:40:35Z\nconfirmed_epoch: 1791006035\nwords: |-\n  Observe only the disposable validation home.\n"
+      },
+      "stdout": "",
+      "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n"
+    },
+    {
+      "command": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh",
+      "env": {
+        "TMUX": "/private/tmp/fml.w44hX9/tmux-501/fm-lab,0,0"
+      },
+      "rc": 1,
+      "armed": false,
+      "running_before_stop": false,
+      "before_stop": {
+        "files": [
+          ".afk",
+          ".afk-contract",
+          ".afk-daemon-terminal",
+          ".supervise-daemon.log"
+        ],
+        "daemon_log": "[2026-10-02T23:40:37-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n[2026-10-02T23:40:37-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+        "terminal_record": "none\t-\tnative\n",
+        "afk": "away\n1791006036\n",
+        "contract": "version: 2\nentered: 2026-10-03T05:40:35Z\nentered_epoch: 1791006035\nexpected_return: -\nreach_channels: none\nreach_announced: No phone channel is configured; anything that needs you waits for your return.\nspend_max_concurrent_workers: 4\nconfirmed: 2026-10-03T05:40:35Z\nconfirmed_epoch: 1791006035\nwords: |-\n  Observe only the disposable validation home.\n"
+      },
+      "after_stop": {
+        "files": [
+          ".afk",
+          ".afk-contract",
+          ".afk-daemon-terminal",
+          ".supervise-daemon.log"
+        ],
+        "daemon_log": "[2026-10-02T23:40:37-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n[2026-10-02T23:40:37-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+        "terminal_record": "none\t-\tnative\n",
+        "afk": "away\n1791006036\n",
+        "contract": "version: 2\nentered: 2026-10-03T05:40:35Z\nentered_epoch: 1791006035\nexpected_return: -\nreach_channels: none\nreach_announced: No phone channel is configured; anything that needs you waits for your return.\nspend_max_concurrent_workers: 4\nconfirmed: 2026-10-03T05:40:35Z\nconfirmed_epoch: 1791006035\nwords: |-\n  Observe only the disposable validation home.\n"
+      },
+      "stdout": "",
+      "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n"
+    }
+  ],
+  "final": {
+    "files": [
+      ".afk",
+      ".afk-contract",
+      ".afk-daemon-terminal",
+      ".supervise-daemon.log"
+    ],
+    "daemon_log": "[2026-10-02T23:40:37-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n[2026-10-02T23:40:37-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+    "terminal_record": "none\t-\tnative\n",
+    "afk": "away\n1791006036\n",
+    "contract": "version: 2\nentered: 2026-10-03T05:40:35Z\nentered_epoch: 1791006035\nexpected_return: -\nreach_channels: none\nreach_announced: No phone channel is configured; anything that needs you waits for your return.\nspend_max_concurrent_workers: 4\nconfirmed: 2026-10-03T05:40:35Z\nconfirmed_epoch: 1791006035\nwords: |-\n  Observe only the disposable validation home.\n"
+  },
+  "stop": {
+    "command": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-afk-launch.sh",
+      "stop"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": "fm-afk-launch: away-posture record archived at /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/.validation-supervisor-target-live/no-handle/state/afk-contracts/1791006035.afk-contract\nfm-afk-launch: away mode stopped; no daemon terminal was running, .afk cleared, and the posture record archived\n"
+  }
+}

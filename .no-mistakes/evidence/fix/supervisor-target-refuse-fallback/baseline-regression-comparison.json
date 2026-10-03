@@ -1,0 +1,75 @@
+{
+  "base_commit": "e31bc6e620ca532c2e0e0b72f3fd7c0869a12270",
+  "baseline": {
+    "command": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/.validation-supervisor-target-live/baseline/bin/fm-supervise-daemon.sh",
+    "env": {
+      "TMUX": "/private/tmp/fml.A6vIYB/tmux-501/fm-lab,0,0"
+    },
+    "rc": 0,
+    "armed": true,
+    "running_before_stop": true,
+    "before_stop": {
+      "files": [
+        ".supervise-daemon.lock",
+        ".supervise-daemon.lock.owner.Vk8vNJ",
+        ".supervise-daemon.log",
+        ".supervise-daemon.pid",
+        ".supervise-daemon.watcher.err"
+      ],
+      "daemon_log": "[2026-10-02T23:42:28-0600] daemon starting (pid 86288); target=firstmate:0; target_source=FALLBACK(firstmate:0); backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n",
+      "terminal_record": "",
+      "afk": "",
+      "contract": ""
+    },
+    "after_stop": {
+      "files": [
+        ".inactive-outcome-reconcile",
+        ".last-check",
+        ".last-heartbeat",
+        ".last-watcher-beat",
+        ".secondmate-liveness-tick",
+        ".supervise-daemon.log",
+        ".supervise-daemon.watcher.err",
+        ".watcher-down",
+        "home-summary.json",
+        "terminal-outcomes"
+      ],
+      "daemon_log": "[2026-10-02T23:42:28-0600] daemon starting (pid 86288); target=firstmate:0; target_source=FALLBACK(firstmate:0); backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T23:42:29-0600] daemon shutting down\n",
+      "terminal_record": "",
+      "afk": "",
+      "contract": ""
+    },
+    "stdout": "",
+    "stderr": "warn: could not auto-discover supervisor pane (no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV/HERDR_PANE_ID); falling back to 'firstmate:0' \u2014 verify this is firstmate's pane\n"
+  },
+  "candidate_commit": "246ac8155213d273c91174c3e9fe9f7d3accde78",
+  "candidate": {
+    "command": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M403X5GM3ZBZW2G6DGAMHVVR/bin/fm-supervise-daemon.sh",
+    "env": {
+      "TMUX": "/private/tmp/fml.A6vIYB/tmux-501/fm-lab,0,0"
+    },
+    "rc": 1,
+    "armed": false,
+    "running_before_stop": false,
+    "before_stop": {
+      "files": [
+        ".supervise-daemon.log"
+      ],
+      "daemon_log": "[2026-10-02T23:42:30-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+      "terminal_record": "",
+      "afk": "",
+      "contract": ""
+    },
+    "after_stop": {
+      "files": [
+        ".supervise-daemon.log"
+      ],
+      "daemon_log": "[2026-10-02T23:42:30-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+      "terminal_record": "",
+      "afk": "",
+      "contract": ""
+    },
+    "stdout": "",
+    "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n"
+  }
+}
