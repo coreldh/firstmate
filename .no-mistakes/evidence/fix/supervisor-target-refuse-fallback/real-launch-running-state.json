@@ -1,0 +1,35 @@
+{
+  ".afk": {
+    "exists": true,
+    "directory": false,
+    "content": "away\n1791000839\n"
+  },
+  ".afk-contract": {
+    "exists": true,
+    "directory": false,
+    "content": "version: 2\nentered: 2026-10-03T04:13:58Z\nentered_epoch: 1791000838\nexpected_return: -\nreach_channels: none\nreach_announced: No phone channel is configured; anything that needs you waits for your return.\nspend_max_concurrent_workers: 4\nconfirmed: 2026-10-03T04:13:58Z\nconfirmed_epoch: 1791000838\nwords: |-\n  Disposable validation: record the refusal only.\n"
+  },
+  ".afk-daemon-terminal": {
+    "exists": true,
+    "directory": false,
+    "content": "tmux\tfm-afk-daemon-2927568377-3847-22255-1791000839\t\n"
+  },
+  ".supervise-daemon.pid": {
+    "exists": true,
+    "directory": false,
+    "content": "4925\n"
+  },
+  ".supervise-daemon.lock": {
+    "exists": true,
+    "directory": true
+  },
+  ".afk-launch.lock": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.log": {
+    "exists": true,
+    "directory": false,
+    "content": "[2026-10-02T22:13:59-0600] daemon starting (pid 4925); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=on; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n"
+  }
+}

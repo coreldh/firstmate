@@ -1,0 +1,2 @@
+exit=1
+fm-herdr-lab: fleet-state tripwire requires exactly one running default session

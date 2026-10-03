@@ -1,0 +1,34 @@
+{
+  ".afk": {
+    "exists": true,
+    "directory": false,
+    "content": "away\n1791000841\n"
+  },
+  ".afk-contract": {
+    "exists": true,
+    "directory": false,
+    "content": "version: 2\nentered: 2026-10-03T04:14:01Z\nentered_epoch: 1791000841\nexpected_return: -\nreach_channels: none\nreach_announced: No phone channel is configured; anything that needs you waits for your return.\nspend_max_concurrent_workers: 4\nconfirmed: 2026-10-03T04:14:01Z\nconfirmed_epoch: 1791000841\nwords: |-\n  Disposable validation: record the refusal only.\n"
+  },
+  ".afk-daemon-terminal": {
+    "exists": true,
+    "directory": false,
+    "content": "none\t-\tnative\n"
+  },
+  ".supervise-daemon.pid": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.lock": {
+    "exists": false,
+    "directory": false
+  },
+  ".afk-launch.lock": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.log": {
+    "exists": true,
+    "directory": false,
+    "content": "[2026-10-02T22:14:01-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n"
+  }
+}

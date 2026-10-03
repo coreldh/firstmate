@@ -1,0 +1,31 @@
+{
+  ".afk": {
+    "exists": false,
+    "directory": false
+  },
+  ".afk-contract": {
+    "exists": false,
+    "directory": false
+  },
+  ".afk-daemon-terminal": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.pid": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.lock": {
+    "exists": false,
+    "directory": false
+  },
+  ".afk-launch.lock": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.log": {
+    "exists": true,
+    "directory": false,
+    "content": "[2026-10-02T22:13:55-0600] daemon starting (pid 96650); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T22:13:56-0600] daemon shutting down\n"
+  }
+}

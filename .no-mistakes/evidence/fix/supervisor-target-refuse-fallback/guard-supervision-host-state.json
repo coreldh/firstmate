@@ -1,0 +1,31 @@
+{
+  ".afk": {
+    "exists": false,
+    "directory": false
+  },
+  ".afk-contract": {
+    "exists": true,
+    "directory": false,
+    "content": "version: 2\nentered: 2026-10-03T04:13:53Z\nentered_epoch: 1791000833\nexpected_return: -\nreach_channels: none\nreach_announced: No phone channel is configured; anything that needs you waits for your return.\nspend_max_concurrent_workers: 4\nconfirmed: 2026-10-03T04:13:53Z\nconfirmed_epoch: 1791000833\nwords: |-\n  Disposable validation: record the refusal only.\n"
+  },
+  ".afk-daemon-terminal": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.pid": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.lock": {
+    "exists": false,
+    "directory": false
+  },
+  ".afk-launch.lock": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.log": {
+    "exists": false,
+    "directory": false
+  }
+}

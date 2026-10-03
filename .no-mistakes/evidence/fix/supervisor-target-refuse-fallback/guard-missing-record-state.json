@@ -1,0 +1,30 @@
+{
+  ".afk": {
+    "exists": false,
+    "directory": false
+  },
+  ".afk-contract": {
+    "exists": false,
+    "directory": false
+  },
+  ".afk-daemon-terminal": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.pid": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.lock": {
+    "exists": false,
+    "directory": false
+  },
+  ".afk-launch.lock": {
+    "exists": false,
+    "directory": false
+  },
+  ".supervise-daemon.log": {
+    "exists": false,
+    "directory": false
+  }
+}

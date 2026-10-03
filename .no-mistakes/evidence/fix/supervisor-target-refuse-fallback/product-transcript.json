@@ -1,0 +1,866 @@
+[
+  {
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "rc": 0,
+    "stdout": "06debe10b1bfeda5a0b5c3bcdaf7574e7e933b26\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "tmux",
+      "-V"
+    ],
+    "rc": 0,
+    "stdout": "tmux 3.6b\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "bin/fm-harness.sh"
+    ],
+    "rc": 0,
+    "stdout": "codex\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/socket-owner-f3jegmbc"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/socket-owner-f3jegmbc\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "tmux-dir",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/socket-owner-f3jegmbc"
+    ],
+    "rc": 0,
+    "stdout": "/tmp/fml.P1H8tW\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "new-session",
+      "-d",
+      "-s",
+      "firstmate",
+      "-x",
+      "120",
+      "-y",
+      "40",
+      "-c",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0",
+      "bash -c \"printf UNRELATED_CREW_PANE; exec sleep 600\""
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "new-session",
+      "-d",
+      "-s",
+      "operator",
+      "-x",
+      "120",
+      "-y",
+      "40",
+      "-c",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0",
+      "sleep 600"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "display-message",
+      "-p",
+      "-t",
+      "operator:0",
+      "#{socket_path},#{pid},0"
+    ],
+    "rc": 0,
+    "stdout": "/private/tmp/fml.P1H8tW/tmux-501/fm-lab,80921,0\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "display-message",
+      "-p",
+      "-t",
+      "operator:0",
+      "#{pane_id}"
+    ],
+    "rc": 0,
+    "stdout": "%1\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "display-message",
+      "-p",
+      "-t",
+      "firstmate:0",
+      "#{pane_id}"
+    ],
+    "rc": 0,
+    "stdout": "%0\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "capture-pane",
+      "-p",
+      "-t",
+      "firstmate:0"
+    ],
+    "rc": 0,
+    "stdout": "UNRELATED_CREW_PANE\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "bash",
+      "-c",
+      ". \"$1\"; discover_supervisor_target",
+      "_",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/base-code/bin/fm-supervisor-target-lib.sh"
+    ],
+    "rc": 1,
+    "stdout": "firstmate:0",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/baseline-xr6gwa0q"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/baseline-xr6gwa0q\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/base-code/bin/fm-afk-launch.sh",
+      "enter",
+      "--words",
+      "Disposable regression control."
+    ],
+    "rc": 0,
+    "stdout": "Away posture recorded at 2026-10-03T04:13:48Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.\nAway posture (recorded):\n  entered: 2026-10-03T04:13:48Z\n  expected return: not given\n  spend cap: 4 concurrent workers\n  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.\n  your words (verbatim):\n    Disposable regression control.\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/base-code/bin/fm-afk-launch.sh",
+      "start-native"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/base-code/bin/fm-supervise-daemon.sh"
+    ],
+    "env": {
+      "FM_WEDGE_ALARM_EXEC": "discard",
+      "FM_HOME": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/baseline-xr6gwa0q",
+      "FM_POLL": "1",
+      "FM_HEARTBEAT": "999999",
+      "FM_CHECK_INTERVAL": "999999",
+      "FM_INJECT_FAIL_SLEEP": "1",
+      "TMUX_TMPDIR": "/tmp/fml.P1H8tW",
+      "TMUX": "/private/tmp/fml.P1H8tW/tmux-501/fm-lab,80921,0"
+    },
+    "rc": 0,
+    "armed": true,
+    "stdout": "",
+    "stderr": "warn: could not auto-discover supervisor pane (no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV/HERDR_PANE_ID); falling back to 'firstmate:0' \u2014 verify this is firstmate's pane\n",
+    "state": {
+      ".afk": {
+        "exists": true,
+        "directory": false,
+        "content": "away\n1791000829\n"
+      },
+      ".afk-contract": {
+        "exists": true,
+        "directory": false,
+        "content": "version: 2\nentered: 2026-10-03T04:13:48Z\nentered_epoch: 1791000828\nexpected_return: -\nreach_channels: none\nreach_announced: No phone channel is configured; anything that needs you waits for your return.\nspend_max_concurrent_workers: 4\nconfirmed: 2026-10-03T04:13:48Z\nconfirmed_epoch: 1791000828\nwords: |-\n  Disposable regression control.\n"
+      },
+      ".afk-daemon-terminal": {
+        "exists": true,
+        "directory": false,
+        "content": "none\t-\tnative\n"
+      },
+      ".supervise-daemon.pid": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-launch.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.log": {
+        "exists": true,
+        "directory": false,
+        "content": "[2026-10-02T22:13:49-0600] daemon starting (pid 84443); target=firstmate:0; target_source=FALLBACK(firstmate:0); backend=tmux; backend_source=FALLBACK(tmux); afk=on; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T22:13:51-0600] daemon shutting down\n"
+      }
+    }
+  },
+  {
+    "argv": [
+      "bash",
+      "-c",
+      ". \"$1\"; discover_supervisor_target",
+      "_",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-supervisor-target-lib.sh"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "bash",
+      "-c",
+      ". \"$1\"; discover_supervisor_target",
+      "_",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-supervisor-target-lib.sh"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "bash",
+      "-c",
+      ". \"$1\"; discover_supervisor_target",
+      "_",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-supervisor-target-lib.sh"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/no-handle-dxdsrbs1"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/no-handle-dxdsrbs1\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-supervise-daemon.sh"
+    ],
+    "env": {
+      "FM_WEDGE_ALARM_EXEC": "discard",
+      "FM_HOME": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/no-handle-dxdsrbs1",
+      "FM_POLL": "1",
+      "FM_HEARTBEAT": "999999",
+      "FM_CHECK_INTERVAL": "999999",
+      "FM_INJECT_FAIL_SLEEP": "1",
+      "TMUX_TMPDIR": "/tmp/fml.P1H8tW",
+      "TMUX": "/private/tmp/fml.P1H8tW/tmux-501/fm-lab,80921,0"
+    },
+    "rc": 1,
+    "armed": false,
+    "stdout": "",
+    "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n",
+    "state": {
+      ".afk": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-contract": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-daemon-terminal": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.pid": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-launch.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.log": {
+        "exists": true,
+        "directory": false,
+        "content": "[2026-10-02T22:13:51-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n"
+      }
+    }
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-supervise-daemon.sh"
+    ],
+    "env": {
+      "FM_WEDGE_ALARM_EXEC": "discard",
+      "FM_HOME": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/no-handle-dxdsrbs1",
+      "FM_POLL": "1",
+      "FM_HEARTBEAT": "999999",
+      "FM_CHECK_INTERVAL": "999999",
+      "FM_INJECT_FAIL_SLEEP": "1",
+      "TMUX_TMPDIR": "/tmp/fml.P1H8tW",
+      "TMUX": "/private/tmp/fml.P1H8tW/tmux-501/fm-lab,80921,0"
+    },
+    "rc": 1,
+    "armed": false,
+    "stdout": "",
+    "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n",
+    "state": {
+      ".afk": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-contract": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-daemon-terminal": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.pid": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-launch.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.log": {
+        "exists": true,
+        "directory": false,
+        "content": "[2026-10-02T22:13:51-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n[2026-10-02T22:13:51-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n"
+      }
+    }
+  },
+  {
+    "argv": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "capture-pane",
+      "-p",
+      "-t",
+      "firstmate:0"
+    ],
+    "rc": 0,
+    "stdout": "UNRELATED_CREW_PANE\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/launcher-refusal-0ylwz578"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/launcher-refusal-0ylwz578\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "enter",
+      "--words",
+      "Disposable validation: record the refusal only."
+    ],
+    "rc": 0,
+    "stdout": "Away posture recorded at 2026-10-03T04:13:51Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.\nAway posture (recorded):\n  entered: 2026-10-03T04:13:51Z\n  expected return: not given\n  spend cap: 4 concurrent workers\n  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.\n  your words (verbatim):\n    Disposable validation: record the refusal only.\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon\n"
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon\n"
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "stop"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": "fm-afk-launch: away-posture record archived at /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/launcher-refusal-0ylwz578/state/afk-contracts/1791000831.afk-contract\nfm-afk-launch: away mode stopped; no daemon terminal was running, .afk cleared, and the posture record archived\n"
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/missing-record-2trx6u1q"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/missing-record-2trx6u1q\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "fm-afk-launch: an away-posture record is required; run enter before starting the daemon\n"
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/pending-return-d5gsy_iw"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/pending-return-d5gsy_iw\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "fm-afk-launch: return catch-up is still pending; run bin/fm-afk-return.sh check before re-entering away mode\n"
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/supervision-host-x6zgrn1e"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/supervision-host-x6zgrn1e\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "enter",
+      "--words",
+      "Disposable validation: record the refusal only."
+    ],
+    "rc": 0,
+    "stdout": "Away posture recorded at 2026-10-03T04:13:53Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.\nAway posture (recorded):\n  entered: 2026-10-03T04:13:53Z\n  expected return: not given\n  spend cap: 4 concurrent workers\n  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.\n  your words (verbatim):\n    Disposable validation: record the refusal only.\nSupervision host: no engine runs the away session on this home (the primary harness 'codex' has no verified supervision engine), so every away wake reaches this conversation; name a verified engine in config/supervision-host (for example \"claude\").\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "fm-afk-launch: the away daemon is not launched on this codex home, which runs the supervision host (docs/supervision-host.md); the away-posture record is the posture here (run bin/fm-afk-launch.sh enter and stop)\n"
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/explicit-cnqwodui"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/explicit-cnqwodui\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-supervise-daemon.sh"
+    ],
+    "env": {
+      "FM_WEDGE_ALARM_EXEC": "discard",
+      "FM_HOME": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/explicit-cnqwodui",
+      "FM_POLL": "1",
+      "FM_HEARTBEAT": "999999",
+      "FM_CHECK_INTERVAL": "999999",
+      "FM_INJECT_FAIL_SLEEP": "1",
+      "TMUX_TMPDIR": "/tmp/fml.P1H8tW",
+      "TMUX": "/private/tmp/fml.P1H8tW/tmux-501/fm-lab,80921,0",
+      "FM_SUPERVISOR_TARGET": "%1",
+      "FM_SUPERVISOR_BACKEND": "tmux",
+      "TMUX_PANE": "%0"
+    },
+    "rc": 0,
+    "armed": true,
+    "stdout": "",
+    "stderr": "",
+    "state": {
+      ".afk": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-contract": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-daemon-terminal": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.pid": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-launch.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.log": {
+        "exists": true,
+        "directory": false,
+        "content": "[2026-10-02T22:13:54-0600] daemon starting (pid 93780); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T22:13:55-0600] daemon shutting down\n"
+      }
+    }
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/explicit-default-backend-jm_v15b7"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/explicit-default-backend-jm_v15b7\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-supervise-daemon.sh"
+    ],
+    "env": {
+      "FM_WEDGE_ALARM_EXEC": "discard",
+      "FM_HOME": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/explicit-default-backend-jm_v15b7",
+      "FM_POLL": "1",
+      "FM_HEARTBEAT": "999999",
+      "FM_CHECK_INTERVAL": "999999",
+      "FM_INJECT_FAIL_SLEEP": "1",
+      "TMUX_TMPDIR": "/tmp/fml.P1H8tW",
+      "TMUX": "/private/tmp/fml.P1H8tW/tmux-501/fm-lab,80921,0",
+      "FM_SUPERVISOR_TARGET": "%1"
+    },
+    "rc": 0,
+    "armed": true,
+    "stdout": "",
+    "stderr": "",
+    "state": {
+      ".afk": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-contract": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-daemon-terminal": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.pid": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-launch.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.log": {
+        "exists": true,
+        "directory": false,
+        "content": "[2026-10-02T22:13:55-0600] daemon starting (pid 96650); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T22:13:56-0600] daemon shutting down\n"
+      }
+    }
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/inherited-tmux-47fxa2hm"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/inherited-tmux-47fxa2hm\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-supervise-daemon.sh"
+    ],
+    "env": {
+      "FM_WEDGE_ALARM_EXEC": "discard",
+      "FM_HOME": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/inherited-tmux-47fxa2hm",
+      "FM_POLL": "1",
+      "FM_HEARTBEAT": "999999",
+      "FM_CHECK_INTERVAL": "999999",
+      "FM_INJECT_FAIL_SLEEP": "1",
+      "TMUX_TMPDIR": "/tmp/fml.P1H8tW",
+      "TMUX": "/private/tmp/fml.P1H8tW/tmux-501/fm-lab,80921,0",
+      "TMUX_PANE": "%1"
+    },
+    "rc": 0,
+    "armed": true,
+    "stdout": "",
+    "stderr": "",
+    "state": {
+      ".afk": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-contract": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-daemon-terminal": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.pid": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".afk-launch.lock": {
+        "exists": false,
+        "directory": false
+      },
+      ".supervise-daemon.log": {
+        "exists": true,
+        "directory": false,
+        "content": "[2026-10-02T22:13:57-0600] daemon starting (pid 99642); target=%1; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T22:13:58-0600] daemon shutting down\n"
+      }
+    }
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/real-launch-e1ace4k6"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/real-launch-e1ace4k6\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "enter",
+      "--words",
+      "Disposable validation: record the refusal only."
+    ],
+    "rc": 0,
+    "stdout": "Away posture recorded at 2026-10-03T04:13:58Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.\nAway posture (recorded):\n  entered: 2026-10-03T04:13:58Z\n  expected return: not given\n  spend cap: 4 concurrent workers\n  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.\n  your words (verbatim):\n    Disposable validation: record the refusal only.\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "list-panes",
+      "-t",
+      "operator",
+      "-F",
+      "#{pane_id}:#{pane_width}:#{pane_height}"
+    ],
+    "rc": 0,
+    "stdout": "%1:120:40\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "start"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": "fm-afk-launch: daemon launched in detached tmux session 'fm-afk-daemon-2927568377-3847-22255-1791000839', supervising %1\n"
+  },
+  {
+    "argv": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "list-panes",
+      "-t",
+      "operator",
+      "-F",
+      "#{pane_id}:#{pane_width}:#{pane_height}"
+    ],
+    "rc": 0,
+    "stdout": "%1:120:40\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "stop"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": "fm-afk-launch: terminal close command failed, but exact absence was confirmed\nfm-afk-launch: away-posture record archived at /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/real-launch-e1ace4k6/state/afk-contracts/1791000838.afk-contract\nfm-afk-launch: away mode stopped; daemon terminal torn down, .afk cleared, and the posture record archived\n"
+  },
+  {
+    "argv": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "has-session",
+      "-t",
+      "fm-afk-daemon"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "can't find session: fm-afk-daemon\n"
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "create",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/native-sequence-eo0kij3t"
+    ],
+    "rc": 0,
+    "stdout": "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/native-sequence-eo0kij3t\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "enter",
+      "--words",
+      "Disposable validation: record the refusal only."
+    ],
+    "rc": 0,
+    "stdout": "Away posture recorded at 2026-10-03T04:14:01Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.\nAway posture (recorded):\n  entered: 2026-10-03T04:14:01Z\n  expected return: not given\n  spend cap: 4 concurrent workers\n  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.\n  your words (verbatim):\n    Disposable validation: record the refusal only.\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "start-native"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-start.sh"
+    ],
+    "rc": 1,
+    "stdout": "afk: starting supervise daemon in foreground; keep this command as a tracked background session\n",
+    "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n"
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-afk-launch.sh",
+      "stop"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": "fm-afk-launch: away-posture record archived at /Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/native-sequence-eo0kij3t/state/afk-contracts/1791000841.afk-contract\nfm-afk-launch: away mode stopped; no daemon terminal was running, .afk cleared, and the posture record archived\n"
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-herdr-lab.sh",
+      "prepare",
+      "fm-lab-supervisor-01m3zy"
+    ],
+    "rc": 1,
+    "stdout": "",
+    "stderr": "fm-herdr-lab: fleet-state tripwire requires exactly one running default session\n"
+  },
+  {
+    "argv": [
+      "tmux",
+      "-L",
+      "fm-lab",
+      "kill-server"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/bin/fm-lab-home.sh",
+      "teardown",
+      "/Users/admin/.no-mistakes/worktrees/57ee2c16a82d/01M3ZYSES4EX4N46PB1WM7APD0/.validation-supervisor-target/socket-owner-f3jegmbc"
+    ],
+    "rc": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]
