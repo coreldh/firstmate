@@ -1,0 +1,3 @@
+Attempt: supported helper with workspace-local XDG roots and HERDR_CONFIG_PATH.
+Exit: 1
+fm-herdr-lab: fleet-state tripwire requires exactly one running default session

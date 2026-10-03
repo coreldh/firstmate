@@ -1,0 +1,28 @@
+# explicit-target-keeps-precedence
+HEAD 937437e506016e39fe74dc4cd10cf78c1b7d906b
+COMMANDS
+FM_SUPERVISOR_TARGET=<real operator pane> FM_SUPERVISOR_BACKEND=tmux
+TMUX_PANE=<different real shell pane> HERDR_ENV=1 HERDR_PANE_ID=not-a-target
+bin/fm-supervise-daemon.sh; terminate exact test process after startup
+PRODUCT OUTPUT
+{
+  "rc": 0,
+  "armed": true,
+  "alive_when_observed": true,
+  "stderr": "",
+  "log": "[2026-10-02T21:46:23-0600] daemon starting (pid 78726); target=%1; target_source=FM_SUPERVISOR_TARGET; backend=tmux; backend_source=FM_SUPERVISOR_BACKEND; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T21:46:23-0600] daemon shutting down\n",
+  "state": {
+    "afk": false,
+    "terminal": false,
+    "contract": false,
+    "daemon_pid": false,
+    "daemon_lock": false,
+    "launcher_lock": false
+  }
+}
+OBSERVED STATE
+{
+  "real_daemon_armed": true,
+  "selected_explicit_operator": true,
+  "normal_shutdown": true
+}

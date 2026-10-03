@@ -1,0 +1,33 @@
+# daemon-refuses-incomplete-herdr
+HEAD 937437e506016e39fe74dc4cd10cf78c1b7d906b
+COMMANDS
+FM_HOME=<isolated marked home> bin/fm-supervise-daemon.sh
+bash -c ". bin/fm-supervisor-target-lib.sh; discover_supervisor_target"
+real firstmate:0 shell remains on the private fm-lab socket
+PRODUCT OUTPUT
+%0 bash
+{
+  "rc": 1,
+  "armed": false,
+  "alive_when_observed": false,
+  "stderr": "error: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to arm - set FM_SUPERVISOR_TARGET and FM_SUPERVISOR_BACKEND to firstmate's own pane\n",
+  "log": "[2026-10-02T21:46:21-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; backend_source=FALLBACK(tmux)\n",
+  "state": {
+    "afk": false,
+    "terminal": false,
+    "contract": false,
+    "daemon_pid": false,
+    "daemon_lock": false,
+    "launcher_lock": false
+  }
+}
+Discovery: {"rc": 1, "stdout": ""}
+OBSERVED STATE
+{
+  "discovery_rc_1_no_output": true,
+  "daemon_rc_1": true,
+  "stderr_UNAVAILABLE": true,
+  "log_UNAVAILABLE": true,
+  "never_armed": true,
+  "no_pid_or_locks": true
+}

@@ -1,0 +1,29 @@
+# baseline-reproduces-fallback
+HEAD 937437e506016e39fe74dc4cd10cf78c1b7d906b
+COMMANDS
+git archive e31bc6e620ca532c2e0e0b72f3fd7c0869a12270 bin (isolated copy)
+tmux -L fm-lab new-session -d -s firstmate -x 120 -y 40 bash
+FM_HOME=<lab/base> <base>/bin/fm-supervise-daemon.sh (no pane handles)
+PRODUCT OUTPUT
+Existing unrelated pane: %0 bash
+{
+  "rc": 0,
+  "armed": true,
+  "alive_when_observed": true,
+  "stderr": "warn: could not auto-discover supervisor pane (no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV/HERDR_PANE_ID); falling back to 'firstmate:0' \u2014 verify this is firstmate's pane\n",
+  "log": "[2026-10-02T21:46:18-0600] daemon starting (pid 69118); target=firstmate:0; target_source=FALLBACK(firstmate:0); backend=tmux; backend_source=FALLBACK(tmux); afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s\n[2026-10-02T21:46:20-0600] daemon shutting down\n",
+  "state": {
+    "afk": false,
+    "terminal": false,
+    "contract": false,
+    "daemon_pid": false,
+    "daemon_lock": false,
+    "launcher_lock": false
+  }
+}
+OBSERVED STATE
+{
+  "base_armed": true,
+  "constant_selected": true,
+  "base_stopped_and_released_lock": true
+}

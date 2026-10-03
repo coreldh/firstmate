@@ -1,0 +1,22 @@
+# guard-first-supervision-host
+HEAD 937437e506016e39fe74dc4cd10cf78c1b7d906b
+COMMANDS
+bin/fm-afk-launch.sh start without pane handles
+PRODUCT OUTPUT
+fm-afk-launch: the away daemon is not launched on this codex home, which runs the supervision host (docs/supervision-host.md); the away-posture record is the posture here (run bin/fm-afk-launch.sh enter and stop)
+{
+  "afk": false,
+  "terminal": false,
+  "contract": true,
+  "daemon_pid": false,
+  "daemon_lock": false,
+  "launcher_lock": false
+}
+OBSERVED STATE
+{
+  "refused": true,
+  "earlier_guard_message": true,
+  "no_UNAVAILABLE_message": true,
+  "no_discovery_log": true,
+  "no_daemon_or_launcher_lock": true
+}

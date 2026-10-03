@@ -1,0 +1,38 @@
+# launcher-refuses-durably
+HEAD 937437e506016e39fe74dc4cd10cf78c1b7d906b
+COMMANDS
+bin/fm-afk-launch.sh enter --words "isolated local test only"
+bin/fm-afk-launch.sh start (twice, no pane handles)
+PRODUCT OUTPUT
+Away posture recorded at 2026-10-03T03:46:21Z: hold-for-return only. No phone channel is configured; anything that needs you waits for your return. Your away instructions are recorded verbatim; the away session will carry them out where it can, and anything it is unsure of, or that needs you, waits for your return. Destructive, irreversible, and security-sensitive actions are never pre-authorizable, whatever the words say. Expected return: not given. Spend cap: 4 concurrent workers.
+Away posture (recorded):
+  entered: 2026-10-03T03:46:21Z
+  expected return: not given
+  spend cap: 4 concurrent workers
+  reach: hold-for-return only. No phone channel is configured; anything that needs you waits for your return.
+  your words (verbatim):
+    isolated local test only
+fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon
+
+fm-afk-launch: away-mode pane escalation unavailable: no operator pane handle (target_source=UNAVAILABLE; no FM_SUPERVISOR_TARGET, TMUX_PANE, or HERDR_ENV+HERDR_PANE_ID); refusing to launch the daemon
+[2026-01-01T00:00:00+0000] existing durable log entry
+[2026-10-02T21:46:21-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start
+[2026-10-02T21:46:22-0600] startup refused: away-mode pane escalation unavailable; target_source=UNAVAILABLE; refused_by=fm-afk-launch start
+{
+  "afk": false,
+  "terminal": false,
+  "contract": true,
+  "daemon_pid": false,
+  "daemon_lock": false,
+  "launcher_lock": false
+}
+OBSERVED STATE
+{
+  "both_rc_1": true,
+  "both_stderr_UNAVAILABLE": true,
+  "prior_log_preserved": true,
+  "two_appended_refusals": true,
+  "no_flag_terminal_pid_or_lock": true,
+  "contract_unchanged": true,
+  "private_sessions_unchanged": true
+}

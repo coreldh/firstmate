@@ -1,0 +1,14 @@
+# tmux-inherited-pane-arms
+HEAD 937437e506016e39fe74dc4cd10cf78c1b7d906b
+COMMANDS
+tmux -L fm-lab new-session -s auto -x 120 -y 40 bin/fm-supervise-daemon.sh
+daemon inherits the actual TMUX_PANE; no target override
+PRODUCT OUTPUT
+[2026-10-02T21:46:24-0600] daemon starting (pid 81259); target=%2; target_source=TMUX_PANE; backend=tmux; backend_source=TMUX_PANE; afk=off; inject_skip='heartbeat'; stale_escalate=240s; batch=90s
+[2026-10-02T21:46:25-0600] daemon shutting down
+
+OBSERVED STATE
+{
+  "daemon_armed_in_actual_pane": true,
+  "clean_shutdown": true
+}

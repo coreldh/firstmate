@@ -1,0 +1,132 @@
+[
+  {
+    "name": "baseline-reproduces-fallback",
+    "result": "pass",
+    "checks": {
+      "base_armed": true,
+      "constant_selected": true,
+      "base_stopped_and_released_lock": true
+    },
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M3ZXB3JCK4N38MK9HEYBD5ZR/baseline-reproduces-fallback.log"
+  },
+  {
+    "name": "daemon-refuses-absent",
+    "result": "pass",
+    "checks": {
+      "discovery_rc_1_no_output": true,
+      "daemon_rc_1": true,
+      "stderr_UNAVAILABLE": true,
+      "log_UNAVAILABLE": true,
+      "never_armed": true,
+      "no_pid_or_locks": true
+    },
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M3ZXB3JCK4N38MK9HEYBD5ZR/daemon-refuses-absent.log"
+  },
+  {
+    "name": "daemon-refuses-empty",
+    "result": "pass",
+    "checks": {
+      "discovery_rc_1_no_output": true,
+      "daemon_rc_1": true,
+      "stderr_UNAVAILABLE": true,
+      "log_UNAVAILABLE": true,
+      "never_armed": true,
+      "no_pid_or_locks": true
+    },
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M3ZXB3JCK4N38MK9HEYBD5ZR/daemon-refuses-empty.log"
+  },
+  {
+    "name": "daemon-refuses-incomplete-herdr",
+    "result": "pass",
+    "checks": {
+      "discovery_rc_1_no_output": true,
+      "daemon_rc_1": true,
+      "stderr_UNAVAILABLE": true,
+      "log_UNAVAILABLE": true,
+      "never_armed": true,
+      "no_pid_or_locks": true
+    },
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M3ZXB3JCK4N38MK9HEYBD5ZR/daemon-refuses-incomplete-herdr.log"
+  },
+  {
+    "name": "launcher-refuses-durably",
+    "result": "pass",
+    "checks": {
+      "both_rc_1": true,
+      "both_stderr_UNAVAILABLE": true,
+      "prior_log_preserved": true,
+      "two_appended_refusals": true,
+      "no_flag_terminal_pid_or_lock": true,
+      "contract_unchanged": true,
+      "private_sessions_unchanged": true
+    },
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M3ZXB3JCK4N38MK9HEYBD5ZR/launcher-refuses-durably.log"
+  },
+  {
+    "name": "guard-first-missing-record",
+    "result": "pass",
+    "checks": {
+      "refused": true,
+      "earlier_guard_message": true,
+      "no_UNAVAILABLE_message": true,
+      "no_discovery_log": true,
+      "no_daemon_or_launcher_lock": true
+    },
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M3ZXB3JCK4N38MK9HEYBD5ZR/guard-first-missing-record.log"
+  },
+  {
+    "name": "guard-first-pending-return",
+    "result": "pass",
+    "checks": {
+      "refused": true,
+      "earlier_guard_message": true,
+      "no_UNAVAILABLE_message": true,
+      "no_discovery_log": true,
+      "no_daemon_or_launcher_lock": true
+    },
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M3ZXB3JCK4N38MK9HEYBD5ZR/guard-first-pending-return.log"
+  },
+  {
+    "name": "guard-first-supervision-host",
+    "result": "pass",
+    "checks": {
+      "refused": true,
+      "earlier_guard_message": true,
+      "no_UNAVAILABLE_message": true,
+      "no_discovery_log": true,
+      "no_daemon_or_launcher_lock": true
+    },
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M3ZXB3JCK4N38MK9HEYBD5ZR/guard-first-supervision-host.log"
+  },
+  {
+    "name": "explicit-target-keeps-precedence",
+    "result": "pass",
+    "checks": {
+      "real_daemon_armed": true,
+      "selected_explicit_operator": true,
+      "normal_shutdown": true
+    },
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M3ZXB3JCK4N38MK9HEYBD5ZR/explicit-target-keeps-precedence.log"
+  },
+  {
+    "name": "native-known-limitation",
+    "result": "pass",
+    "checks": {
+      "preparation_succeeded": true,
+      "daemon_refused_rc_1": true,
+      "afk_flag_remains_as_documented": true,
+      "refusal_durable": true,
+      "no_live_daemon_lock_or_pid": true
+    },
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M3ZXB3JCK4N38MK9HEYBD5ZR/native-known-limitation.log"
+  },
+  {
+    "name": "tmux-inherited-pane-arms",
+    "result": "pass",
+    "checks": {
+      "daemon_armed_in_actual_pane": true,
+      "clean_shutdown": true
+    },
+    "evidence": "/Users/admin/.no-mistakes/evidence/01M3ZXB3JCK4N38MK9HEYBD5ZR/tmux-inherited-pane-arms.log"
+  }
+]
