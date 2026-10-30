@@ -845,10 +845,11 @@ Claude ran in bare mode, Codex used an offline provider with hooks disabled and 
 Only local `/clear` or `/status` commands were submitted; no model response, paid service, or account session was exercised.
 The guard captured a real pending draft, required exit 1 and zero backend key operations for a typed marked request, and checked the entire draft row unchanged, with no inbox fallback or surviving known-undelivered reply expectation.
 It separately checked a command from an empty composer and durable inbox enqueue while the draft stayed pending with zero key operations.
+The refresh guard also requires explicit `--key Enter` to submit a pending local command and leave the composer empty; it records that check separately from the refusal and inbox cases.
 Raw captures are retained because transient furniture outside the input row, such as Grok's clipboard hint, can change independently of the draft.
 
-The other adapter executables were absent from the inspected PATH: opencode, pi, pi-signed, kimi, cursor-agent, gemini, muse, rovo, omp, agy, devin, command-code, polytoken, and cortex.
-The available `agent` alias identified as Grok rather than Cursor; no real Cursor result is claimed.
+The other adapter executables were absent from the inspected PATH: opencode, pi, pi-signed, kimi, cursor-agent, gemini, muse, rovo, omp, agy, devin, commandcode, polytoken, and cortex.
+The available `agent` alias identified as Grok rather than Cursor; that tmux run claims no real Cursor result, and the separate Herdr supplement below owns the prior Cursor evidence.
 An installed client without a verified isolated launch recipe fails the guard by name and version instead of being silently omitted, and a run that exercises no client cannot pass.
 The macOS sandbox is a capability requirement; an explicitly forced run fails when that requirement is absent.
 Portable coverage in `tests/fm-send-inbox.test.sh` and `tests/fm-send-remote-delivery.test.sh` covers reused reply bookkeeping, unknown and unproven reads, failed capture, deliberate Enter, and divergent Cursor identity, busy-tail, and selected-composer signals.
@@ -3016,6 +3017,7 @@ All seven live panes of the running default session - one Pi, four Claude, two p
 **Typed-submit confirmation is verified on tmux and Herdr only.**
 Zellij, cmux, Orca, and Paseo share a submit core that never consults the busy footer, so a typed-plane Cursor send that passes the pre-type composer guard in the [`fm-send.sh` header](../../bin/fm-send.sh) lands but `fm-send` reports delivery unconfirmed and exits non-zero; ordinary text steers ride the durable inbox and exit 0 at enqueue.
 Teaching that shared core the same transition is deliberately separate work, because it changes the submit path for every harness on those four backends and needs its own live validation on each.
+Tern also lacks rendered-footer confirmation; its adapter can instead confirm a native idle-to-working transition, but no real Cursor/Tern result is recorded here.
 
 The portable regression is `tests/fm-cursor-harness.test.sh`, the composer captures are pinned in `tests/fm-composer-lib.test.sh`, and the Herdr submit and footer behavior is pinned in `tests/fm-backend-herdr.test.sh`.
 Refresh this harness-dependent proof before accepting a cursor upgrade:
