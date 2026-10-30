@@ -122,6 +122,9 @@ def draft_rows(screen, draft):
     return [row for row in text.splitlines() if draft in row]
 
 try:
+    # Keep a caller-selected diagnostics root inside a checkout from making
+    # vendor project discovery reach that checkout's settings or trust root.
+    run(["git", "init", "--quiet", lab])
     # Enumerate the adapter inventory, not just the three expected local tools.
     # A newly installed adapter has to earn an account-free launch recipe.
     names = ["claude", "codex", "opencode", "pi", "pi-signed", "grok", "kimi", "cursor-agent",
@@ -202,7 +205,7 @@ assert out['loopback']==errno.ECONNREFUSED,out
                 tm("send-keys", "-t", target, "Up"); tm("send-keys", "-t", target, "Enter")
             elif "Yes, I trust this folder" in screen:
                 tm("send-keys", "-t", target, "Down"); tm("send-keys", "-t", target, "Enter")
-            elif "Do you trust" in screen and name == "codex":
+            elif name == "codex" and ("Do you trust" in screen or "Trust this folder?" in screen):
                 tm("send-keys", "-t", target, "Enter")
             else:
                 break
@@ -243,6 +246,19 @@ assert out['loopback']==errno.ECONNREFUSED,out
         results[name].update(empty=True, pending_refused=True, inbox_unchanged=True, inbox_exit=ordinary.returncode,
                              inbox_after=after_inbox.decode(errors="replace"), inbox_key_operations=inbox_keys,
                              input_rows_before=rows, input_rows_after=draft_rows(after_inbox, draft))
+        # Explicit Enter intentionally submits an existing draft. Use only a
+        # native local command so this check cannot request a model response.
+        tm("send-keys", "-t", target, "C-u")
+        tm("send-keys", "-t", target, "-l", local_command)
+        time.sleep(.4)
+        require(verdict(target) == "pending", "local command draft is not pending before explicit Enter")
+        results[name]["explicit_enter_before"] = capture(target).decode(errors="replace")
+        entered = send(target, "--key", "Enter")
+        time.sleep(.5)
+        results[name]["explicit_enter_after"] = capture(target).decode(errors="replace")
+        results[name]["explicit_enter_exit"] = entered.returncode
+        require(entered.returncode == 0 and verdict(target) == "empty", "explicit Enter did not submit the local command")
+        print("ok - " + name + ": explicit --key Enter intentionally submitted pending local command", flush=True)
         print("ok - " + name + " (" + version + "): pending refused before keys; empty local command and durable inbox preserved", flush=True)
     status = 0
 except Exception as exc:
