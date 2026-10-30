@@ -819,6 +819,42 @@ It covers writing once, preserving explicit and concurrent settings, invoking gu
 These behavior tests do not verify an actual vendor-refusal recovery or live relaunch; the prior live automatic-review probe verifies the fallback's capabilities, not that complete recovery path.
 There is no automatic detector or harness-output classifier to verify, and a generic login error does not establish a defeated bypass.
 
+## Typed-plane stale-draft refusal
+
+Verified on 2026-10-29 on macOS arm64 with native tmux 3.6b and the three installed clients below.
+The current behavior contract, including the narrow Herdr Cursor exception and the remaining concurrent-input race, belongs to the [`fm-send.sh` header](../../bin/fm-send.sh).
+Refresh the real-client evidence with:
+
+```sh
+FM_SEND_PENDING_LIVE=1 /bin/bash bin/fm-test-run.sh --jobs 1 --per-script-timeout-secs 180 tests/fm-send-pending-live.test.sh
+```
+
+Exact result lines:
+
+```text
+# network boundary: {"external": 1, "loopback": 61}; private Unix connect=0
+# native backend: tmux 3.6b
+ok - claude (2.1.311 (Claude Code)): pending refused before keys; empty local command and durable inbox preserved
+ok - codex (codex-cli 0.164.0): pending refused before keys; empty local command and durable inbox preserved
+ok - grok (grok 1.0.70 (f50904eaee6c)): pending refused before keys; empty local command and durable inbox preserved
+```
+
+Each client ran with an empty home and configuration roots, synthetic invalid API keys, loopback endpoints and proxies, and an OS sandbox that denied external IP connections before any vendor execution.
+The negative network control required external `EPERM`, loopback `ECONNREFUSED`, and a successful private Unix-domain connection; proxies alone are insufficient for Grok.
+Claude ran in bare mode, Codex used an offline provider with hooks disabled and no shared daemon, and Grok used a private leader socket.
+Only local `/clear` or `/status` commands were submitted; no model response, paid service, or account session was exercised.
+The guard captured a real pending draft, required exit 1 and zero backend key operations for a typed marked request, and checked the entire draft row unchanged, with no inbox fallback or surviving known-undelivered reply expectation.
+It separately checked a command from an empty composer and durable inbox enqueue while the draft stayed pending with zero key operations.
+Raw captures are retained because transient furniture outside the input row, such as Grok's clipboard hint, can change independently of the draft.
+
+The other adapter executables were absent from the inspected PATH: opencode, pi, pi-signed, kimi, cursor-agent, gemini, muse, rovo, omp, agy, devin, command-code, polytoken, and cortex.
+The available `agent` alias identified as Grok rather than Cursor; no real Cursor result is claimed.
+An installed client without a verified isolated launch recipe fails the guard by name and version instead of being silently omitted, and a run that exercises no client cannot pass.
+The macOS sandbox is a capability requirement; an explicitly forced run fails when that requirement is absent.
+Portable coverage in `tests/fm-send-inbox.test.sh` and `tests/fm-send-remote-delivery.test.sh` covers reused reply bookkeeping, unknown and unproven reads, failed capture, deliberate Enter, and divergent Cursor identity, busy-tail, and selected-composer signals.
+Real transport coverage here is tmux only: Herdr, Zellij, Orca, cmux, Paseo, Rex, and Tern remain `NOT_RUN` for this guard, including the Herdr Cursor exception.
+T3 Code has no terminal composer and its existing adapter returns only empty or unknown; no T3 service was contacted for this result.
+
 ## Composer classification matrix
 
 The shared composer classifier (`bin/fm-composer-lib.sh`, `fm_composer_classify_screen`) owns every composer shape fleet-wide; each backend contributes only a capture and a capability descriptor.
@@ -2955,7 +2991,7 @@ Other harnesses on Herdr are unaffected by the edge-detector change.
 All seven live panes of the running default session - one Pi, four Claude, two plain shells - classified identically under the pre-fix and current classifiers.
 
 **Typed-submit confirmation is verified on tmux and Herdr only.**
-Zellij, cmux, Orca, and Paseo share a submit core that never consults the busy footer, so a typed-plane Cursor send there lands but `fm-send` reports delivery unconfirmed and exits non-zero; ordinary text steers ride the durable inbox and exit 0 at enqueue.
+Zellij, cmux, Orca, and Paseo share a submit core that never consults the busy footer, so a typed-plane Cursor send that passes the pre-type composer guard in the [`fm-send.sh` header](../../bin/fm-send.sh) lands but `fm-send` reports delivery unconfirmed and exits non-zero; ordinary text steers ride the durable inbox and exit 0 at enqueue.
 Teaching that shared core the same transition is deliberately separate work, because it changes the submit path for every harness on those four backends and needs its own live validation on each.
 
 The portable regression is `tests/fm-cursor-harness.test.sh`, the composer captures are pinned in `tests/fm-composer-lib.test.sh`, and the Herdr submit and footer behavior is pinned in `tests/fm-backend-herdr.test.sh`.

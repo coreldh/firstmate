@@ -51,7 +51,7 @@ Herdr reports Cursor `blocked` in every state, so its native idle path is unreac
 `../../../bin/backends/herdr.sh` baselines before Enter and confirms the footer transition, so an already-busy pane cannot confirm.
 
 Zellij, cmux, Orca, and tern do not consult that footer.
-A typed-plane native invocation or explicit backend send lands but reports unconfirmed and exits nonzero; ordinary steering uses the durable inbox and exits zero at enqueue.
+A typed-plane native invocation or explicit backend send that passes the pre-type composer guard in the [`fm-send.sh` header](../../../../../bin/fm-send.sh) lands but reports unconfirmed and exits nonzero; ordinary steering uses the durable inbox and exits zero at enqueue.
 Treat this as confirmation failure, not loss, because text lands and busy state comes from the transcript.
 Teaching those backends is separate cross-harness work requiring live checks.
 
