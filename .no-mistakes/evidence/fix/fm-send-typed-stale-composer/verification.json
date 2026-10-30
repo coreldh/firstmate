@@ -1,0 +1,279 @@
+{
+  "scope": "Intent-targeted Test evidence bound to this head; no product edits, publication, CI or human-acceptance claim.",
+  "head": "e8791ede3b1ef4a2770909c5d9f4ab875855b62d",
+  "tree": "daa54bb0f025bde6ac23620e91c91c545171f8c1",
+  "runtime_blobs_and_modes": [
+    "100755 blob c6a4fa660b454bfa7db6fa595729955354a9c1a7\tbin/fm-send.sh",
+    "100644 blob 27a02919417b5b1046b3d8a07a47f9fca15c4617\tbin/fm-backend.sh",
+    "100644 blob c33bcc10cd75b07b64e9481ede7f90274d898bc4\tbin/backends/herdr.sh",
+    "100644 blob 7725fdf7573440f41e2c0f0dc4facf71eba0df05\tbin/backends/tmux.sh",
+    "100644 blob 942bce8658296049a1b5692158fc0a4058892fbe\tbin/fm-composer-lib.sh",
+    "100755 blob 383cfd1b6f007994c492e5030341297907aac6e5\tbin/fm-tmux-lib.sh",
+    "100755 blob 7093bfd2091c9c7406a1e330faa49f77f5ebd096\tbin/fm-cursor-lib.sh",
+    "100644 blob edc5446075d732e46d29481489cadaeec0ce445d\tbin/fm-agent-process-lib.sh",
+    "100644 blob cdf95c3d80e31e32177dfeb9777ca79340530cce\tbin/fm-session-lock-lib.sh",
+    "100644 blob df26e9890469431bfacaa246cfdd99cde1ceddf3\tbin/fm-gemini-lib.sh",
+    "100644 blob 6a6534a36aee13c32188014c8bfda3aecc335f6a\tbin/fm-transition-lib.sh",
+    "100755 blob a4821c24af96df7c005ff1d9132c17677ad15dbb\tbin/fm-pending-reply-lib.sh",
+    "100644 blob 23a7b4d6af9f3cd27da677d4674d66e8865f41fc\tbin/fm-marker-lib.sh",
+    "100755 blob d0ce813cf9b11aaa69901c01281b684571574871\tbin/fm-operational-input.sh",
+    "100755 blob 4ef23286934c8e4e1a9ee583565049c54f4059e9\tbin/fm-classify-lib.sh",
+    "100644 blob 89ac8e321682be3ccd4ed812426c18a3bd915634\tbin/fm-timeout-lib.sh",
+    "100644 blob 43b730f9c55c64372f68fd5a20e58a730ac3610d\tbin/fm-control-lib.sh",
+    "100644 blob 8be27955740595da1397e356ffe27a4e4faab4d8\tbin/fm-line-cap-lib.sh",
+    "100755 blob d7afb516c050527259b772e6ec19a2ee0fb5dd58\tbin/fm-lease-lib.sh",
+    "100755 blob ee922dc509eef2c80f0a30a114ff270bc51b5a67\tbin/fm-guard.sh",
+    "100644 blob 0f3ec4977e982e8539bef4de55f4872056d13a85\tbin/fm-gate-refuse-lib.sh",
+    "100644 blob 6cd781e397a78c26ba53f9ac2a6b3f17ff2fdd3b\tbin/fm-task-inbox-lib.sh"
+  ],
+  "test_guard_working_blob": "f1a9c2541f28720d6ef96d6edcc924206c46c217",
+  "commands": [
+    {
+      "command": "bash tests/fm-send-inbox.test.sh",
+      "exit": 0,
+      "scope": "Durable inbox; stale typed draft refusal; new/reused known-undelivered cleanup; no inbox fallback; empty/unknown/unproven/failed reads; explicit Enter; selected Cursor composer and independent identity/busy counterfactuals. Backend doubles: not live-client proof.",
+      "verification": "Re-executed at this head during report correction; exit 0. Portable executable evidence, not live-client execution."
+    },
+    {
+      "command": "bash tests/fm-send-remote-delivery.test.sh",
+      "exit": 0,
+      "scope": "Real sender and host-local delivery executable with isolated SSH transport double; durable/idempotent remote records; failure bookkeeping; local exit-3 contracts. Not live SSH proof.",
+      "verification": "Re-executed at this head during report correction; exit 0. Portable executable evidence, not live-client execution."
+    },
+    {
+      "command": "FM_SEND_PENDING_LIVE=1 bash tests/fm-send-pending-live.test.sh",
+      "exit": 0,
+      "scope": "Real installed clients, private tmux 160 columns by 45 rows, empty configuration roots, synthetic invalid keys, outbound-IP sandbox. Empty local command, pending refusal, durable inbox and explicit pending Enter.",
+      "verification": "Successful real-client execution earlier in this same active Test run, preserved rather than re-executed in this report-only correction. Committed guard equals the tested working blob; affected runtime bytes and modes match this head."
+    }
+  ],
+  "baseline_reproduction": {
+    "base": "05196e30ead54796dfbe986db61abe9d8df9e3d2",
+    "command": "test_typed_send_refuses_stale_pending_composer against baseline fm-send executable",
+    "exit": 1,
+    "observed": "Expected refusal exit 1; baseline sender returned 0. Same regression passes on corrected runtime."
+  },
+  "network_control": {
+    "external_connect_errno": 1,
+    "loopback_connect_errno": 61,
+    "private_unix_connect_exit": 0
+  },
+  "tmux": "3.6b",
+  "clients": {
+    "claude": {
+      "version": "2.1.311 (Claude Code)",
+      "empty_command_exit": 0,
+      "pending_refusal_exit": 1,
+      "pending_mutation_calls": 0,
+      "inbox_exit": 0,
+      "inbox_mutation_calls": 0,
+      "draft_before": [
+        "\u276f\u00a0STALE-CLAUDE: "
+      ],
+      "draft_after": [
+        "\u276f\u00a0STALE-CLAUDE: "
+      ],
+      "explicit_enter_exit": 0,
+      "cleanup_tmux_exit": 0
+    },
+    "codex": {
+      "version": "codex-cli 0.164.0",
+      "empty_command_exit": 0,
+      "pending_refusal_exit": 1,
+      "pending_mutation_calls": 0,
+      "inbox_exit": 0,
+      "inbox_mutation_calls": 0,
+      "draft_before": [
+        "\u203a STALE-CODEX:"
+      ],
+      "draft_after": [
+        "\u203a STALE-CODEX:"
+      ],
+      "explicit_enter_exit": 0,
+      "cleanup_tmux_exit": 0
+    },
+    "grok": {
+      "version": "grok 1.0.70 (f50904eaee6c)",
+      "empty_command_exit": 0,
+      "pending_refusal_exit": 1,
+      "pending_mutation_calls": 0,
+      "inbox_exit": 0,
+      "inbox_mutation_calls": 0,
+      "draft_before": [
+        "  \u2502 \u276f STALE-GROK:                                                                                                                                            \u2502"
+      ],
+      "draft_after": [
+        "  \u2502 \u276f STALE-GROK:                                                                                                                                            \u2502"
+      ],
+      "explicit_enter_exit": 0,
+      "cleanup_tmux_exit": 0
+    }
+  },
+  "carried_cursor_herdr": {
+    "live_in_this_run": false,
+    "cursor": "2026.10.22-27dcf5f",
+    "herdr": "0.9.3",
+    "criteria": [
+      "C1 pending draft: exit 1, zero mutations, full capture preserved",
+      "C2 selected busy placeholder with independent Cursor identity and working activity: exit 0, queued follow-up response observed",
+      "C3 old transcript hint outside selected pending composer: exit 1, zero mutations, full capture preserved"
+    ],
+    "identity": "Directly compared all 22 listed runtime blobs and modes between the prior real-test tree, this HEAD and working files: identical. Prior execution only; no Cursor or Herdr execution in this run.",
+    "geometry": "C1/C2: 120 columns by 40 rows; C3: 160 columns by 160 rows",
+    "tested_tree": "415941fb42b77a790e2e87916d8ab8407c749ab1",
+    "prior_receipts": [
+      {
+        "label": "2026-10-29 Cursor/Herdr RETURN.md",
+        "sha256": "ab4684b9658fcc184619907872b60fca1420e4098a7e4cab7ffd07e67b493d19"
+      },
+      {
+        "label": "2026-10-29 Cursor/Herdr RECEIPT.json",
+        "sha256": "781eec2c6da5931e390356824cb11fda0d1d6cfa24163f834e055350f1a0d663"
+      }
+    ],
+    "dependency_scope": "Typed explicit Herdr target, composer classification, identity, activity and submission paths. An unrelated main-branch change to fm-wake-lib.sh alters dead-lock reaper takeover; C1/C2/C3 do not invoke that takeover. No whole-repository identity claim.",
+    "criteria_receipts_sha256": {
+      "C1": "43049f2eea39ee07805e6ce0f8ca7a4f52e7e99a2d5698e4c8fb5ee9a256d2b2",
+      "C2": "b4263269112e8ce4bfb9ec9a95edfe6241ef391da6f7c10fed1f089449166646",
+      "C3": "5d1977072e1759405b842399593e7ddb1b09ab8cd34b6af8554ee5ba605641a9"
+    },
+    "evidence_class": "Historical real-client execution, carried forward by runtime blob AND mode identity; not rerun in this run.",
+    "execution_start_utc": "2026-10-29T23:49:32+00:00",
+    "execution_end_utc": "2026-10-30T00:04:36.530462+00:00",
+    "identity_verification": {
+      "commands": [
+        "git ls-tree HEAD -- <runtime-path>",
+        "git ls-tree 415941fb42b77a790e2e87916d8ab8407c749ab1 -- <runtime-path>",
+        "git hash-object -- <runtime-path>"
+      ],
+      "exit": 0,
+      "scope": "Each of the 22 runtime paths listed above: historical tree and HEAD entries identical, filesystem hash and executable mode identical. Read-only comparison repeated at current head; no client execution."
+    },
+    "tested": [
+      {
+        "criterion": "C1",
+        "command": "bash bin/fm-send.sh \"$TARGET\" OP5592-NO-CONCATENAR-1",
+        "exit": 1,
+        "result": "Refused before text/Enter; zero mutations; full ANSI capture identical.",
+        "receipt_sha256": "43049f2eea39ee07805e6ce0f8ca7a4f52e7e99a2d5698e4c8fb5ee9a256d2b2",
+        "geometry": "120 columns by 40 rows"
+      },
+      {
+        "criterion": "C2",
+        "command": "bash bin/fm-send.sh \"$TARGET\" 'Finish with the exact marker OP5592-FOLLOWUP-OK.'",
+        "exit": 0,
+        "result": "Selected busy placeholder accepted; native Cursor identity and working activity measured independently; queued follow-up response observed.",
+        "receipt_sha256": "b4263269112e8ce4bfb9ec9a95edfe6241ef391da6f7c10fed1f089449166646",
+        "geometry": "120 columns by 40 rows"
+      },
+      {
+        "criterion": "C3",
+        "command": "bash bin/fm-send.sh \"$TARGET\" OP5592-NOT-SENT-STALE-3",
+        "exit": 1,
+        "result": "Visible old transcript hint did not excuse selected pending draft; zero mutations; full ANSI capture identical.",
+        "receipt_sha256": "5d1977072e1759405b842399593e7ddb1b09ab8cd34b6af8554ee5ba605641a9",
+        "geometry": "160 columns by 160 rows"
+      }
+    ],
+    "command_notation": "Relative canonical commands for prior executions; TARGET denotes the explicit isolated Herdr pane. Not executed again in this run."
+  },
+  "limits": [
+    "Cursor/Herdr C1/C2/C3 were real historical executions, not rerun in this run; they are retained separately by exact relevant runtime blob and mode identity, not included in current-run scenarios.",
+    "Concurrent input between read and typing remains a race.",
+    "Version/geometry-scoped proof, not universal harness coverage.",
+    "Reused reply state, unknown/unproven/failed reads, deliberately incorrect identity or activity, and transport failures are portable executable counterfactuals, not live-client results.",
+    "Current Claude/Codex/Grok evidence uses no model prompts, paid requests, account sessions or production SSH. Prior Cursor C2 used a real model follow-up.",
+    "CLI behavior only; native terminal captures, no graphical layout verification."
+  ],
+  "privacy": "Only this sanitized report is placed in the public evidence directory. Raw diagnostics and captured paths are excluded.",
+  "test_guard_scope": "The committed guard preserves the previously successful test-only fixes: nested disposable project, current Codex trust wording, explicit pending Enter assertions.",
+  "verdict": "go",
+  "verdict_scope": "Bounded typed-draft protection and compatibility: current real tmux clients plus prior real Cursor/Herdr C1/C2/C3 bound by runtime identity, with portable regressions for state and transport counterfactuals. No publication, CI or human acceptance claim.",
+  "scenarios": [
+    {
+      "name": "Proven pending draft refuses text before keys and preserves the draft",
+      "result": "pass",
+      "live": true,
+      "evidence": "clients",
+      "scope": "Claude 2.1.311, Codex 0.164.0, Grok 1.0.70; earlier successful execution in this same Test run"
+    },
+    {
+      "name": "Ordinary inbox delivery preserves the pending draft",
+      "result": "pass",
+      "live": true,
+      "evidence": "clients; commands",
+      "scope": "Same three current tmux clients; durable record, zero mutation calls"
+    },
+    {
+      "name": "Explicit Enter submits a pending local command",
+      "result": "pass",
+      "live": true,
+      "evidence": "clients.explicit_enter_exit",
+      "scope": "Same three current tmux clients; no model request"
+    }
+  ],
+  "test_guard_committed_blob": "f1a9c2541f28720d6ef96d6edcc924206c46c217",
+  "current_run_raw_receipt_sha256": "bade16b6595e1b62f1e2982b1a96c8f788af1c8161742a8e357b78bfac758862",
+  "current_run_raw_integrity": "All stdout/stderr hashes for the 94 diagnostic commands match the preserved raw receipt; final private tmux teardown exit 0.",
+  "visual_evidence": "Terminal input/transport behavior, no graphical layout change. Native ANSI captures were inspected in the preserved private diagnostics; no screenshot or graphical rendering was produced. Public evidence contains only sanitized draft rows and results.",
+  "tested": [
+    {
+      "command": "bash tests/fm-send-inbox.test.sh",
+      "exit": 0,
+      "scope": "Durable inbox; stale typed draft refusal; new/reused known-undelivered cleanup; no inbox fallback; empty/unknown/unproven/failed reads; explicit Enter; selected Cursor composer and independent identity/busy counterfactuals. Backend doubles: not live-client proof.",
+      "verification": "Re-executed at this head during report correction; exit 0. Portable executable evidence, not live-client execution.",
+      "evidence_class": "portable executable regression"
+    },
+    {
+      "command": "bash tests/fm-send-remote-delivery.test.sh",
+      "exit": 0,
+      "scope": "Real sender and host-local delivery executable with isolated SSH transport double; durable/idempotent remote records; failure bookkeeping; local exit-3 contracts. Not live SSH proof.",
+      "verification": "Re-executed at this head during report correction; exit 0. Portable executable evidence, not live-client execution.",
+      "evidence_class": "portable executable regression"
+    },
+    {
+      "command": "FM_SEND_PENDING_LIVE=1 bash tests/fm-send-pending-live.test.sh",
+      "exit": 0,
+      "scope": "Real installed clients, private tmux 160 columns by 45 rows, empty configuration roots, synthetic invalid keys, outbound-IP sandbox. Empty local command, pending refusal, durable inbox and explicit pending Enter.",
+      "verification": "Successful real-client execution earlier in this same active Test run, preserved rather than re-executed in this report-only correction. Committed guard equals the tested working blob; affected runtime bytes and modes match this head.",
+      "evidence_class": "same-Test real clients"
+    },
+    {
+      "criterion": "C1",
+      "command": "bash bin/fm-send.sh \"$TARGET\" OP5592-NO-CONCATENAR-1",
+      "exit": 1,
+      "result": "Refused before text/Enter; zero mutations; full ANSI capture identical.",
+      "receipt_sha256": "43049f2eea39ee07805e6ce0f8ca7a4f52e7e99a2d5698e4c8fb5ee9a256d2b2",
+      "geometry": "120 columns by 40 rows",
+      "evidence_class": "historical real Cursor/Herdr; not rerun in this run",
+      "identity_evidence": "carried_cursor_herdr.identity_verification; runtime_blobs_and_modes"
+    },
+    {
+      "criterion": "C2",
+      "command": "bash bin/fm-send.sh \"$TARGET\" 'Finish with the exact marker OP5592-FOLLOWUP-OK.'",
+      "exit": 0,
+      "result": "Selected busy placeholder accepted; native Cursor identity and working activity measured independently; queued follow-up response observed.",
+      "receipt_sha256": "b4263269112e8ce4bfb9ec9a95edfe6241ef391da6f7c10fed1f089449166646",
+      "geometry": "120 columns by 40 rows",
+      "evidence_class": "historical real Cursor/Herdr; not rerun in this run",
+      "identity_evidence": "carried_cursor_herdr.identity_verification; runtime_blobs_and_modes"
+    },
+    {
+      "criterion": "C3",
+      "command": "bash bin/fm-send.sh \"$TARGET\" OP5592-NOT-SENT-STALE-3",
+      "exit": 1,
+      "result": "Visible old transcript hint did not excuse selected pending draft; zero mutations; full ANSI capture identical.",
+      "receipt_sha256": "5d1977072e1759405b842399593e7ddb1b09ab8cd34b6af8554ee5ba605641a9",
+      "geometry": "160 columns by 160 rows",
+      "evidence_class": "historical real Cursor/Herdr; not rerun in this run",
+      "identity_evidence": "carried_cursor_herdr.identity_verification; runtime_blobs_and_modes"
+    }
+  ],
+  "testing_summary": "Three current-run scenario groups passed on real Claude 2.1.311, Codex 0.164.0 and Grok 1.0.70 earlier in this same Test: pending refusal/preserved draft/no keys, durable inbox without composer mutation, and explicit pending Enter. Historical real Cursor/Herdr C1/C2/C3 are separate carried evidence, not rerun in this run; all 22 relevant runtime blobs and modes match the prior tested tree, current HEAD and filesystem. Portable regressions cover reused reply state, unknown/unproven/failed reads and transport/identity/activity counterfactuals; these are not live-client results. Version/geometry limits and the concurrent-input race remain. No publication, CI or human acceptance claim.",
+  "report_recheck": {
+    "head": "e8791ede3b1ef4a2770909c5d9f4ab875855b62d",
+    "result": "Verified without rerunning clients or regressions.",
+    "scope": "Rechecked historical primary receipt hashes, 22 runtime blob/mode identities against historical tree, HEAD and filesystem, committed/tested guard identity, same-Test real-client raw receipt and all diagnostic stream hashes, raw captures and targeted regression logs; public artifact privacy reviewed.",
+    "exit": 0
+  }
+}
