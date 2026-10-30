@@ -855,6 +855,29 @@ Portable coverage in `tests/fm-send-inbox.test.sh` and `tests/fm-send-remote-del
 Real transport coverage here is tmux only: Herdr, Zellij, Orca, cmux, Paseo, Rex, and Tern remain `NOT_RUN` for this guard, including the Herdr Cursor exception.
 T3 Code has no terminal composer and its existing adapter returns only empty or unknown; no T3 service was contacted for this result.
 
+### Cursor on Herdr: real-client supplement
+
+Separately verified on 2026-10-29 on Linux with Cursor Agent 2026.10.22-27dcf5f and Herdr 0.9.3, protocol 22.
+The macOS PATH absences and `NOT_RUN` entries above describe that tmux guard's run only; they do not establish Cursor's absence elsewhere.
+This supplement covers tree `415941fb42b77a790e2e87916d8ab8407c749ab1`, committed as `66d1f751070c1d7c42600bceeec7cf4c4ed10ce6`; affected runtime changes require justification or refreshed real-client evidence before carrying these results forward.
+Public-interface invocations, relative to the tested source root:
+
+```sh
+bash bin/fm-send.sh fm-lab-c5592b:w2:p1 OP5592-NO-CONCATENAR-1
+# exit 1
+bash bin/fm-send.sh fm-lab-c5592b:w2:p1 'Finish with the exact marker OP5592-FOLLOWUP-OK.'
+# exit 0; response marker: OP5592-FOLLOWUP-OK
+bash bin/fm-send.sh fm-lab-c5592b:w2:p1 OP5592-NOT-SENT-STALE-3
+# exit 1
+```
+
+The first and third invocations made zero text/key calls and preserved the complete ANSI capture, respectively with a real pending draft and with an old follow-up hint visible outside the selected draft composer.
+The second measured native Cursor identity and busy activity independently, selected `A` after ghost stripping and the exact busy placeholder without stripping, queued the follow-up, and observed the response marker.
+The private verification receipt retains the raw argv, captures, identity checks, isolation proof, and cleanup evidence; this record retains the version-scoped result rather than the task chronology.
+The pending-draft and busy-placeholder cases used a 40-row by 120-column terminal; the visible-old-hint case used 160 rows by 160 columns.
+This is not a geometry matrix, a live wrong-identity counterfactual, independent signal-blinding proof, or a concurrent-input race test.
+The token-free tmux guard above does not refresh this Herdr result; refreshing it requires an isolated real Cursor/Herdr session and the three public-interface cases, including a model response for the queued follow-up.
+
 ## Composer classification matrix
 
 The shared composer classifier (`bin/fm-composer-lib.sh`, `fm_composer_classify_screen`) owns every composer shape fleet-wide; each backend contributes only a capture and a capability descriptor.
@@ -975,7 +998,7 @@ The same panes accepted `fm_backend_send_text_submit` at the same moment because
 `test_composer_footer_demotion_needs_a_proven_pair` pins the three bounds of the demotion - a blank row ends the footer zone, a separator pair that closed over no agent-glyph row demotes nothing, and Cursor's half-block-bounded `→` composer is untouched - plus the strict posture that an unanchored statusLine row alone never proves an empty composer.
 The footer zone is a property of any envelope a glyph row inside it proves, not of the separator pair specifically, so the same statusLine footer under claude's BORDERED composer (the shape a wide pane renders) is demoted identically; `test_composer_footer_zone_is_shape_independent` carries that box shape, asserts the statusLine is never the extracted composer content, and pins both counterweights - typed text inside that same box under that same footer still reads `pending`, and codex's startup banner, which holds no glyph row and therefore proves nothing, still yields to the live bare row drawn contiguously below it.
 
-The demotion is deliberately ASYMMETRIC: `empty` is the only verdict that authorizes `fm-send` to type into a pane, so the rule may move a verdict toward refusing but never toward `empty`.
+The demotion is deliberately ASYMMETRIC: the rule may move a verdict toward refusing but never toward `empty`; the [`fm-send.sh` header](../../bin/fm-send.sh) owns how each delivery plane consumes composer verdicts.
 It therefore counts a footer zone only when every row in it is demonstrably furniture - omp's status row, a braille animation row, claude's permission-mode hint row (`⏵⏵ bypass permissions on`), or a row leading with an agent glyph OTHER than the one that proved the envelope, which is what the `→` statusLine is on a `❯` claude pane.
 A run containing unclaimed activity (`Working on request...`, `→ ran npm test (3 failures)`) is not furniture in either row order and keeps invalidating the envelope above it, and a row leading with the SAME glyph the envelope was proven by (`❯ my typed draft`) is a live composer that keeps winning, so a visible draft is never overwritten.
 `test_composer_footer_zone_refuses_rather_than_allows` pins both directions on the bordered-box and separator-pair shapes.
