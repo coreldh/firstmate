@@ -1,0 +1,48 @@
+{
+  "sha": "9c1618687585dece19358c3b544c1c723bf8fc4a",
+  "scope": "Bash 3.2 local fm-send transport and arm/cd PreToolUse executable interfaces; synthetic isolated data; real classifiers and private tmux receiver; no model CLI, real fleet, publication, CI or human acceptance",
+  "commands": [
+    {
+      "command": "TMPDIR=\"$PWD/.gate-test-tmp\" /bin/bash tests/fm-arm-pretool-check.test.sh",
+      "exit": 0,
+      "evidence": "arm-suite.log"
+    },
+    {
+      "command": "TMPDIR=\"$PWD/.gate-test-tmp\" /bin/bash tests/fm-cd-pretool-check.test.sh",
+      "exit": 0,
+      "evidence": "cd-suite.log"
+    },
+    {
+      "command": "TMPDIR=\"$PWD/.gate-test-tmp\" /bin/bash tests/fm-send-inbox.test.sh",
+      "exit": 0,
+      "evidence": "send-suite.log"
+    }
+  ],
+  "manual_drivers": [
+    {
+      "command": "python3 ~/.no-mistakes/evidence/01M7EJT50KNXTM8HRAGFTD6NTB/live_driver.py",
+      "exit": 0,
+      "evidence": "live-results.json"
+    },
+    {
+      "command": "python3 ~/.no-mistakes/evidence/01M7EJT50KNXTM8HRAGFTD6NTB/marked_driver.py",
+      "exit": 0,
+      "evidence": "marked-results.json"
+    }
+  ],
+  "setup_correction": "The initial marked-driver assertion prohibited all state additions. Watcher-warning bookkeeping is permitted; corrected oracle checks no inbox or pending-reply records, then re-drove successfully. No product change.",
+  "note": "Existing arm/cd suites also invoked their embedded fm-lint check. No separate static-analysis command was requested or run.",
+  "cleanup": "Both private tmux kill-server calls exited 0. Fixture directories removed; .gate-test-tmp empty and removed.",
+  "cleanup_checks": [
+    {
+      "socket": "{run-worktree}/.gate-test-tmp/s",
+      "exit": 1,
+      "stderr": "no server running on {run-worktree}/.gate-test-tmp/s"
+    },
+    {
+      "socket": "{run-worktree}/.gate-test-tmp/m",
+      "exit": 1,
+      "stderr": "no server running on {run-worktree}/.gate-test-tmp/m"
+    }
+  ]
+}

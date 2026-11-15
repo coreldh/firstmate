@@ -1,0 +1,220 @@
+{
+  "sha": "9c1618687585dece19358c3b544c1c723bf8fc4a",
+  "shell": "GNU bash, version 3.2.57(1)-release (arm64-apple-darwin25)",
+  "locale": "en_US.UTF-8",
+  "results": [
+    {
+      "name": "mint disposable home",
+      "exit": 0,
+      "seconds": 0.27,
+      "stdout": "{run-worktree}/.gate-test-tmp/live/home\n",
+      "stderr": ""
+    },
+    {
+      "name": "initialize disposable primary",
+      "exit": 0,
+      "seconds": 0.021,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "base large innocuous command",
+      "exit": 0,
+      "seconds": 0.63,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "target large innocuous command",
+      "exit": 0,
+      "seconds": 0.021,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "arm fast UTF8",
+      "exit": 0,
+      "seconds": 0.024,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "arm protected UTF8",
+      "exit": 2,
+      "seconds": 0.085,
+      "stdout": "{\"decision\":\"deny\",\"reason\":\"[watcher-background] a protected watcher command cannot run in an asynchronous shell list or through nohup/disown\"}\n",
+      "stderr": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\"},\"systemMessage\":\"[watcher-background] a protected watcher command cannot run in an asynchronous shell list or through nohup/disown\"}\n"
+    },
+    {
+      "name": "arm allowed protected",
+      "exit": 0,
+      "seconds": 0.054,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "arm ANSI-C marker",
+      "exit": 2,
+      "seconds": 0.066,
+      "stdout": "{\"decision\":\"deny\",\"reason\":\"[watcher-background] a protected watcher command cannot run in an asynchronous shell list or through nohup/disown\"}\n",
+      "stderr": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\"},\"systemMessage\":\"[watcher-background] a protected watcher command cannot run in an asynchronous shell list or through nohup/disown\"}\n"
+    },
+    {
+      "name": "arm quoted token",
+      "exit": 2,
+      "seconds": 0.063,
+      "stdout": "{\"decision\":\"deny\",\"reason\":\"[watcher-background] a protected watcher command cannot run in an asynchronous shell list or through nohup/disown\"}\n",
+      "stderr": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\"},\"systemMessage\":\"[watcher-background] a protected watcher command cannot run in an asynchronous shell list or through nohup/disown\"}\n"
+    },
+    {
+      "name": "arm invalid innocuous",
+      "exit": 0,
+      "seconds": 0.056,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "arm invalid protected",
+      "exit": 2,
+      "seconds": 0.06,
+      "stdout": "{\"decision\":\"deny\",\"reason\":\"[watcher-background] a protected watcher command cannot run in an asynchronous shell list or through nohup/disown\"}\n",
+      "stderr": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\"},\"systemMessage\":\"[watcher-background] a protected watcher command cannot run in an asynchronous shell list or through nohup/disown\"}\n"
+    },
+    {
+      "name": "cd fast UTF8",
+      "exit": 0,
+      "seconds": 0.022,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "cd protected UTF8",
+      "exit": 2,
+      "seconds": 0.107,
+      "stdout": "{\"decision\":\"deny\",\"reason\":\"[persistent-cd] a persistent top-level directory change in the primary firstmate checkout is blocked; it would move the shell out of the home so a later firstmate-owned command runs inside a project clone. Reach the target without moving the shell - use git -C <dir> or an absolute path on the command itself - or scope the cd to a subshell like (cd <dir> && ...).\"}\n",
+      "stderr": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\"},\"systemMessage\":\"[persistent-cd] a persistent top-level directory change in the primary firstmate checkout is blocked; it would move the shell out of the home so a later firstmate-owned command runs inside a project clone. Reach the target without moving the shell - use git -C <dir> or an absolute path on the command itself - or scope the cd to a subshell like (cd <dir> && ...).\"}\n"
+    },
+    {
+      "name": "cd allowed protected",
+      "exit": 0,
+      "seconds": 0.078,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "cd ANSI-C marker",
+      "exit": 2,
+      "seconds": 0.083,
+      "stdout": "{\"decision\":\"deny\",\"reason\":\"[persistent-cd] a persistent top-level directory change in the primary firstmate checkout is blocked; it would move the shell out of the home so a later firstmate-owned command runs inside a project clone. Reach the target without moving the shell - use git -C <dir> or an absolute path on the command itself - or scope the cd to a subshell like (cd <dir> && ...).\"}\n",
+      "stderr": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\"},\"systemMessage\":\"[persistent-cd] a persistent top-level directory change in the primary firstmate checkout is blocked; it would move the shell out of the home so a later firstmate-owned command runs inside a project clone. Reach the target without moving the shell - use git -C <dir> or an absolute path on the command itself - or scope the cd to a subshell like (cd <dir> && ...).\"}\n"
+    },
+    {
+      "name": "cd quoted token",
+      "exit": 2,
+      "seconds": 0.088,
+      "stdout": "{\"decision\":\"deny\",\"reason\":\"[persistent-cd] a persistent top-level directory change in the primary firstmate checkout is blocked; it would move the shell out of the home so a later firstmate-owned command runs inside a project clone. Reach the target without moving the shell - use git -C <dir> or an absolute path on the command itself - or scope the cd to a subshell like (cd <dir> && ...).\"}\n",
+      "stderr": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\"},\"systemMessage\":\"[persistent-cd] a persistent top-level directory change in the primary firstmate checkout is blocked; it would move the shell out of the home so a later firstmate-owned command runs inside a project clone. Reach the target without moving the shell - use git -C <dir> or an absolute path on the command itself - or scope the cd to a subshell like (cd <dir> && ...).\"}\n"
+    },
+    {
+      "name": "cd invalid innocuous",
+      "exit": 0,
+      "seconds": 0.09,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "cd invalid protected",
+      "exit": 2,
+      "seconds": 0.093,
+      "stdout": "{\"decision\":\"deny\",\"reason\":\"[persistent-cd] a persistent top-level directory change in the primary firstmate checkout is blocked; it would move the shell out of the home so a later firstmate-owned command runs inside a project clone. Reach the target without moving the shell - use git -C <dir> or an absolute path on the command itself - or scope the cd to a subshell like (cd <dir> && ...).\"}\n",
+      "stderr": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\"},\"systemMessage\":\"[persistent-cd] a persistent top-level directory change in the primary firstmate checkout is blocked; it would move the shell out of the home so a later firstmate-owned command runs inside a project clone. Reach the target without moving the shell - use git -C <dir> or an absolute path on the command itself - or scope the cd to a subshell like (cd <dir> && ...).\"}\n"
+    },
+    {
+      "name": "arm failed tr partial-deny",
+      "exit": 2,
+      "seconds": 0.737,
+      "stdout": "{\"decision\":\"deny\",\"reason\":\"[watcher-background] a protected watcher command cannot run in an asynchronous shell list or through nohup/disown\"}\n",
+      "stderr": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\"},\"systemMessage\":\"[watcher-background] a protected watcher command cannot run in an asynchronous shell list or through nohup/disown\"}\n",
+      "classifier_received_exact_original": true
+    },
+    {
+      "name": "arm failed tr partial-allow",
+      "exit": 0,
+      "seconds": 0.072,
+      "stdout": "",
+      "stderr": "",
+      "classifier_received_exact_original": true
+    },
+    {
+      "name": "cd failed tr partial-deny",
+      "exit": 2,
+      "seconds": 0.112,
+      "stdout": "{\"decision\":\"deny\",\"reason\":\"[persistent-cd] a persistent top-level directory change in the primary firstmate checkout is blocked; it would move the shell out of the home so a later firstmate-owned command runs inside a project clone. Reach the target without moving the shell - use git -C <dir> or an absolute path on the command itself - or scope the cd to a subshell like (cd <dir> && ...).\"}\n",
+      "stderr": "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\"},\"systemMessage\":\"[persistent-cd] a persistent top-level directory change in the primary firstmate checkout is blocked; it would move the shell out of the home so a later firstmate-owned command runs inside a project clone. Reach the target without moving the shell - use git -C <dir> or an absolute path on the command itself - or scope the cd to a subshell like (cd <dir> && ...).\"}\n",
+      "classifier_received_exact_original": true
+    },
+    {
+      "name": "cd failed tr partial-allow",
+      "exit": 0,
+      "seconds": 0.084,
+      "stdout": "",
+      "stderr": "",
+      "classifier_received_exact_original": true
+    },
+    {
+      "name": "start private tmux consumer",
+      "exit": 0,
+      "seconds": 0.097,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "send large UTF8 to real tmux",
+      "exit": 0,
+      "seconds": 3.102,
+      "stdout": "",
+      "stderr": "fm-gate-refuse: gate agent lifecycle permitted only against lab home {run-worktree}/.gate-test-tmp/live/home\n●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n●  WATCHER DOWN - SUPERVISION IS OFF\n●  1 task(s) in flight, but no watcher has a fresh beacon (last beat: never, grace 300s).\n●  Trust the emitted supervision protocol for this harness; do not use shell & for watcher repair.\n●  This is a supervision warning only; the requested message WILL still be sent.\n●  repair missing watcher supervision with a foreground checkpoint: bin/fm-watch-checkpoint.sh --seconds 180.\n●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+    },
+    {
+      "name": "read durable steer body",
+      "exit": 0,
+      "seconds": 0.167,
+      "stdout": "[large body omitted; exact byte comparison succeeded]",
+      "stderr": "",
+      "sha256": "89ebde40706e2af85b7bfa6f57a8ebd96c6a442aa79fa42b4e9d0fb113b802d8",
+      "body_bytes": 86032
+    },
+    {
+      "name": "reject whitespace ''",
+      "exit": 1,
+      "seconds": 0.749,
+      "stdout": "",
+      "stderr": "fm-gate-refuse: gate agent lifecycle permitted only against lab home {run-worktree}/.gate-test-tmp/live/home\nWARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.\nerror: a text steer requires a nonempty message; nothing was sent (an empty marked request would deliver only marker and correlation bytes and leave the parent waiting on a reply to nothing)\n"
+    },
+    {
+      "name": "reject whitespace ' \\t\\n'",
+      "exit": 1,
+      "seconds": 0.725,
+      "stdout": "",
+      "stderr": "fm-gate-refuse: gate agent lifecycle permitted only against lab home {run-worktree}/.gate-test-tmp/live/home\nWARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.\nerror: a text steer requires a nonempty message; nothing was sent (an empty marked request would deliver only marker and correlation bytes and leave the parent waiting on a reply to nothing)\n"
+    },
+    {
+      "name": "reject whitespace '\\u2003'",
+      "exit": 1,
+      "seconds": 0.697,
+      "stdout": "",
+      "stderr": "fm-gate-refuse: gate agent lifecycle permitted only against lab home {run-worktree}/.gate-test-tmp/live/home\nWARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.\nerror: a text steer requires a nonempty message; nothing was sent (an empty marked request would deliver only marker and correlation bytes and leave the parent waiting on a reply to nothing)\n"
+    },
+    {
+      "name": "capture real tmux doorbell",
+      "exit": 0,
+      "seconds": 0.011,
+      "stdout": ": Firstmate instruction waiting: list \"$FM_TASK_INBOX\"/*.msg in your 't1.inbox' steering inbox, read and act on each in\nnumeric order, then mv each into its handled/.\n: Firstmate instruction waiting: list \"$FM_TASK_INBOX\"/*.msg in your 't1.inbox' steering inbox, read and act on each in\nnumeric order, then mv each into its handled/.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "stderr": ""
+    },
+    {
+      "name": "stop private tmux server",
+      "exit": 0
+    }
+  ]
+}

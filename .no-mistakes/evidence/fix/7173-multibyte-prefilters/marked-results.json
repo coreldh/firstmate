@@ -1,0 +1,51 @@
+[
+  {
+    "name": "mint lab",
+    "exit": 0,
+    "seconds": 0.055,
+    "stdout": "{run-worktree}/.gate-test-tmp/marked/home\n",
+    "stderr": ""
+  },
+  {
+    "name": "start private pane",
+    "exit": 0,
+    "seconds": 0.061,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "marked blank rejected before record or correlation",
+    "exit": 1,
+    "seconds": 1.462,
+    "stdout": "",
+    "stderr": "fm-gate-refuse: gate agent lifecycle permitted only against lab home {run-worktree}/.gate-test-tmp/marked/home\n●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n●  WATCHER DOWN - SUPERVISION IS OFF\n●  1 task(s) in flight, but no watcher has a fresh beacon (last beat: never, grace 300s).\n●  Trust the emitted supervision protocol for this harness; do not use shell & for watcher repair.\n●  This is a supervision warning only; the requested message WILL still be sent.\n●  repair missing watcher supervision with a foreground checkpoint: bin/fm-watch-checkpoint.sh --seconds 180.\n●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nerror: a text steer requires a nonempty message; nothing was sent (an empty marked request would deliver only marker and correlation bytes and leave the parent waiting on a reply to nothing)\n"
+  },
+  {
+    "name": "send marked UTF8",
+    "exit": 0,
+    "seconds": 3.46,
+    "stdout": "",
+    "stderr": "fm-gate-refuse: gate agent lifecycle permitted only against lab home {run-worktree}/.gate-test-tmp/marked/home\nWARNING: watcher still down (same stale episode; last beat: never, grace 300s) - full banner already printed this episode.\n"
+  },
+  {
+    "name": "read marked record",
+    "exit": 0,
+    "seconds": 0.111,
+    "stdout": "[body omitted: exact payload suffix preserved]",
+    "stderr": "",
+    "marker": "[fm-from-firstmate]⁣corr=7c240ac322ea3b8c ",
+    "payload_bytes": 42000,
+    "pending_reply_delivered": true
+  },
+  {
+    "name": "capture marked doorbell",
+    "exit": 0,
+    "seconds": 0.008,
+    "stdout": ": Firstmate instruction waiting: list \"$FM_TASK_INBOX\"/*.msg in your 'domain.inbox' steering inbox, read and act on each\n in numeric order, then mv each into its handled/.\n: Firstmate instruction waiting: list \"$FM_TASK_INBOX\"/*.msg in your 'domain.inbox' steering inbox, read and act on each\n in numeric order, then mv each into its handled/.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "stop private pane",
+    "exit": 0
+  }
+]
